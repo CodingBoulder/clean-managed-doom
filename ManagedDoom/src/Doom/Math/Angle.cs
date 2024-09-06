@@ -22,6 +22,7 @@ namespace ManagedDoom
 {
     public struct Angle
     {
+        private static double TwoXPI = 2 * Math.PI;
         public static readonly Angle Ang0 = new Angle(0x00000000);
         public static readonly Angle Ang45 = new Angle(0x20000000);
         public static readonly Angle Ang90 = new Angle(0x40000000);
@@ -44,7 +45,7 @@ namespace ManagedDoom
 
         public static Angle FromRadian(double radian)
         {
-            var data = Math.Round(0x100000000 * (radian / (2 * Math.PI)));
+            var data = Math.Round(0x100000000 * (radian / (TwoXPI)));
             return new Angle((uint)data);
         }
 
@@ -56,7 +57,7 @@ namespace ManagedDoom
 
         public double ToRadian()
         {
-            return 2 * Math.PI * ((double)data / 0x100000000);
+            return TwoXPI * ((double)data / 0x100000000);
         }
 
         public double ToDegree()

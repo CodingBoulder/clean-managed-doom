@@ -24,6 +24,9 @@ namespace ManagedDoom
         private const int slopeRange = 2048;
         private const int slopeBits = 11;
         private const int fracToSlopeShift = Fixed.FracBits - slopeBits;
+        private static Angle Ang90Minus1 = new Angle(Angle.Ang90.Data - 1);
+        private static Angle ang180Minus1 = new Angle(Angle.Ang180.Data - 1);
+        private static Angle ang270Minus1 = new Angle(Angle.Ang270.Data - 1);
 
         private static uint SlopeDiv(Fixed num, Fixed den)
         {
@@ -160,7 +163,7 @@ namespace ManagedDoom
                     else
                     {
                         // octant 1
-                        return new Angle(Angle.Ang90.Data - 1) - Trig.TanToAngle(SlopeDiv(x, y));
+                        return Ang90Minus1 - Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
                 else
@@ -191,7 +194,7 @@ namespace ManagedDoom
                     if (x > y)
                     {
                         // octant 3
-                        return new Angle(Angle.Ang180.Data - 1) - Trig.TanToAngle(SlopeDiv(y, x));
+                        return ang180Minus1 - Trig.TanToAngle(SlopeDiv(y, x));
                     }
                     else
                     {
@@ -212,7 +215,7 @@ namespace ManagedDoom
                     else
                     {
                         // octant 5
-                        return new Angle(Angle.Ang270.Data - 1) - Trig.TanToAngle(SlopeDiv(x, y));
+                        return ang270Minus1 - Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
             }
