@@ -92,13 +92,11 @@ namespace ManagedDoom
 
         private static IEnumerable<string> ReadLines(byte[] data)
         {
-            using (var ms = new MemoryStream(data))
-            using (var sr = new StreamReader(ms))
+            using var ms = new MemoryStream(data);
+            using var sr = new StreamReader(ms);
+            for (var line = sr.ReadLine(); line != null; line = sr.ReadLine())
             {
-                for (var line = sr.ReadLine(); line != null; line = sr.ReadLine())
-                {
-                    yield return line;
-                }
+                yield return line;
             }
         }
 

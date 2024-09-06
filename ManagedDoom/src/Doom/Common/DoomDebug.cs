@@ -113,15 +113,13 @@ namespace ManagedDoom
 
         public static void DumpMobjCsv(string path, World world)
         {
-            using (var writer = new System.IO.StreamWriter(path))
+            using var writer = new System.IO.StreamWriter(path);
+            foreach (var thinker in world.Thinkers)
             {
-                foreach (var thinker in world.Thinkers)
+                var mobj = thinker as Mobj;
+                if (mobj != null)
                 {
-                    var mobj = thinker as Mobj;
-                    if (mobj != null)
-                    {
-                        writer.WriteLine(GetMobjCsv(mobj));
-                    }
+                    writer.WriteLine(GetMobjCsv(mobj));
                 }
             }
         }

@@ -124,10 +124,8 @@ namespace ManagedDoom
 
                 data[ptr++] = 0x1d;
 
-                using (var writer = new FileStream(path, FileMode.Create, FileAccess.Write))
-                {
-                    writer.Write(data, 0, ptr);
-                }
+                using var writer = new FileStream(path, FileMode.Create, FileAccess.Write);
+                writer.Write(data, 0, ptr);
             }
 
             private void PadPointer()

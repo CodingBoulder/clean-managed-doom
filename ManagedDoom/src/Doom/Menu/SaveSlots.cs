@@ -38,11 +38,9 @@ namespace ManagedDoom
                 var path = Path.Combine(directory, "doomsav" + i + ".dsg");
                 if (File.Exists(path))
                 {
-                    using (var reader = new FileStream(path, FileMode.Open, FileAccess.Read))
-                    {
-                        reader.Read(buffer, 0, buffer.Length);
-                        slots[i] = DoomInterop.ToString(buffer, 0, buffer.Length);
-                    }
+                    using var reader = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    reader.Read(buffer, 0, buffer.Length);
+                    slots[i] = DoomInterop.ToString(buffer, 0, buffer.Length);
                 }
             }
         }

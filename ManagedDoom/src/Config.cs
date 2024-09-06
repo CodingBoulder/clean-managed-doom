@@ -207,39 +207,37 @@ namespace ManagedDoom
         {
             try
             {
-                using (var writer = new StreamWriter(path))
-                {
-                    writer.WriteLine(nameof(key_forward) + " = " + key_forward);
-                    writer.WriteLine(nameof(key_backward) + " = " + key_backward);
-                    writer.WriteLine(nameof(key_strafeleft) + " = " + key_strafeleft);
-                    writer.WriteLine(nameof(key_straferight) + " = " + key_straferight);
-                    writer.WriteLine(nameof(key_turnleft) + " = " + key_turnleft);
-                    writer.WriteLine(nameof(key_turnright) + " = " + key_turnright);
-                    writer.WriteLine(nameof(key_fire) + " = " + key_fire);
-                    writer.WriteLine(nameof(key_use) + " = " + key_use);
-                    writer.WriteLine(nameof(key_run) + " = " + key_run);
-                    writer.WriteLine(nameof(key_strafe) + " = " + key_strafe);
+                using var writer = new StreamWriter(path);
+                writer.WriteLine(nameof(key_forward) + " = " + key_forward);
+                writer.WriteLine(nameof(key_backward) + " = " + key_backward);
+                writer.WriteLine(nameof(key_strafeleft) + " = " + key_strafeleft);
+                writer.WriteLine(nameof(key_straferight) + " = " + key_straferight);
+                writer.WriteLine(nameof(key_turnleft) + " = " + key_turnleft);
+                writer.WriteLine(nameof(key_turnright) + " = " + key_turnright);
+                writer.WriteLine(nameof(key_fire) + " = " + key_fire);
+                writer.WriteLine(nameof(key_use) + " = " + key_use);
+                writer.WriteLine(nameof(key_run) + " = " + key_run);
+                writer.WriteLine(nameof(key_strafe) + " = " + key_strafe);
 
-                    writer.WriteLine(nameof(mouse_sensitivity) + " = " + mouse_sensitivity);
-                    writer.WriteLine(nameof(mouse_disableyaxis) + " = " + BoolToString(mouse_disableyaxis));
+                writer.WriteLine(nameof(mouse_sensitivity) + " = " + mouse_sensitivity);
+                writer.WriteLine(nameof(mouse_disableyaxis) + " = " + BoolToString(mouse_disableyaxis));
 
-                    writer.WriteLine(nameof(game_alwaysrun) + " = " + BoolToString(game_alwaysrun));
+                writer.WriteLine(nameof(game_alwaysrun) + " = " + BoolToString(game_alwaysrun));
 
-                    writer.WriteLine(nameof(video_screenwidth) + " = " + video_screenwidth);
-                    writer.WriteLine(nameof(video_screenheight) + " = " + video_screenheight);
-                    writer.WriteLine(nameof(video_fullscreen) + " = " + BoolToString(video_fullscreen));
-                    writer.WriteLine(nameof(video_highresolution) + " = " + BoolToString(video_highresolution));
-                    writer.WriteLine(nameof(video_displaymessage) + " = " + BoolToString(video_displaymessage));
-                    writer.WriteLine(nameof(video_gamescreensize) + " = " + video_gamescreensize);
-                    writer.WriteLine(nameof(video_gammacorrection) + " = " + video_gammacorrection);
-                    writer.WriteLine(nameof(video_fpsscale) + " = " + video_fpsscale);
+                writer.WriteLine(nameof(video_screenwidth) + " = " + video_screenwidth);
+                writer.WriteLine(nameof(video_screenheight) + " = " + video_screenheight);
+                writer.WriteLine(nameof(video_fullscreen) + " = " + BoolToString(video_fullscreen));
+                writer.WriteLine(nameof(video_highresolution) + " = " + BoolToString(video_highresolution));
+                writer.WriteLine(nameof(video_displaymessage) + " = " + BoolToString(video_displaymessage));
+                writer.WriteLine(nameof(video_gamescreensize) + " = " + video_gamescreensize);
+                writer.WriteLine(nameof(video_gammacorrection) + " = " + video_gammacorrection);
+                writer.WriteLine(nameof(video_fpsscale) + " = " + video_fpsscale);
 
-                    writer.WriteLine(nameof(audio_soundvolume) + " = " + audio_soundvolume);
-                    writer.WriteLine(nameof(audio_musicvolume) + " = " + audio_musicvolume);
-                    writer.WriteLine(nameof(audio_randompitch) + " = " + BoolToString(audio_randompitch));
-                    writer.WriteLine(nameof(audio_soundfont) + " = " + audio_soundfont);
-                    writer.WriteLine(nameof(audio_musiceffect) + " = " + BoolToString(audio_musiceffect));
-                }
+                writer.WriteLine(nameof(audio_soundvolume) + " = " + audio_soundvolume);
+                writer.WriteLine(nameof(audio_musicvolume) + " = " + audio_musicvolume);
+                writer.WriteLine(nameof(audio_randompitch) + " = " + BoolToString(audio_randompitch));
+                writer.WriteLine(nameof(audio_soundfont) + " = " + audio_soundfont);
+                writer.WriteLine(nameof(audio_musiceffect) + " = " + BoolToString(audio_musiceffect));
             }
             catch
             {
