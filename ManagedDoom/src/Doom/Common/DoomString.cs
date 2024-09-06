@@ -22,8 +22,8 @@ namespace ManagedDoom
 {
     public sealed class DoomString
     {
-        private static Dictionary<string, DoomString> valueTable = new Dictionary<string, DoomString>();
-        private static Dictionary<string, DoomString> nameTable = new Dictionary<string, DoomString>();
+        private static Dictionary<string, DoomString> valueTable = [];
+        private static Dictionary<string, DoomString> nameTable = [];
 
         private string original;
         private string replaced;

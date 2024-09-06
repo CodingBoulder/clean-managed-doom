@@ -57,7 +57,7 @@ namespace ManagedDoom
 
 
 
-        private static Dictionary<int, Texture> dummyTextures = new Dictionary<int, Texture>();
+        private static Dictionary<int, Texture> dummyTextures = [];
 
         public static Texture GetTexture(int height)
         {

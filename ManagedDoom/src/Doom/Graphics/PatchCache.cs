@@ -29,7 +29,7 @@ namespace ManagedDoom
         {
             this.wad = wad;
 
-            cache = new Dictionary<string, Patch>();
+            cache = [];
         }
 
         public Patch this[string name]

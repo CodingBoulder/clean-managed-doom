@@ -45,7 +45,7 @@ namespace ManagedDoom
         private void InitSpawnMapThing()
         {
             playerStarts = new MapThing[Player.MaxPlayerCount];
-            deathmatchStarts = new List<MapThing>();
+            deathmatchStarts = [];
         }
 
         /// <summary>

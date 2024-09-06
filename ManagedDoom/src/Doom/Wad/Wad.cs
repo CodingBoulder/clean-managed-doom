@@ -38,9 +38,9 @@ namespace ManagedDoom
             {
                 Console.Write("Open WAD files: ");
 
-                names = new List<string>();
-                streams = new List<Stream>();
-                lumpInfos = new List<LumpInfo>();
+                names = [];
+                streams = [];
+                lumpInfos = [];
 
                 foreach (var fileName in fileNames)
                 {

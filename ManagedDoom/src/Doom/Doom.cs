@@ -75,7 +75,7 @@ namespace ManagedDoom
             this.music = music;
             this.userInput = userInput;
 
-            events = new List<DoomEvent>();
+            events = [];
 
             options = new GameOptions(args, content);
             options.Video = video;

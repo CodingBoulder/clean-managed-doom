@@ -96,7 +96,7 @@ namespace ManagedDoom
             up = false;
             down = false;
 
-            marks = new List<Vertex>();
+            marks = [];
             nextMarkNumber = 0;
         }
 

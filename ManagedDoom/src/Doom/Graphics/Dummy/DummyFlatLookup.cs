@@ -39,8 +39,8 @@ namespace ManagedDoom
 
             flats = new Flat[count];
 
-            nameToFlat = new Dictionary<string, Flat>();
-            nameToNumber = new Dictionary<string, int>();
+            nameToFlat = [];
+            nameToNumber = [];
 
             for (var lump = firstFlat; lump <= lastFlat; lump++)
             {

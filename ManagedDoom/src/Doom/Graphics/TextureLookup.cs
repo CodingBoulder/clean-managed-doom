@@ -54,9 +54,9 @@ namespace ManagedDoom
 
         private void InitLookup(Wad wad)
         {
-            textures = new List<Texture>();
-            nameToTexture = new Dictionary<string, Texture>();
-            nameToNumber = new Dictionary<string, int>();
+            textures = [];
+            nameToTexture = [];
+            nameToNumber = [];
 
             var patches = LoadPatches(wad);
 

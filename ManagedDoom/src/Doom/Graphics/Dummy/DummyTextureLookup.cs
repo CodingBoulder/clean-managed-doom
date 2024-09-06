@@ -20,9 +20,9 @@ namespace ManagedDoom
 
         private void InitLookup(Wad wad)
         {
-            textures = new List<Texture>();
-            nameToTexture = new Dictionary<string, Texture>();
-            nameToNumber = new Dictionary<string, int>();
+            textures = [];
+            nameToTexture = [];
+            nameToNumber = [];
 
             for (var n = 1; n <= 2; n++)
             {

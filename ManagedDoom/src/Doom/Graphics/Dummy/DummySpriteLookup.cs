@@ -29,7 +29,7 @@ namespace ManagedDoom
             var temp = new Dictionary<string, List<SpriteInfo>>();
             for (var i = 0; i < (int)Sprite.Count; i++)
             {
-                temp.Add(DoomInfo.SpriteNames[i], new List<SpriteInfo>());
+                temp.Add(DoomInfo.SpriteNames[i], []);
             }
 
             var cache = new Dictionary<int, Patch>();
