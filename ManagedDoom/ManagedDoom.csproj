@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>managed-doom</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 
@@ -23,6 +23,12 @@
     <PackageReference Include="Silk.NET.Input.Glfw" Version="2.17.1" />
     <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.17.1" />
     <PackageReference Include="TrippyGL" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DOOM1.WAD">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
