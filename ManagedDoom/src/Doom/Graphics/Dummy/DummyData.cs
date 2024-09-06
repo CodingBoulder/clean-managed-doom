@@ -15,16 +15,15 @@
 
 
 
-using System;
 using System.Collections.Generic;
 
 namespace ManagedDoom
 {
-    public static class DummyData
+    public class DummyData
     {
-        private static Patch dummyPatch;
+        private Patch dummyPatch;
 
-        public static Patch GetPatch()
+        public Patch GetPatch()
         {
             if (dummyPatch != null)
             {
@@ -57,9 +56,9 @@ namespace ManagedDoom
 
 
 
-        private static Dictionary<int, Texture> dummyTextures = [];
+        private readonly Dictionary<int, Texture> dummyTextures = [];
 
-        public static Texture GetTexture(int height)
+        public Texture GetTexture(int height)
         {
             if (dummyTextures.ContainsKey(height))
             {
@@ -77,9 +76,9 @@ namespace ManagedDoom
 
 
 
-        private static Flat dummyFlat;
+        private Flat dummyFlat;
 
-        public static Flat GetFlat()
+        public Flat GetFlat()
         {
             if (dummyFlat != null)
             {
@@ -106,9 +105,9 @@ namespace ManagedDoom
 
 
 
-        private static Flat dummySkyFlat;
+        private Flat dummySkyFlat;
 
-        public static Flat GetSkyFlat()
+        public Flat GetSkyFlat()
         {
             if (dummySkyFlat != null)
             {

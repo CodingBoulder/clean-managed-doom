@@ -23,6 +23,7 @@ namespace ManagedDoom
 {
     public sealed class DummyFlatLookup : IFlatLookup
     {
+        private readonly DummyData dummyData = new();
         private Flat[] flats;
 
         private Dictionary<string, Flat> nameToFlat;
@@ -51,7 +52,7 @@ namespace ManagedDoom
 
                 var number = lump - firstFlat;
                 var name = wad.LumpInfos[lump].Name;
-                var flat = name != "F_SKY1" ? DummyData.GetFlat() : DummyData.GetSkyFlat();
+                var flat = name != "F_SKY1" ? dummyData.GetFlat() : dummyData.GetSkyFlat();
 
                 flats[number] = flat;
                 nameToFlat[name] = flat;

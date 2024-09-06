@@ -6,12 +6,14 @@ namespace ManagedDoom
 {
     public class DummyTextureLookup : ITextureLookup
     {
+        private readonly DummyData dummyData = new();
+        
         private List<Texture> textures;
         private Dictionary<string, Texture> nameToTexture;
         private Dictionary<string, int> nameToNumber;
 
         private int[] switchList;
-
+        
         public DummyTextureLookup(Wad wad)
         {
             InitLookup(wad);
@@ -39,7 +41,7 @@ namespace ManagedDoom
                     var offset = BitConverter.ToInt32(data, 4 + 4 * i);
                     var name = Texture.GetName(data, offset);
                     var height = Texture.GetHeight(data, offset);
-                    var texture = DummyData.GetTexture(height);
+                    var texture = dummyData.GetTexture(height);
                     nameToNumber.TryAdd(name, textures.Count);
                     textures.Add(texture);
                     nameToTexture.TryAdd(name, texture);

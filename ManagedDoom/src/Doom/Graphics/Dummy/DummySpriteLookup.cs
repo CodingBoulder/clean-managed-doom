@@ -22,6 +22,7 @@ namespace ManagedDoom
 {
     public sealed class DummySpriteLookup : ISpriteLookup
     {
+        private readonly DummyData dummyData = new();
         private SpriteDef[] spriteDefs;
 
         public DummySpriteLookup(Wad wad)
@@ -60,7 +61,7 @@ namespace ManagedDoom
                         {
                             if (list[frame].Patches[i] == null)
                             {
-                                list[frame].Patches[i] = DummyData.GetPatch();
+                                list[frame].Patches[i] = dummyData.GetPatch();
                                 list[frame].Flip[i] = false;
                             }
                         }
@@ -69,7 +70,7 @@ namespace ManagedDoom
                     {
                         if (list[frame].Patches[rotation - 1] == null)
                         {
-                            list[frame].Patches[rotation - 1] = DummyData.GetPatch();
+                            list[frame].Patches[rotation - 1] = dummyData.GetPatch();
                             list[frame].Flip[rotation - 1] = false;
                         }
                     }
@@ -91,7 +92,7 @@ namespace ManagedDoom
                         {
                             if (list[frame].Patches[i] == null)
                             {
-                                list[frame].Patches[i] = DummyData.GetPatch();
+                                list[frame].Patches[i] = dummyData.GetPatch();
                                 list[frame].Flip[i] = true;
                             }
                         }
@@ -100,7 +101,7 @@ namespace ManagedDoom
                     {
                         if (list[frame].Patches[rotation - 1] == null)
                         {
-                            list[frame].Patches[rotation - 1] = DummyData.GetPatch();
+                            list[frame].Patches[rotation - 1] = dummyData.GetPatch();
                             list[frame].Flip[rotation - 1] = true;
                         }
                     }
