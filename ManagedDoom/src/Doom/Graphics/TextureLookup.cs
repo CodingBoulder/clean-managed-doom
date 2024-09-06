@@ -30,11 +30,7 @@ namespace ManagedDoom
 
         private int[] switchList;
 
-        public TextureLookup(Wad wad) : this(wad, false)
-        {
-        }
-
-        public TextureLookup(Wad wad, bool useDummy)
+        public void Initialize(Wad wad)
         {
             try
             {

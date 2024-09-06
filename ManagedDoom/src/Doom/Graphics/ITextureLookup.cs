@@ -17,11 +17,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ManagedDoom
 {
     public interface ITextureLookup : IReadOnlyList<Texture>
     {
+        void Initialize(Wad wad);
+
         int GetNumber(string name);
         Texture this[string name] { get; }
         public int[] SwitchList { get; }

@@ -93,6 +93,11 @@ namespace ManagedDoom
             return textures.GetEnumerator();
         }
 
+        public void Initialize(Wad wad)
+        {
+            throw new NotImplementedException();
+        }
+
         public int Count => textures.Count;
         public Texture this[int num] => textures[num];
         public Texture this[string name] => nameToTexture[name];

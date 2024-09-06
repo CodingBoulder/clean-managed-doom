@@ -1,12 +1,13 @@
-﻿using System;
-using System.Runtime.ExceptionServices;
+﻿using DrippyAL;
 using Silk.NET.Input;
 using Silk.NET.Input.Glfw;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Glfw;
-using DrippyAL;
+using System;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 
 namespace ManagedDoom.Silk
 {
@@ -35,6 +36,8 @@ namespace ManagedDoom.Silk
 
         private Exception exception;
 
+        private CancellationTokenSource cancellationTokenSource = new();
+
         public SilkDoom(CommandLineArgs args)
         {
             try
@@ -45,7 +48,14 @@ namespace ManagedDoom.Silk
                 GlfwInput.RegisterPlatform();
 
                 config = SilkConfigUtilities.GetConfig();
-                content = new GameContent(args);
+
+                Wad wad = new(ConfigUtilities.GetWadPaths(args));
+
+                DeHackEd.Initialize(args, wad);
+
+                content = new GameContent(wad);
+
+                content.InitializeAsync(cancellationTokenSource.Token);
 
                 config.video_screenwidth = Math.Clamp(config.video_screenwidth, 320, 3200);
                 config.video_screenheight = Math.Clamp(config.video_screenheight, 200, 2000);
@@ -210,6 +220,8 @@ namespace ManagedDoom.Silk
                 window.Dispose();
                 window = null;
             }
+
+            cancellationTokenSource.Dispose();
         }
 
         public string QuitMessage => doom.QuitMessage;

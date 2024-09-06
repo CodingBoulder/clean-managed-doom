@@ -16,6 +16,8 @@
 
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ManagedDoom
 {
@@ -29,35 +31,31 @@ namespace ManagedDoom
         private ISpriteLookup sprites;
         private TextureAnimation animation;
 
-        private GameContent()
+        public GameContent(Wad wad)
         {
+            this.wad = wad;
         }
 
-        public GameContent(CommandLineArgs args)
+        public async Task InitializeAsync(CancellationToken cancellationToken)
         {
-            wad = new Wad(ConfigUtilities.GetWadPaths(args));
+            textures = new TextureLookup();
+            textures.Initialize(wad);
 
-            DeHackEd.Initialize(args, wad);
-
-            palette = new Palette(wad);
-            colorMap = new ColorMap(wad);
-            textures = new TextureLookup(wad);
             flats = new FlatLookup(wad);
-            sprites = new SpriteLookup(wad);
-            animation = new TextureAnimation(textures, flats);
+
+            await Task.WhenAll(
+                Task.Run(() => palette = new Palette(wad), cancellationToken),
+                Task.Run(() => colorMap = new ColorMap(wad), cancellationToken),
+                Task.Run(() => sprites = new SpriteLookup(wad), cancellationToken),
+                Task.Run(() => animation = new TextureAnimation(textures, flats), cancellationToken));
         }
 
         public static GameContent CreateDummy(params string[] wadPaths)
         {
-            var gc = new GameContent();
+            var gc = new GameContent(new Wad(wadPaths));
 
-            gc.wad = new Wad(wadPaths);
-            gc.palette = new Palette(gc.wad);
-            gc.colorMap = new ColorMap(gc.wad);
-            gc.textures = new DummyTextureLookup(gc.wad);
-            gc.flats = new DummyFlatLookup(gc.wad);
-            gc.sprites = new DummySpriteLookup(gc.wad);
-            gc.animation = new TextureAnimation(gc.textures, gc.flats);
+            gc.InitializeAsync(CancellationToken.None)
+                .Wait();
 
             return gc;
         }
