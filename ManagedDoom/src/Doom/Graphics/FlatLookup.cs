@@ -193,16 +193,9 @@ namespace ManagedDoom
         }
 
         public int GetNumber(string name)
-        {
-            if (nameToNumber.ContainsKey(name))
-            {
-                return nameToNumber[name];
-            }
-            else
-            {
-                return -1;
-            }
-        }
+            => nameToNumber.TryGetValue(name, out int number)
+                ? number
+                : -1;
 
         public IEnumerator<Flat> GetEnumerator()
         {
