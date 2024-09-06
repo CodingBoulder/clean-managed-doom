@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ManagedDoom;
+﻿using ManagedDoom;
+using System;
+using Xunit;
 
 namespace ManagedDoomTest.UnitTests
 {
-    [TestClass]
     public class AngleTest
     {
         private static readonly double delta = 1.0E-3;
 
-        [TestMethod]
+        [Fact]
         public void ToRadian()
         {
-            Assert.AreEqual(0.00 * Math.PI, Angle.Ang0.ToRadian(), delta);
-            Assert.AreEqual(0.25 * Math.PI, Angle.Ang45.ToRadian(), delta);
-            Assert.AreEqual(0.50 * Math.PI, Angle.Ang90.ToRadian(), delta);
-            Assert.AreEqual(1.00 * Math.PI, Angle.Ang180.ToRadian(), delta);
-            Assert.AreEqual(1.50 * Math.PI, Angle.Ang270.ToRadian(), delta);
+            Assert.Equal(0.00 * Math.PI, Angle.Ang0.ToRadian(), delta);
+            Assert.Equal(0.25 * Math.PI, Angle.Ang45.ToRadian(), delta);
+            Assert.Equal(0.50 * Math.PI, Angle.Ang90.ToRadian(), delta);
+            Assert.Equal(1.00 * Math.PI, Angle.Ang180.ToRadian(), delta);
+            Assert.Equal(1.50 * Math.PI, Angle.Ang270.ToRadian(), delta);
         }
 
-        [TestMethod]
+        [Fact]
         public void FromDegrees()
         {
             for (var deg = -720; deg <= 720; deg++)
@@ -33,22 +30,22 @@ namespace ManagedDoomTest.UnitTests
                 var actualSin = Math.Sin(angle.ToRadian());
                 var actualCos = Math.Cos(angle.ToRadian());
 
-                Assert.AreEqual(expectedSin, actualSin, delta);
-                Assert.AreEqual(expectedCos, actualCos, delta);
+                Assert.Equal(expectedSin, actualSin, delta);
+                Assert.Equal(expectedCos, actualCos, delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void FromRadianToDegrees()
         {
-            Assert.AreEqual(Angle.FromRadian(0.00 * Math.PI).ToDegree(), 0, delta);
-            Assert.AreEqual(Angle.FromRadian(0.25 * Math.PI).ToDegree(), 45, delta);
-            Assert.AreEqual(Angle.FromRadian(0.50 * Math.PI).ToDegree(), 90, delta);
-            Assert.AreEqual(Angle.FromRadian(1.00 * Math.PI).ToDegree(), 180, delta);
-            Assert.AreEqual(Angle.FromRadian(1.50 * Math.PI).ToDegree(), 270, delta);
+            Assert.Equal(0, Angle.FromRadian(0.00 * Math.PI).ToDegree(), delta);
+            Assert.Equal(45, Angle.FromRadian(0.25 * Math.PI).ToDegree(), delta);
+            Assert.Equal(90, Angle.FromRadian(0.50 * Math.PI).ToDegree(), delta);
+            Assert.Equal(180, Angle.FromRadian(1.00 * Math.PI).ToDegree(), delta);
+            Assert.Equal(270, Angle.FromRadian(1.50 * Math.PI).ToDegree(), delta);
         }
 
-        [TestMethod]
+        [Fact]
         public void Sign()
         {
             var random = new Random(666);
@@ -69,8 +66,8 @@ namespace ManagedDoomTest.UnitTests
                     var actualSin = Math.Sin(ab.ToRadian());
                     var actualCos = Math.Cos(ab.ToRadian());
 
-                    Assert.AreEqual(expectedSin, actualSin, delta);
-                    Assert.AreEqual(expectedCos, actualCos, delta);
+                    Assert.Equal(expectedSin, actualSin, delta);
+                    Assert.Equal(expectedCos, actualCos, delta);
                 }
 
                 {
@@ -80,13 +77,13 @@ namespace ManagedDoomTest.UnitTests
                     var actualSin = Math.Sin(ac.ToRadian());
                     var actualCos = Math.Cos(ac.ToRadian());
 
-                    Assert.AreEqual(expectedSin, actualSin, delta);
-                    Assert.AreEqual(expectedCos, actualCos, delta);
+                    Assert.Equal(expectedSin, actualSin, delta);
+                    Assert.Equal(expectedCos, actualCos, delta);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Abs()
         {
             var random = new Random(666);
@@ -104,12 +101,12 @@ namespace ManagedDoomTest.UnitTests
                 var actualSin = Math.Sin(ab.ToRadian());
                 var actualCos = Math.Cos(ab.ToRadian());
 
-                Assert.AreEqual(expectedSin, actualSin, delta);
-                Assert.AreEqual(expectedCos, actualCos, delta);
+                Assert.Equal(expectedSin, actualSin, delta);
+                Assert.Equal(expectedCos, actualCos, delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Addition()
         {
             var random = new Random(666);
@@ -129,12 +126,12 @@ namespace ManagedDoomTest.UnitTests
                 var actualSin = Math.Sin(fc.ToRadian());
                 var actualCos = Math.Cos(fc.ToRadian());
 
-                Assert.AreEqual(expectedSin, actualSin, delta);
-                Assert.AreEqual(expectedCos, actualCos, delta);
+                Assert.Equal(expectedSin, actualSin, delta);
+                Assert.Equal(expectedCos, actualCos, delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subtraction()
         {
             var random = new Random(666);
@@ -154,12 +151,12 @@ namespace ManagedDoomTest.UnitTests
                 var actualSin = Math.Sin(fc.ToRadian());
                 var actualCos = Math.Cos(fc.ToRadian());
 
-                Assert.AreEqual(expectedSin, actualSin, delta);
-                Assert.AreEqual(expectedCos, actualCos, delta);
+                Assert.Equal(expectedSin, actualSin, delta);
+                Assert.Equal(expectedCos, actualCos, delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiplication1()
         {
             var random = new Random(666);
@@ -172,11 +169,11 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Angle.FromDegree(a);
                 var fc = fa * b;
 
-                Assert.AreEqual(c, fc.ToDegree(), delta);
+                Assert.Equal(c, fc.ToDegree(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiplication2()
         {
             var random = new Random(666);
@@ -189,11 +186,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Angle.FromDegree(b);
                 var fc = a * fb;
 
-                Assert.AreEqual(c, fc.ToDegree(), delta);
+                Assert.Equal(c, fc.ToDegree(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Division()
         {
             var random = new Random(666);
@@ -206,11 +203,11 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Angle.FromDegree(a);
                 var fc = fa / b;
 
-                Assert.AreEqual(c, fc.ToDegree(), delta);
+                Assert.Equal(c, fc.ToDegree(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Comparison()
         {
             var random = new Random(666);
@@ -225,12 +222,12 @@ namespace ManagedDoomTest.UnitTests
                 a = ((a % 360) + 360) % 360;
                 b = ((b % 360) + 360) % 360;
 
-                Assert.IsTrue((a == b) == (fa == fb));
-                Assert.IsTrue((a != b) == (fa != fb));
-                Assert.IsTrue((a < b) == (fa < fb));
-                Assert.IsTrue((a > b) == (fa > fb));
-                Assert.IsTrue((a <= b) == (fa <= fb));
-                Assert.IsTrue((a >= b) == (fa >= fb));
+                Assert.True((a == b) == (fa == fb));
+                Assert.True((a != b) == (fa != fb));
+                Assert.True((a < b) == (fa < fb));
+                Assert.True((a > b) == (fa > fb));
+                Assert.True((a <= b) == (fa <= fb));
+                Assert.True((a >= b) == (fa >= fb));
             }
         }
     }

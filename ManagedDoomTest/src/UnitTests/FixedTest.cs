@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ManagedDoom;
+﻿using ManagedDoom;
+using System;
+using Xunit;
 
 namespace ManagedDoomTest.UnitTests
 {
-    [TestClass]
     public class FixedTest
     {
         private static readonly double delta = 1.0E-3;
 
-        [TestMethod]
+        [Fact]
         public void Conversion()
         {
             var random = new Random(666);
@@ -23,12 +20,12 @@ namespace ManagedDoomTest.UnitTests
                 var fda = Fixed.FromDouble(da);
                 var fsa = Fixed.FromFloat(sa);
 
-                Assert.AreEqual(da, fda.ToDouble(), delta);
-                Assert.AreEqual(sa, fsa.ToFloat(), delta);
+                Assert.Equal(da, fda.ToDouble(), delta);
+                Assert.Equal(sa, fsa.ToFloat(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Abs1()
         {
             var random = new Random(666);
@@ -40,11 +37,11 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.Abs(fa);
 
-                Assert.AreEqual(b, fb.ToDouble(), delta);
+                Assert.Equal(b, fb.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Abs2()
         {
             var random = new Random(666);
@@ -56,11 +53,11 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.Abs(fa);
 
-                Assert.AreEqual(b, fb.ToDouble(), delta);
+                Assert.Equal(b, fb.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Sign1()
         {
             var random = new Random(666);
@@ -70,12 +67,12 @@ namespace ManagedDoomTest.UnitTests
 
                 var fa = Fixed.FromDouble(a);
 
-                Assert.AreEqual(+a, (+fa).ToDouble(), delta);
-                Assert.AreEqual(-a, (-fa).ToDouble(), delta);
+                Assert.Equal(+a, (+fa).ToDouble(), delta);
+                Assert.Equal(-a, (-fa).ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Sign2()
         {
             var random = new Random(666);
@@ -85,12 +82,12 @@ namespace ManagedDoomTest.UnitTests
 
                 var fa = Fixed.FromDouble(a);
 
-                Assert.AreEqual(+a, (+fa).ToDouble(), delta);
-                Assert.AreEqual(-a, (-fa).ToDouble(), delta);
+                Assert.Equal(+a, (+fa).ToDouble(), delta);
+                Assert.Equal(-a, (-fa).ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Addition1()
         {
             var random = new Random(666);
@@ -104,11 +101,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromInt(b);
                 var fc = fa + fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Addition2()
         {
             var random = new Random(666);
@@ -122,11 +119,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromDouble(b);
                 var fc = fa + fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subtraction1()
         {
             var random = new Random(666);
@@ -140,11 +137,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromInt(b);
                 var fc = fa - fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Subtraction2()
         {
             var random = new Random(666);
@@ -158,11 +155,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromDouble(b);
                 var fc = fa - fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiplication1()
         {
             var random = new Random(666);
@@ -176,11 +173,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromInt(b);
                 var fc = fa * fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiplication2()
         {
             var random = new Random(666);
@@ -194,11 +191,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromDouble(b);
                 var fc = fa * fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiplication3()
         {
             var random = new Random(666);
@@ -211,11 +208,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromDouble(b);
                 var fc = a * fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiplication4()
         {
             var random = new Random(666);
@@ -228,11 +225,11 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Fixed.FromDouble(a);
                 var fc = fa * b;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Division1()
         {
             var random = new Random(666);
@@ -246,11 +243,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromInt(b);
                 var fc = fa / fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Division2()
         {
             var random = new Random(666);
@@ -264,11 +261,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromDouble(b);
                 var fc = fa / fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Division3()
         {
             var random = new Random(666);
@@ -281,11 +278,11 @@ namespace ManagedDoomTest.UnitTests
                 var fb = Fixed.FromDouble(b);
                 var fc = a / fb;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Division4()
         {
             var random = new Random(666);
@@ -298,11 +295,11 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Fixed.FromDouble(a);
                 var fc = fa / b;
 
-                Assert.AreEqual(c, fc.ToDouble(), delta);
+                Assert.Equal(c, fc.ToDouble(), delta);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Bitshift()
         {
             var random = new Random(666);
@@ -317,12 +314,12 @@ namespace ManagedDoomTest.UnitTests
                 var fc = fa << b;
                 var fd = fa >> b;
 
-                Assert.AreEqual(c, fc.Data);
-                Assert.AreEqual(d, fd.Data);
+                Assert.Equal(c, fc.Data);
+                Assert.Equal(d, fd.Data);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Comparison()
         {
             var random = new Random(666);
@@ -334,16 +331,16 @@ namespace ManagedDoomTest.UnitTests
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
 
-                Assert.AreEqual(a == b, fa == fb);
-                Assert.AreEqual(a != b, fa != fb);
-                Assert.AreEqual(a < b, fa < fb);
-                Assert.AreEqual(a > b, fa > fb);
-                Assert.AreEqual(a <= b, fa <= fb);
-                Assert.AreEqual(a >= b, fa >= fb);
+                Assert.Equal(a == b, fa == fb);
+                Assert.Equal(a != b, fa != fb);
+                Assert.Equal(a < b, fa < fb);
+                Assert.Equal(a > b, fa > fb);
+                Assert.Equal(a <= b, fa <= fb);
+                Assert.Equal(a >= b, fa >= fb);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void MinMax()
         {
             var random = new Random(666);
@@ -359,12 +356,12 @@ namespace ManagedDoomTest.UnitTests
                 var fmin = Fixed.Min(fa, fb);
                 var fmax = Fixed.Max(fa, fb);
 
-                Assert.AreEqual(min, fmin.ToDouble(), 1.0E-9);
-                Assert.AreEqual(max, fmax.ToDouble(), 1.0E-9);
+                Assert.Equal(min, fmin.ToDouble(), 1.0E-9);
+                Assert.Equal(max, fmax.ToDouble(), 1.0E-9);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ToInt1()
         {
             var random = new Random(666);
@@ -376,12 +373,12 @@ namespace ManagedDoomTest.UnitTests
                 var ffloor = fa.ToIntFloor();
                 var fceiling = fa.ToIntCeiling();
 
-                Assert.AreEqual(a, ffloor, 1.0E-9);
-                Assert.AreEqual(a, fceiling, 1.0E-9);
+                Assert.Equal(a, ffloor, 1.0E-9);
+                Assert.Equal(a, fceiling, 1.0E-9);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ToInt2()
         {
             var random = new Random(666);
@@ -395,8 +392,8 @@ namespace ManagedDoomTest.UnitTests
                 var ffloor = fa.ToIntFloor();
                 var fceiling = fa.ToIntCeiling();
 
-                Assert.AreEqual(floor, ffloor, 1.0E-9);
-                Assert.AreEqual(ceiling, fceiling, 1.0E-9);
+                Assert.Equal(floor, ffloor, 1.0E-9);
+                Assert.Equal(ceiling, fceiling, 1.0E-9);
             }
         }
     }

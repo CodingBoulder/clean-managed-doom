@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ManagedDoom;
+﻿using ManagedDoom;
+using System;
+using Xunit;
 
 namespace ManagedDoomTest.UnitTests
 {
-    [TestClass]
     public class TrigTest
     {
-        [TestMethod]
+        [Fact]
         public void Tan()
         {
             for (var deg = 1; deg < 180; deg++)
@@ -23,18 +20,18 @@ namespace ManagedDoomTest.UnitTests
                 {
                     var actual = Trig.Tan(angle).ToDouble();
                     var delta = Math.Max(Math.Abs(expected) / 50, 1.0E-3);
-                    Assert.AreEqual(expected, actual, delta);
+                    Assert.Equal(expected, actual, delta);
                 }
 
                 {
                     var actual = Trig.Tan(fineAngle).ToDouble();
                     var delta = Math.Max(Math.Abs(expected) / 50, 1.0E-3);
-                    Assert.AreEqual(expected, actual, delta);
+                    Assert.Equal(expected, actual, delta);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Sin()
         {
             for (var deg = -720; deg <= 720; deg++)
@@ -47,17 +44,17 @@ namespace ManagedDoomTest.UnitTests
 
                 {
                     var actual = Trig.Sin(angle).ToDouble();
-                    Assert.AreEqual(expected, actual, 1.0E-3);
+                    Assert.Equal(expected, actual, 1.0E-3);
                 }
 
                 {
                     var actual = Trig.Sin(fineAngle).ToDouble();
-                    Assert.AreEqual(expected, actual, 1.0E-3);
+                    Assert.Equal(expected, actual, 1.0E-3);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Cos()
         {
             for (var deg = -720; deg <= 720; deg++)
@@ -70,12 +67,12 @@ namespace ManagedDoomTest.UnitTests
 
                 {
                     var actual = Trig.Cos(angle).ToDouble();
-                    Assert.AreEqual(expected, actual, 1.0E-3);
+                    Assert.Equal(expected, actual, 1.0E-3);
                 }
 
                 {
                     var actual = Trig.Cos(fineAngle).ToDouble();
-                    Assert.AreEqual(expected, actual, 1.0E-3);
+                    Assert.Equal(expected, actual, 1.0E-3);
                 }
             }
         }

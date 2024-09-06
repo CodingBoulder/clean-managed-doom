@@ -1,42 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ManagedDoom;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ManagedDoom;
+using Xunit;
 
 namespace ManagedDoomTest.CompatibilityTests
 {
-    [TestClass]
     public class Miscellaneous
     {
-        [TestMethod]
+        [Fact]
         public void Altdeath()
         {
-            using (var content = GameContent.CreateDummy(WadPath.Doom2))
+            using var content = GameContent.CreateDummy(WadPath.Doom2);
+            var demo = new Demo(@"data\altdeath_test.lmp");
+            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            var game = new DoomGame(content, demo.Options);
+            game.DeferedInitNew();
+
+            var lastMobjHash = 0;
+            var aggMobjHash = 0;
+
+            while (true)
             {
-                var demo = new Demo(@"data\altdeath_test.lmp");
-                var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
-                var game = new DoomGame(content, demo.Options);
-                game.DeferedInitNew();
-
-                var lastMobjHash = 0;
-                var aggMobjHash = 0;
-
-                while (true)
+                if (!demo.ReadCmd(cmds))
                 {
-                    if (!demo.ReadCmd(cmds))
-                    {
-                        break;
-                    }
-
-                    game.Update(cmds);
-                    lastMobjHash = DoomDebug.GetMobjHash(game.World);
-                    aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
+                    break;
                 }
 
-                Assert.AreEqual(0xf598b1d9u, (uint)lastMobjHash);
-                Assert.AreEqual(0x9f716cfau, (uint)aggMobjHash);
+                game.Update(cmds);
+                lastMobjHash = DoomDebug.GetMobjHash(game.World);
+                aggMobjHash = DoomDebug.CombineHash(aggMobjHash, lastMobjHash);
             }
+
+            Assert.Equal(0xf598b1d9u, (uint)lastMobjHash);
+            Assert.Equal(0x9f716cfau, (uint)aggMobjHash);
         }
     }
 }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ManagedDoom;
+﻿using ManagedDoom;
+using System;
+using Xunit;
 
 namespace ManagedDoomTest.UnitTests
 {
-    [TestClass]
     public class GeometryTest
     {
-        [TestMethod]
+        [Fact]
         public void PointOnSide1()
         {
             var random = new Random(666);
@@ -34,16 +31,16 @@ namespace ManagedDoomTest.UnitTests
                 var x = Fixed.FromDouble(pointX);
                 {
                     var y = Fixed.FromDouble(frontSideY);
-                    Assert.AreEqual(0, Geometry.PointOnSide(x, y, node));
+                    Assert.Equal(0, Geometry.PointOnSide(x, y, node));
                 }
                 {
                     var y = Fixed.FromDouble(backSideY);
-                    Assert.AreEqual(1, Geometry.PointOnSide(x, y, node));
+                    Assert.Equal(1, Geometry.PointOnSide(x, y, node));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnSide2()
         {
             var random = new Random(666);
@@ -68,16 +65,16 @@ namespace ManagedDoomTest.UnitTests
                 var y = Fixed.FromDouble(pointY);
                 {
                     var x = Fixed.FromDouble(frontSideX);
-                    Assert.AreEqual(0, Geometry.PointOnSide(x, y, node));
+                    Assert.Equal(0, Geometry.PointOnSide(x, y, node));
                 }
                 {
                     var x = Fixed.FromDouble(backSideX);
-                    Assert.AreEqual(1, Geometry.PointOnSide(x, y, node));
+                    Assert.Equal(1, Geometry.PointOnSide(x, y, node));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnSide3()
         {
             var random = new Random(666);
@@ -108,18 +105,18 @@ namespace ManagedDoomTest.UnitTests
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
-                        Assert.AreEqual(0, Geometry.PointOnSide(x, y, node));
+                        Assert.Equal(0, Geometry.PointOnSide(x, y, node));
                     }
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
-                        Assert.AreEqual(1, Geometry.PointOnSide(x, y, node));
+                        Assert.Equal(1, Geometry.PointOnSide(x, y, node));
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointToDist()
         {
             var random = new Random(666);
@@ -139,12 +136,12 @@ namespace ManagedDoomTest.UnitTests
                     var toX = Fixed.FromDouble(x);
                     var toY = Fixed.FromDouble(y);
                     var dist = Geometry.PointToDist(fromX, fromY, toX, toY);
-                    Assert.AreEqual(expected, dist.ToDouble(), (double)i / 100);
+                    Assert.Equal(expected, dist.ToDouble(), (double)i / 100);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointToAngle()
         {
             var random = new Random(666);
@@ -164,116 +161,112 @@ namespace ManagedDoomTest.UnitTests
                     var toY = Fixed.FromDouble(y);
                     var angle = Geometry.PointToAngle(fromX, fromY, toX, toY);
                     var actual = angle.ToRadian();
-                    Assert.AreEqual(expected, actual, 0.01);
+                    Assert.Equal(expected, actual, 0.01);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointInSubsectorE1M1()
         {
-            using (var content = GameContent.CreateDummy(WadPath.Doom1))
+            using var content = GameContent.CreateDummy(WadPath.Doom1);
+            var options = new GameOptions();
+            var world = new World(content, options, null);
+            var map = new Map(content, world);
+
+            var ok = 0;
+            var count = 0;
+
+            foreach (var subsector in map.Subsectors)
             {
-                var options = new GameOptions();
-                var world = new World(content, options, null);
-                var map = new Map(content, world);
-
-                var ok = 0;
-                var count = 0;
-
-                foreach (var subsector in map.Subsectors)
+                for (var i = 0; i < subsector.SegCount; i++)
                 {
-                    for (var i = 0; i < subsector.SegCount; i++)
+                    var seg = map.Segs[subsector.FirstSeg + i];
+
+                    var p1x = seg.Vertex1.X.ToDouble();
+                    var p1y = seg.Vertex1.Y.ToDouble();
+                    var p2x = seg.Vertex2.X.ToDouble();
+                    var p2y = seg.Vertex2.Y.ToDouble();
+
+                    var dx = p2x - p1x;
+                    var dy = p2y - p1y;
+                    var length = Math.Sqrt(dx * dx + dy * dy);
+
+                    var centerX = (p1x + p2x) / 2;
+                    var centerY = (p1y + p2y) / 2;
+                    var stepX = dy / length;
+                    var stepY = -dx / length;
+
+                    var targetX = centerX + 3 * stepX;
+                    var targetY = centerY + 3 * stepY;
+
+                    var fx = Fixed.FromDouble(targetX);
+                    var fy = Fixed.FromDouble(targetY);
+
+                    var result = Geometry.PointInSubsector(fx, fy, map);
+
+                    if (result == subsector)
                     {
-                        var seg = map.Segs[subsector.FirstSeg + i];
-
-                        var p1x = seg.Vertex1.X.ToDouble();
-                        var p1y = seg.Vertex1.Y.ToDouble();
-                        var p2x = seg.Vertex2.X.ToDouble();
-                        var p2y = seg.Vertex2.Y.ToDouble();
-
-                        var dx = p2x - p1x;
-                        var dy = p2y - p1y;
-                        var length = Math.Sqrt(dx * dx + dy * dy);
-
-                        var centerX = (p1x + p2x) / 2;
-                        var centerY = (p1y + p2y) / 2;
-                        var stepX = dy / length;
-                        var stepY = -dx / length;
-
-                        var targetX = centerX + 3 * stepX;
-                        var targetY = centerY + 3 * stepY;
-
-                        var fx = Fixed.FromDouble(targetX);
-                        var fy = Fixed.FromDouble(targetY);
-
-                        var result = Geometry.PointInSubsector(fx, fy, map);
-
-                        if (result == subsector)
-                        {
-                            ok++;
-                        }
-                        count++;
+                        ok++;
                     }
+                    count++;
                 }
-
-                Assert.IsTrue((double)ok / count >= 0.995);
             }
+
+            Assert.True((double)ok / count >= 0.995);
         }
 
-        [TestMethod]
+        [Fact]
         public void PointInSubsectorMap01()
         {
-            using (var content = GameContent.CreateDummy(WadPath.Doom2))
+            using var content = GameContent.CreateDummy(WadPath.Doom2);
+            var options = new GameOptions();
+            var world = new World(content, options, null);
+            var map = new Map(content, world);
+
+            var ok = 0;
+            var count = 0;
+
+            foreach (var subsector in map.Subsectors)
             {
-                var options = new GameOptions();
-                var world = new World(content, options, null);
-                var map = new Map(content, world);
-
-                var ok = 0;
-                var count = 0;
-
-                foreach (var subsector in map.Subsectors)
+                for (var i = 0; i < subsector.SegCount; i++)
                 {
-                    for (var i = 0; i < subsector.SegCount; i++)
+                    var seg = map.Segs[subsector.FirstSeg + i];
+
+                    var p1x = seg.Vertex1.X.ToDouble();
+                    var p1y = seg.Vertex1.Y.ToDouble();
+                    var p2x = seg.Vertex2.X.ToDouble();
+                    var p2y = seg.Vertex2.Y.ToDouble();
+
+                    var dx = p2x - p1x;
+                    var dy = p2y - p1y;
+                    var length = Math.Sqrt(dx * dx + dy * dy);
+
+                    var centerX = (p1x + p2x) / 2;
+                    var centerY = (p1y + p2y) / 2;
+                    var stepX = dy / length;
+                    var stepY = -dx / length;
+
+                    var targetX = centerX + 3 * stepX;
+                    var targetY = centerY + 3 * stepY;
+
+                    var fx = Fixed.FromDouble(targetX);
+                    var fy = Fixed.FromDouble(targetY);
+
+                    var result = Geometry.PointInSubsector(fx, fy, map);
+
+                    if (result == subsector)
                     {
-                        var seg = map.Segs[subsector.FirstSeg + i];
-
-                        var p1x = seg.Vertex1.X.ToDouble();
-                        var p1y = seg.Vertex1.Y.ToDouble();
-                        var p2x = seg.Vertex2.X.ToDouble();
-                        var p2y = seg.Vertex2.Y.ToDouble();
-
-                        var dx = p2x - p1x;
-                        var dy = p2y - p1y;
-                        var length = Math.Sqrt(dx * dx + dy * dy);
-
-                        var centerX = (p1x + p2x) / 2;
-                        var centerY = (p1y + p2y) / 2;
-                        var stepX = dy / length;
-                        var stepY = -dx / length;
-
-                        var targetX = centerX + 3 * stepX;
-                        var targetY = centerY + 3 * stepY;
-
-                        var fx = Fixed.FromDouble(targetX);
-                        var fy = Fixed.FromDouble(targetY);
-
-                        var result = Geometry.PointInSubsector(fx, fy, map);
-
-                        if (result == subsector)
-                        {
-                            ok++;
-                        }
-                        count++;
+                        ok++;
                     }
+                    count++;
                 }
-
-                Assert.IsTrue((double)ok / count >= 0.995);
             }
+
+            Assert.True((double)ok / count >= 0.995);
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnSegSide1()
         {
             var random = new Random(666);
@@ -297,16 +290,16 @@ namespace ManagedDoomTest.UnitTests
                 var x = Fixed.FromDouble(pointX);
                 {
                     var y = Fixed.FromDouble(frontSideY);
-                    Assert.AreEqual(0, Geometry.PointOnSegSide(x, y, seg));
+                    Assert.Equal(0, Geometry.PointOnSegSide(x, y, seg));
                 }
                 {
                     var y = Fixed.FromDouble(backSideY);
-                    Assert.AreEqual(1, Geometry.PointOnSegSide(x, y, seg));
+                    Assert.Equal(1, Geometry.PointOnSegSide(x, y, seg));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnSegSide2()
         {
             var random = new Random(666);
@@ -330,16 +323,16 @@ namespace ManagedDoomTest.UnitTests
                 var y = Fixed.FromDouble(pointY);
                 {
                     var x = Fixed.FromDouble(frontSideX);
-                    Assert.AreEqual(0, Geometry.PointOnSegSide(x, y, seg));
+                    Assert.Equal(0, Geometry.PointOnSegSide(x, y, seg));
                 }
                 {
                     var x = Fixed.FromDouble(backSideX);
-                    Assert.AreEqual(1, Geometry.PointOnSegSide(x, y, seg));
+                    Assert.Equal(1, Geometry.PointOnSegSide(x, y, seg));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnSegSide3()
         {
             var random = new Random(666);
@@ -374,18 +367,18 @@ namespace ManagedDoomTest.UnitTests
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
-                        Assert.AreEqual(0, Geometry.PointOnSegSide(x, y, seg));
+                        Assert.Equal(0, Geometry.PointOnSegSide(x, y, seg));
                     }
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
-                        Assert.AreEqual(1, Geometry.PointOnSegSide(x, y, seg));
+                        Assert.Equal(1, Geometry.PointOnSegSide(x, y, seg));
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnLineSide1()
         {
             var random = new Random(666);
@@ -409,16 +402,16 @@ namespace ManagedDoomTest.UnitTests
                 var x = Fixed.FromDouble(pointX);
                 {
                     var y = Fixed.FromDouble(frontSideY);
-                    Assert.AreEqual(0, Geometry.PointOnLineSide(x, y, line));
+                    Assert.Equal(0, Geometry.PointOnLineSide(x, y, line));
                 }
                 {
                     var y = Fixed.FromDouble(backSideY);
-                    Assert.AreEqual(1, Geometry.PointOnLineSide(x, y, line));
+                    Assert.Equal(1, Geometry.PointOnLineSide(x, y, line));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnLineSide2()
         {
             var random = new Random(666);
@@ -442,16 +435,16 @@ namespace ManagedDoomTest.UnitTests
                 var y = Fixed.FromDouble(pointY);
                 {
                     var x = Fixed.FromDouble(frontSideX);
-                    Assert.AreEqual(0, Geometry.PointOnLineSide(x, y, line));
+                    Assert.Equal(0, Geometry.PointOnLineSide(x, y, line));
                 }
                 {
                     var x = Fixed.FromDouble(backSideX);
-                    Assert.AreEqual(1, Geometry.PointOnLineSide(x, y, line));
+                    Assert.Equal(1, Geometry.PointOnLineSide(x, y, line));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnLineSide3()
         {
             var random = new Random(666);
@@ -486,18 +479,18 @@ namespace ManagedDoomTest.UnitTests
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
-                        Assert.AreEqual(0, Geometry.PointOnLineSide(x, y, line));
+                        Assert.Equal(0, Geometry.PointOnLineSide(x, y, line));
                     }
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
-                        Assert.AreEqual(1, Geometry.PointOnLineSide(x, y, line));
+                        Assert.Equal(1, Geometry.PointOnLineSide(x, y, line));
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void BoxOnLineSide1()
         {
             var random = new Random(666);
@@ -545,13 +538,13 @@ namespace ManagedDoomTest.UnitTests
                     vertex2,
                     0, 0, 0, null, null);
 
-                Assert.AreEqual(0, Geometry.BoxOnLineSide(frontBox, line));
-                Assert.AreEqual(1, Geometry.BoxOnLineSide(backBox, line));
-                Assert.AreEqual(-1, Geometry.BoxOnLineSide(crossingBox, line));
+                Assert.Equal(0, Geometry.BoxOnLineSide(frontBox, line));
+                Assert.Equal(1, Geometry.BoxOnLineSide(backBox, line));
+                Assert.Equal(-1, Geometry.BoxOnLineSide(crossingBox, line));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void BoxOnLineSide2()
         {
             var random = new Random(666);
@@ -599,13 +592,13 @@ namespace ManagedDoomTest.UnitTests
                     vertex2,
                     0, 0, 0, null, null);
 
-                Assert.AreEqual(0, Geometry.BoxOnLineSide(frontBox, line));
-                Assert.AreEqual(1, Geometry.BoxOnLineSide(backBox, line));
-                Assert.AreEqual(-1, Geometry.BoxOnLineSide(crossingBox, line));
+                Assert.Equal(0, Geometry.BoxOnLineSide(frontBox, line));
+                Assert.Equal(1, Geometry.BoxOnLineSide(backBox, line));
+                Assert.Equal(-1, Geometry.BoxOnLineSide(crossingBox, line));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void BoxOnLineSide3()
         {
             var random = new Random(666);
@@ -664,14 +657,14 @@ namespace ManagedDoomTest.UnitTests
                         vertex2,
                         0, 0, 0, null, null);
 
-                    Assert.AreEqual(0, Geometry.BoxOnLineSide(frontBox, line));
-                    Assert.AreEqual(1, Geometry.BoxOnLineSide(backBox, line));
-                    Assert.AreEqual(-1, Geometry.BoxOnLineSide(crossingBox, line));
+                    Assert.Equal(0, Geometry.BoxOnLineSide(frontBox, line));
+                    Assert.Equal(1, Geometry.BoxOnLineSide(backBox, line));
+                    Assert.Equal(-1, Geometry.BoxOnLineSide(crossingBox, line));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnDivLineSide1()
         {
             var random = new Random(666);
@@ -698,16 +691,16 @@ namespace ManagedDoomTest.UnitTests
                 var x = Fixed.FromDouble(pointX);
                 {
                     var y = Fixed.FromDouble(frontSideY);
-                    Assert.AreEqual(0, Geometry.PointOnDivLineSide(x, y, divLine));
+                    Assert.Equal(0, Geometry.PointOnDivLineSide(x, y, divLine));
                 }
                 {
                     var y = Fixed.FromDouble(backSideY);
-                    Assert.AreEqual(1, Geometry.PointOnDivLineSide(x, y, divLine));
+                    Assert.Equal(1, Geometry.PointOnDivLineSide(x, y, divLine));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnDivLineSide2()
         {
             var random = new Random(666);
@@ -734,16 +727,16 @@ namespace ManagedDoomTest.UnitTests
                 var y = Fixed.FromDouble(pointY);
                 {
                     var x = Fixed.FromDouble(frontSideX);
-                    Assert.AreEqual(0, Geometry.PointOnDivLineSide(x, y, divLine));
+                    Assert.Equal(0, Geometry.PointOnDivLineSide(x, y, divLine));
                 }
                 {
                     var x = Fixed.FromDouble(backSideX);
-                    Assert.AreEqual(1, Geometry.PointOnDivLineSide(x, y, divLine));
+                    Assert.Equal(1, Geometry.PointOnDivLineSide(x, y, divLine));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PointOnDivLineSide3()
         {
             var random = new Random(666);
@@ -781,18 +774,18 @@ namespace ManagedDoomTest.UnitTests
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
-                        Assert.AreEqual(0, Geometry.PointOnDivLineSide(x, y, divLine));
+                        Assert.Equal(0, Geometry.PointOnDivLineSide(x, y, divLine));
                     }
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
-                        Assert.AreEqual(1, Geometry.PointOnDivLineSide(x, y, divLine));
+                        Assert.Equal(1, Geometry.PointOnDivLineSide(x, y, divLine));
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void AproxDistance()
         {
             var random = new Random(666);
@@ -807,11 +800,11 @@ namespace ManagedDoomTest.UnitTests
 
                 var actual = Geometry.AproxDistance(Fixed.FromDouble(dx), Fixed.FromDouble(dy));
 
-                Assert.AreEqual(expected, actual.ToDouble(), 1.0E-3);
+                Assert.Equal(expected, actual.ToDouble(), 1.0E-3);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DivLineSide1()
         {
             var random = new Random(666);
@@ -847,18 +840,18 @@ namespace ManagedDoomTest.UnitTests
                 var x = Fixed.FromDouble(pointX);
                 {
                     var y = Fixed.FromDouble(frontSideY);
-                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
-                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, node));
+                    Assert.Equal(0, Geometry.DivLineSide(x, y, divLine));
+                    Assert.Equal(0, Geometry.DivLineSide(x, y, node));
                 }
                 {
                     var y = Fixed.FromDouble(backSideY);
-                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
-                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, node));
+                    Assert.Equal(1, Geometry.DivLineSide(x, y, divLine));
+                    Assert.Equal(1, Geometry.DivLineSide(x, y, node));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DivLineSide2()
         {
             var random = new Random(666);
@@ -894,18 +887,18 @@ namespace ManagedDoomTest.UnitTests
                 var y = Fixed.FromDouble(pointY);
                 {
                     var x = Fixed.FromDouble(frontSideX);
-                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
-                    Assert.AreEqual(0, Geometry.DivLineSide(x, y, node));
+                    Assert.Equal(0, Geometry.DivLineSide(x, y, divLine));
+                    Assert.Equal(0, Geometry.DivLineSide(x, y, node));
                 }
                 {
                     var x = Fixed.FromDouble(backSideX);
-                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
-                    Assert.AreEqual(1, Geometry.DivLineSide(x, y, node));
+                    Assert.Equal(1, Geometry.DivLineSide(x, y, divLine));
+                    Assert.Equal(1, Geometry.DivLineSide(x, y, node));
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DivLineSide3()
         {
             var random = new Random(666);
@@ -952,14 +945,14 @@ namespace ManagedDoomTest.UnitTests
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - frontSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + frontSideY * Math.Cos(theta));
-                        Assert.AreEqual(0, Geometry.DivLineSide(x, y, divLine));
-                        Assert.AreEqual(0, Geometry.DivLineSide(x, y, node));
+                        Assert.Equal(0, Geometry.DivLineSide(x, y, divLine));
+                        Assert.Equal(0, Geometry.DivLineSide(x, y, node));
                     }
                     {
                         var x = Fixed.FromDouble(ox + pointX * Math.Cos(theta) - backSideY * Math.Sin(theta));
                         var y = Fixed.FromDouble(oy + pointX * Math.Sin(theta) + backSideY * Math.Cos(theta));
-                        Assert.AreEqual(1, Geometry.DivLineSide(x, y, divLine));
-                        Assert.AreEqual(1, Geometry.DivLineSide(x, y, node));
+                        Assert.Equal(1, Geometry.DivLineSide(x, y, divLine));
+                        Assert.Equal(1, Geometry.DivLineSide(x, y, node));
                     }
                 }
             }
