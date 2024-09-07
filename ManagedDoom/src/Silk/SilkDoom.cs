@@ -8,6 +8,7 @@ using Silk.NET.Windowing.Glfw;
 using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ManagedDoom.Silk
 {
@@ -18,7 +19,7 @@ namespace ManagedDoom.Silk
         private readonly Config _config;
         private readonly GameContent _content;
 
-        private IWindow? _window;
+        private readonly IWindow _window;
 
         private GL? _gl;
         private SilkVideo? _video;
@@ -34,7 +35,7 @@ namespace ManagedDoom.Silk
         private int _fpsScale;
         private int _frameCount;
 
-        private Exception _exception;
+        private Exception? _exception;
 
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
@@ -55,16 +56,16 @@ namespace ManagedDoom.Silk
 
                 _content = new GameContent(wad);
 
-                _content.InitializeAsync(_cancellationTokenSource.Token);
-
-                _config.video_screenwidth = Math.Clamp(_config.video_screenwidth, 320, 3200);
-                _config.video_screenheight = Math.Clamp(_config.video_screenheight, 200, 2000);
+                _config.video_screenwidth = Math.Clamp(_config.video_screenwidth, 320, int.MaxValue);
+                _config.video_screenheight = Math.Clamp(_config.video_screenheight, 200, int.MaxValue);
 
                 WindowOptions windowOptions = WindowOptions.Default;
                 windowOptions.Size = new Vector2D<int>(_config.video_screenwidth, _config.video_screenheight);
                 windowOptions.Title = ApplicationInfo.Title;
                 windowOptions.VSync = false;
-                windowOptions.WindowState = _config.video_fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+                windowOptions.WindowState = _config.video_fullscreen 
+                    ? WindowState.Fullscreen 
+                    : WindowState.Normal;
 
                 _window = Window.Create(windowOptions);
                 _window.Load += OnLoad;
@@ -82,7 +83,7 @@ namespace ManagedDoom.Silk
 
         private void Quit()
         {
-            if (_exception != null)
+            if (_exception is not null)
             {
                 ExceptionDispatchInfo.Throw(_exception);
             }
@@ -94,6 +95,10 @@ namespace ManagedDoom.Silk
             _gl.ClearColor(0.15F, 0.15F, 0.15F, 1F);
             _gl.Clear(ClearBufferMask.ColorBufferBit);
             _window.SwapBuffers();
+
+            _content
+                .InitializeAsync(_cancellationTokenSource.Token)
+                .Wait();
 
             _video = new SilkVideo(_config, _content, _window, _gl);
 
@@ -137,7 +142,7 @@ namespace ManagedDoom.Silk
                 _exception = e;
             }
 
-            if (_exception != null)
+            if (_exception is not null)
             {
                 _window.Close();
             }
@@ -218,7 +223,6 @@ namespace ManagedDoom.Silk
             {
                 _window.Close();
                 _window.Dispose();
-                _window = null;
             }
 
             _cancellationTokenSource.Dispose();
@@ -226,7 +230,6 @@ namespace ManagedDoom.Silk
             GC.SuppressFinalize(this);
         }
 
-        public string? QuitMessage => _doom.QuitMessage;
-        public Exception Exception => _exception;
+        public string QuitMessage => _doom.QuitMessage;
     }
 }

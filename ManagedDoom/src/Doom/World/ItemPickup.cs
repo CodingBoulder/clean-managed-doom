@@ -231,12 +231,10 @@ namespace ManagedDoom
                 return false;
             }
 
-            player.Health += amount;
-            if (player.Health > DoomInfo.DeHackEdConst.InitialHealth)
-            {
-                player.Health = DoomInfo.DeHackEdConst.InitialHealth;
-            }
-
+            player.Health = Math.Min(
+                player.Health + amount, 
+                DoomInfo.DeHackEdConst.InitialHealth);
+            
             player.Mobj.Health = player.Health;
 
             return true;

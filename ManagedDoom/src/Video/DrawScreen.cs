@@ -22,26 +22,26 @@ namespace ManagedDoom.Video
 {
     public sealed class DrawScreen
     {
-        private readonly int width;
-        private readonly int height;
-        private readonly byte[] data;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly byte[] _data;
 
-        private readonly Patch[] chars;
+        private readonly Patch[] _chars;
 
         public DrawScreen(Wad wad, int width, int height)
         {
-            this.width = width;
-            this.height = height;
-            data = new byte[width * height];
+            _width = width;
+            _height = height;
+            _data = new byte[width * height];
 
-            chars = new Patch[128];
-            for (int i = 0; i < chars.Length; i++)
+            _chars = new Patch[128];
+            for (int i = 0; i < _chars.Length; i++)
             {
                 string name = "STCFN" + i.ToString("000");
                 int lump = wad.GetLumpNumber(name);
                 if (lump != -1)
                 {
-                    chars[i] = Patch.FromData(name, wad.ReadLump(lump));
+                    _chars[i] = Patch.FromData(name, wad.ReadLump(lump));
                 }
             }
         }
@@ -63,9 +63,9 @@ namespace ManagedDoom.Video
                 i += exceed;
             }
 
-            if (drawX + drawWidth > width)
+            if (drawX + drawWidth > _width)
             {
-                int exceed = drawX + drawWidth - width;
+                int exceed = drawX + drawWidth - _width;
                 drawWidth -= exceed;
             }
 
@@ -93,9 +93,9 @@ namespace ManagedDoom.Video
                 i += exceed;
             }
 
-            if (drawX + drawWidth > width)
+            if (drawX + drawWidth > _width)
             {
-                int exceed = drawX + drawWidth - width;
+                int exceed = drawX + drawWidth - _width;
                 drawWidth -= exceed;
             }
 
@@ -121,7 +121,7 @@ namespace ManagedDoom.Video
                 int drawLength = exLength;
 
                 int i = 0;
-                int p = height * x + drawY;
+                int p = _height * x + drawY;
                 Fixed frac = Fixed.One / scale - Fixed.Epsilon;
 
                 if (drawY < 0)
@@ -132,15 +132,15 @@ namespace ManagedDoom.Video
                     i += exceed;
                 }
 
-                if (drawY + drawLength > height)
+                if (drawY + drawLength > _height)
                 {
-                    int exceed = drawY + drawLength - height;
+                    int exceed = drawY + drawLength - _height;
                     drawLength -= exceed;
                 }
 
                 for (; i < drawLength; i++)
                 {
-                    data[p] = column.Data[sourceIndex + frac.ToIntFloor()];
+                    _data[p] = column.Data[sourceIndex + frac.ToIntFloor()];
                     p++;
                     frac += step;
                 }
@@ -153,7 +153,7 @@ namespace ManagedDoom.Video
             int drawY = y - 7 * scale;
             foreach (char ch in text)
             {
-                if (ch >= chars.Length)
+                if (ch >= _chars.Length)
                 {
                     continue;
                 }
@@ -170,7 +170,7 @@ namespace ManagedDoom.Video
                     index = index - 'a' + 'A';
                 }
 
-                Patch patch = chars[index];
+                Patch patch = _chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -187,7 +187,7 @@ namespace ManagedDoom.Video
             int drawX = x;
             int drawY = y - 7 * scale;
 
-            if (ch >= chars.Length)
+            if (ch >= _chars.Length)
             {
                 return;
             }
@@ -203,7 +203,7 @@ namespace ManagedDoom.Video
                 index = index - 'a' + 'A';
             }
 
-            Patch patch = chars[index];
+            Patch patch = _chars[index];
             if (patch == null)
             {
                 return;
@@ -218,7 +218,7 @@ namespace ManagedDoom.Video
             int drawY = y - 7 * scale;
             foreach (char ch in text)
             {
-                if (ch >= chars.Length)
+                if (ch >= _chars.Length)
                 {
                     continue;
                 }
@@ -235,7 +235,7 @@ namespace ManagedDoom.Video
                     index = index - 'a' + 'A';
                 }
 
-                Patch patch = chars[index];
+                Patch patch = _chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -249,7 +249,7 @@ namespace ManagedDoom.Video
 
         public int MeasureChar(char ch, int scale)
         {
-            if (ch >= chars.Length)
+            if (ch >= _chars.Length)
             {
                 return 0;
             }
@@ -265,7 +265,7 @@ namespace ManagedDoom.Video
                 index = index - 'a' + 'A';
             }
 
-            Patch patch = chars[index];
+            Patch patch = _chars[index];
             if (patch == null)
             {
                 return 0;
@@ -280,7 +280,7 @@ namespace ManagedDoom.Video
 
             foreach (char ch in text)
             {
-                if (ch >= chars.Length)
+                if (ch >= _chars.Length)
                 {
                     continue;
                 }
@@ -297,7 +297,7 @@ namespace ManagedDoom.Video
                     index = index - 'a' + 'A';
                 }
 
-                Patch patch = chars[index];
+                Patch patch = _chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -315,7 +315,7 @@ namespace ManagedDoom.Video
 
             foreach (char ch in text)
             {
-                if (ch >= chars.Length)
+                if (ch >= _chars.Length)
                 {
                     continue;
                 }
@@ -332,7 +332,7 @@ namespace ManagedDoom.Video
                     index = index - 'a' + 'A';
                 }
 
-                Patch patch = chars[index];
+                Patch patch = _chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -350,10 +350,10 @@ namespace ManagedDoom.Video
             int x2 = x + w;
             for (int drawX = x1; drawX < x2; drawX++)
             {
-                int pos = height * drawX + y;
+                int pos = _height * drawX + y;
                 for (int i = 0; i < h; i++)
                 {
-                    data[pos] = (byte)color;
+                    _data[pos] = (byte)color;
                     pos++;
                 }
             }
@@ -379,7 +379,7 @@ namespace ManagedDoom.Video
             {
                 code |= OutCode.Left;
             }
-            else if (x > width)
+            else if (x > _width)
             {
                 code |= OutCode.Right;
             }
@@ -388,7 +388,7 @@ namespace ManagedDoom.Video
             {
                 code |= OutCode.Bottom;
             }
-            else if (y > height)
+            else if (y > _height)
             {
                 code |= OutCode.Top;
             }
@@ -423,8 +423,8 @@ namespace ManagedDoom.Video
 
                     if ((outcodeOut & OutCode.Top) != 0)
                     {
-                        x = x1 + (x2 - x1) * (height - y1) / (y2 - y1);
-                        y = height;
+                        x = x1 + (x2 - x1) * (_height - y1) / (y2 - y1);
+                        y = _height;
                     }
                     else if ((outcodeOut & OutCode.Bottom) != 0)
                     {
@@ -433,8 +433,8 @@ namespace ManagedDoom.Video
                     }
                     else if ((outcodeOut & OutCode.Right) != 0)
                     {
-                        y = y1 + (y2 - y1) * (width - x1) / (x2 - x1);
-                        x = width;
+                        y = y1 + (y2 - y1) * (_width - x1) / (x2 - x1);
+                        x = _width;
                     }
                     else if ((outcodeOut & OutCode.Left) != 0)
                     {
@@ -459,10 +459,10 @@ namespace ManagedDoom.Video
 
             if (accept)
             {
-                int bx1 = Math.Clamp((int)x1, 0, width - 1);
-                int by1 = Math.Clamp((int)y1, 0, height - 1);
-                int bx2 = Math.Clamp((int)x2, 0, width - 1);
-                int by2 = Math.Clamp((int)y2, 0, height - 1);
+                int bx1 = Math.Clamp((int)x1, 0, _width - 1);
+                int by1 = Math.Clamp((int)y1, 0, _height - 1);
+                int bx2 = Math.Clamp((int)x2, 0, _width - 1);
+                int by2 = Math.Clamp((int)y2, 0, _height - 1);
                 Bresenham(bx1, by1, bx2, by2, color);
             }
         }
@@ -486,7 +486,7 @@ namespace ManagedDoom.Video
 
                 while (true)
                 {
-                    data[height * x + y] = (byte)color;
+                    _data[_height * x + y] = (byte)color;
 
                     if (x == x2)
                     {
@@ -508,7 +508,7 @@ namespace ManagedDoom.Video
                 int d = ax - ay / 2;
                 while (true)
                 {
-                    data[height * x + y] = (byte)color;
+                    _data[_height * x + y] = (byte)color;
 
                     if (y == y2)
                     {
@@ -527,8 +527,8 @@ namespace ManagedDoom.Video
             }
         }
 
-        public int Width => width;
-        public int Height => height;
-        public byte[] Data => data;
+        public int Width => _width;
+        public int Height => _height;
+        public byte[] Data => _data;
     }
 }

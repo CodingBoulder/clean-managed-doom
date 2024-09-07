@@ -22,7 +22,7 @@ namespace ManagedDoom.Video
 {
     public sealed class Renderer
     {
-        private static readonly double[] gammaCorrectionParameters =
+        private static readonly double[] _gammaCorrectionParameters =
         [
             1.00,
             0.95,
@@ -37,69 +37,69 @@ namespace ManagedDoom.Video
             0.50
         ];
 
-        private readonly Config config;
+        private readonly Config _config;
 
-        private readonly Palette palette;
+        private readonly Palette _palette;
 
-        private readonly DrawScreen screen;
+        private readonly DrawScreen _screen;
 
-        private readonly MenuRenderer menu;
-        private readonly ThreeDRenderer threeD;
-        private readonly StatusBarRenderer statusBar;
-        private readonly IntermissionRenderer intermission;
-        private readonly OpeningSequenceRenderer openingSequence;
-        private readonly AutoMapRenderer autoMap;
-        private readonly FinaleRenderer finale;
+        private readonly MenuRenderer _menu;
+        private readonly ThreeDRenderer _threeD;
+        private readonly StatusBarRenderer _statusBar;
+        private readonly IntermissionRenderer _intermission;
+        private readonly OpeningSequenceRenderer _openingSequence;
+        private readonly AutoMapRenderer _autoMap;
+        private readonly FinaleRenderer _finale;
 
-        private readonly Patch pause;
+        private readonly Patch _pause;
 
-        private readonly int wipeBandWidth;
-        private readonly int wipeBandCount;
-        private readonly int wipeHeight;
-        private readonly byte[] wipeBuffer;
+        private readonly int _wipeBandWidth;
+        private readonly int _wipeBandCount;
+        private readonly int _wipeHeight;
+        private readonly byte[] _wipeBuffer;
 
         public Renderer(Config config, GameContent content)
         {
-            this.config = config;
+            this._config = config;
 
-            palette = content.Palette;
+            _palette = content.Palette;
 
             if (config.video_highresolution)
             {
-                screen = new DrawScreen(content.Wad, 640, 400);
+                _screen = new DrawScreen(content.Wad, 640, 400);
             }
             else
             {
-                screen = new DrawScreen(content.Wad, 320, 200);
+                _screen = new DrawScreen(content.Wad, 320, 200);
             }
 
             config.video_gamescreensize = Math.Clamp(config.video_gamescreensize, 0, MaxWindowSize);
             config.video_gammacorrection = Math.Clamp(config.video_gammacorrection, 0, MaxGammaCorrectionLevel);
 
-            menu = new MenuRenderer(content.Wad, screen);
-            threeD = new ThreeDRenderer(content, screen, config.video_gamescreensize);
-            statusBar = new StatusBarRenderer(content.Wad, screen);
-            intermission = new IntermissionRenderer(content.Wad, screen);
-            openingSequence = new OpeningSequenceRenderer(content.Wad, screen, this);
-            autoMap = new AutoMapRenderer(content.Wad, screen);
-            finale = new FinaleRenderer(content, screen);
+            _menu = new MenuRenderer(content.Wad, _screen);
+            _threeD = new ThreeDRenderer(content, _screen, config.video_gamescreensize);
+            _statusBar = new StatusBarRenderer(content.Wad, _screen);
+            _intermission = new IntermissionRenderer(content.Wad, _screen);
+            _openingSequence = new OpeningSequenceRenderer(content.Wad, _screen, this);
+            _autoMap = new AutoMapRenderer(content.Wad, _screen);
+            _finale = new FinaleRenderer(content, _screen);
 
-            pause = Patch.FromWad(content.Wad, "M_PAUSE");
+            _pause = Patch.FromWad(content.Wad, "M_PAUSE");
 
-            int scale = screen.Width / 320;
-            wipeBandWidth = 2 * scale;
-            wipeBandCount = screen.Width / wipeBandWidth + 1;
-            wipeHeight = screen.Height / scale;
-            wipeBuffer = new byte[screen.Data.Length];
+            int scale = _screen.Width / 320;
+            _wipeBandWidth = 2 * scale;
+            _wipeBandCount = _screen.Width / _wipeBandWidth + 1;
+            _wipeHeight = _screen.Height / scale;
+            _wipeBuffer = new byte[_screen.Data.Length];
 
-            palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
+            _palette.ResetColors(_gammaCorrectionParameters[config.video_gammacorrection]);
         }
 
         public void RenderDoom(Doom doom, Fixed frameFrac)
         {
             if (doom.State == DoomState.Opening)
             {
-                openingSequence.Render(doom.Opening, frameFrac);
+                _openingSequence.Render(doom.Opening, frameFrac);
             }
             else if (doom.State == DoomState.DemoPlayback)
             {
@@ -116,10 +116,10 @@ namespace ManagedDoom.Video
                     doom.Game.State == GameState.Level &&
                     doom.Game.Paused)
                 {
-                    int scale = screen.Width / 320;
-                    screen.DrawPatch(
-                        pause,
-                        (screen.Width - scale * pause.Width) / 2,
+                    int scale = _screen.Width / 320;
+                    _screen.DrawPatch(
+                        _pause,
+                        (_screen.Width - scale * _pause.Width) / 2,
                         4 * scale,
                         scale);
                 }
@@ -130,7 +130,7 @@ namespace ManagedDoom.Video
         {
             if (doom.Menu.Active)
             {
-                menu.Render(doom.Menu);
+                _menu.Render(doom.Menu);
             }
         }
 
@@ -148,38 +148,38 @@ namespace ManagedDoom.Video
 
                 if (game.World.AutoMap.Visible)
                 {
-                    autoMap.Render(consolePlayer);
-                    statusBar.Render(consolePlayer, true);
+                    _autoMap.Render(consolePlayer);
+                    _statusBar.Render(consolePlayer, true);
                 }
                 else
                 {
-                    threeD.Render(displayPlayer, frameFrac);
-                    if (threeD.WindowSize < 8)
+                    _threeD.Render(displayPlayer, frameFrac);
+                    if (_threeD.WindowSize < 8)
                     {
-                        statusBar.Render(consolePlayer, true);
+                        _statusBar.Render(consolePlayer, true);
                     }
-                    else if (threeD.WindowSize == ThreeDRenderer.MaxScreenSize)
+                    else if (_threeD.WindowSize == ThreeDRenderer.MaxScreenSize)
                     {
-                        statusBar.Render(consolePlayer, false);
+                        _statusBar.Render(consolePlayer, false);
                     }
                 }
 
-                if (config.video_displaymessage || ReferenceEquals(consolePlayer.Message, (string)DoomInfo.Strings.MSGOFF))
+                if (_config.video_displaymessage || ReferenceEquals(consolePlayer.Message, (string)DoomInfo.Strings.MSGOFF))
                 {
                     if (consolePlayer.MessageTime > 0)
                     {
-                        int scale = screen.Width / 320;
-                        screen.DrawText(consolePlayer.Message, 0, 7 * scale, scale);
+                        int scale = _screen.Width / 320;
+                        _screen.DrawText(consolePlayer.Message, 0, 7 * scale, scale);
                     }
                 }
             }
             else if (game.State == GameState.Intermission)
             {
-                intermission.Render(game.Intermission);
+                _intermission.Render(game.Intermission);
             }
             else if (game.State == GameState.Finale)
             {
-                finale.Render(game.Finale);
+                _finale.Render(game.Finale);
             }
         }
 
@@ -194,22 +194,22 @@ namespace ManagedDoom.Video
             RenderDoom(doom, frameFrac);
             RenderMenu(doom);
 
-            uint[] colors = palette[0];
+            uint[] colors = _palette[0];
             if (doom.State == DoomState.Game &&
                 doom.Game.State == GameState.Level)
             {
-                colors = palette[GetPaletteNumber(doom.Game.World.ConsolePlayer)];
+                colors = _palette[GetPaletteNumber(doom.Game.World.ConsolePlayer)];
             }
             else if (doom.State == DoomState.Opening &&
                 doom.Opening.State == OpeningSequenceState.Demo &&
                 doom.Opening.DemoGame.State == GameState.Level)
             {
-                colors = palette[GetPaletteNumber(doom.Opening.DemoGame.World.ConsolePlayer)];
+                colors = _palette[GetPaletteNumber(doom.Opening.DemoGame.World.ConsolePlayer)];
             }
             else if (doom.State == DoomState.DemoPlayback &&
                 doom.DemoPlayback.Game.State == GameState.Level)
             {
-                colors = palette[GetPaletteNumber(doom.DemoPlayback.Game.World.ConsolePlayer)];
+                colors = _palette[GetPaletteNumber(doom.DemoPlayback.Game.World.ConsolePlayer)];
             }
 
             WriteData(colors, destination);
@@ -220,40 +220,40 @@ namespace ManagedDoom.Video
             RenderDoom(doom, Fixed.One);
 
             WipeEffect wipe = doom.WipeEffect;
-            int scale = screen.Width / 320;
-            for (int i = 0; i < wipeBandCount - 1; i++)
+            int scale = _screen.Width / 320;
+            for (int i = 0; i < _wipeBandCount - 1; i++)
             {
-                int x1 = wipeBandWidth * i;
-                int x2 = x1 + wipeBandWidth;
+                int x1 = _wipeBandWidth * i;
+                int x2 = x1 + _wipeBandWidth;
                 int y1 = Math.Max(scale * wipe.Y[i], 0);
                 int y2 = Math.Max(scale * wipe.Y[i + 1], 0);
-                float dy = (float)(y2 - y1) / wipeBandWidth;
+                float dy = (float)(y2 - y1) / _wipeBandWidth;
                 for (int x = x1; x < x2; x++)
                 {
                     int y = (int)MathF.Round(y1 + dy * ((x - x1) / 2 * 2));
-                    int copyLength = screen.Height - y;
+                    int copyLength = _screen.Height - y;
                     if (copyLength > 0)
                     {
-                        int srcPos = screen.Height * x;
-                        int dstPos = screen.Height * x + y;
-                        Array.Copy(wipeBuffer, srcPos, screen.Data, dstPos, copyLength);
+                        int srcPos = _screen.Height * x;
+                        int dstPos = _screen.Height * x + y;
+                        Array.Copy(_wipeBuffer, srcPos, _screen.Data, dstPos, copyLength);
                     }
                 }
             }
 
             RenderMenu(doom);
 
-            WriteData(palette[0], destination);
+            WriteData(_palette[0], destination);
         }
 
         public void InitializeWipe()
         {
-            Array.Copy(screen.Data, wipeBuffer, screen.Data.Length);
+            Array.Copy(_screen.Data, _wipeBuffer, _screen.Data.Length);
         }
 
         private void WriteData(uint[] colors, byte[] destination)
         {
-            byte[] screenData = screen.Data;
+            byte[] screenData = _screen.Data;
             Span<uint> p = MemoryMarshal.Cast<byte, uint>(destination);
             for (int i = 0; i < p.Length; i++)
             {
@@ -312,11 +312,11 @@ namespace ManagedDoom.Video
             return palette;
         }
 
-        public int Width => screen.Width;
-        public int Height => screen.Height;
+        public int Width => _screen.Width;
+        public int Height => _screen.Height;
 
-        public int WipeBandCount => wipeBandCount;
-        public int WipeHeight => wipeHeight;
+        public int WipeBandCount => _wipeBandCount;
+        public int WipeHeight => _wipeHeight;
 
         public int MaxWindowSize
         {
@@ -330,13 +330,13 @@ namespace ManagedDoom.Video
         {
             get
             {
-                return threeD.WindowSize;
+                return _threeD.WindowSize;
             }
 
             set
             {
-                config.video_gamescreensize = value;
-                threeD.WindowSize = value;
+                _config.video_gamescreensize = value;
+                _threeD.WindowSize = value;
             }
         }
 
@@ -344,12 +344,12 @@ namespace ManagedDoom.Video
         {
             get
             {
-                return config.video_displaymessage;
+                return _config.video_displaymessage;
             }
 
             set
             {
-                config.video_displaymessage = value;
+                _config.video_displaymessage = value;
             }
         }
 
@@ -357,7 +357,7 @@ namespace ManagedDoom.Video
         {
             get
             {
-                return gammaCorrectionParameters.Length - 1;
+                return _gammaCorrectionParameters.Length - 1;
             }
         }
 
@@ -365,13 +365,13 @@ namespace ManagedDoom.Video
         {
             get
             {
-                return config.video_gammacorrection;
+                return _config.video_gammacorrection;
             }
 
             set
             {
-                config.video_gammacorrection = value;
-                palette.ResetColors(gammaCorrectionParameters[config.video_gammacorrection]);
+                _config.video_gammacorrection = value;
+                _palette.ResetColors(_gammaCorrectionParameters[_config.video_gammacorrection]);
             }
         }
     }

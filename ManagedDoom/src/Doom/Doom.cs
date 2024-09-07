@@ -35,7 +35,7 @@ namespace ManagedDoom
 #pragma warning restore IDE0052 // Remove unread private members
         private readonly IUserInput _userInput;
 
-        private readonly List<DoomEvent> _events;
+        private readonly List<DoomEvent> _events = [];
 
         private readonly GameOptions _options;
 
@@ -58,7 +58,7 @@ namespace ManagedDoom
         private bool _sendPause;
 
         private bool _quit;
-        private string? _quitMessage;
+        private string _quitMessage = string.Empty;
 
         private bool _mouseGrabbed;
 
@@ -76,8 +76,6 @@ namespace ManagedDoom
             _sound = sound;
             _music = music;
             _userInput = userInput;
-
-            _events = [];
 
             _options = new GameOptions(args, content)
             {
@@ -108,8 +106,7 @@ namespace ManagedDoom
             _sendPause = false;
 
             _quit = false;
-            _quitMessage = null;
-
+            
             _mouseGrabbed = false;
 
             CheckGameArgs();
@@ -555,6 +552,6 @@ namespace ManagedDoom
         public DoomMenu Menu => _menu;
         public WipeEffect WipeEffect => _wipeEffect;
         public bool Wiping => _wiping;
-        public string? QuitMessage => _quitMessage;
+        public string QuitMessage => _quitMessage;
     }
 }

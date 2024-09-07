@@ -45,11 +45,11 @@ namespace ManagedDoom
 
 
 
-        private readonly World world;
+        private readonly World _world;
 
         public PlayerBehavior(World world)
         {
-            this.world = world;
+            _world = world;
         }
 
 
@@ -132,7 +132,7 @@ namespace ManagedDoom
                     newWeapon = (int)WeaponType.Chainsaw;
                 }
 
-                if ((world.Options.GameMode == GameMode.Commercial) &&
+                if ((_world.Options.GameMode == GameMode.Commercial) &&
                     newWeapon == (int)WeaponType.Shotgun &&
                     player.WeaponOwned[(int)WeaponType.SuperShotgun] &&
                     player.ReadyWeapon != WeaponType.SuperShotgun)
@@ -145,7 +145,7 @@ namespace ManagedDoom
                 {
                     // Do not go to plasma or BFG in shareware, even if cheated.
                     if ((newWeapon != (int)WeaponType.Plasma && newWeapon != (int)WeaponType.Bfg) ||
-                        (world.Options.GameMode != GameMode.Shareware))
+                        (_world.Options.GameMode != GameMode.Shareware))
                     {
                         player.PendingWeapon = (WeaponType)newWeapon;
                     }
@@ -157,7 +157,7 @@ namespace ManagedDoom
             {
                 if (!player.UseDown)
                 {
-                    world.MapInteraction.UseLines(player);
+                    _world.MapInteraction.UseLines(player);
                     player.UseDown = true;
                 }
             }
@@ -243,9 +243,9 @@ namespace ManagedDoom
         }
 
 
-        private static readonly Fixed maxBob = new(0x100000);
+        private static readonly Fixed _maxBob = new(0x100000);
 
-        private bool onGround;
+        private bool _onGround;
 
         /// <summary>
         /// Move the player according to TicCmd.
@@ -257,14 +257,14 @@ namespace ManagedDoom
             player.Mobj.Angle += new Angle(cmd.AngleTurn << 16);
 
             // Do not let the player control movement if not onground.
-            onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
+            _onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
 
-            if (cmd.ForwardMove != 0 && onGround)
+            if (cmd.ForwardMove != 0 && _onGround)
             {
                 Thrust(player, player.Mobj.Angle, new Fixed(cmd.ForwardMove * 2048));
             }
 
-            if (cmd.SideMove != 0 && onGround)
+            if (cmd.SideMove != 0 && _onGround)
             {
                 Thrust(player, player.Mobj.Angle - Angle.Ang90, new Fixed(cmd.SideMove * 2048));
             }
@@ -286,12 +286,12 @@ namespace ManagedDoom
             // It needs to be calculated for gun swing even if not on ground.
             player.Bob = player.Mobj.MomX * player.Mobj.MomX + player.Mobj.MomY * player.Mobj.MomY;
             player.Bob >>= 2;
-            if (player.Bob > maxBob)
+            if (player.Bob > _maxBob)
             {
-                player.Bob = maxBob;
+                player.Bob = _maxBob;
             }
 
-            if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !onGround)
+            if ((player.Cheats & CheatFlags.NoMomentum) != 0 || !_onGround)
             {
                 player.ViewZ = player.Mobj.Z + Player.NormalViewHeight;
 
@@ -305,7 +305,7 @@ namespace ManagedDoom
                 return;
             }
 
-            int angle = (Trig.FineAngleCount / 20 * world.LevelTime) & Trig.FineMask;
+            int angle = (Trig.FineAngleCount / 20 * _world.LevelTime) & Trig.FineMask;
 
             Fixed bob = (player.Bob / 2) * Trig.Sin(angle);
 
@@ -373,7 +373,7 @@ namespace ManagedDoom
                 return;
             }
 
-            ThingInteraction ti = world.ThingInteraction;
+            ThingInteraction ti = _world.ThingInteraction;
 
             // Has hitten ground.
             switch ((int)sector.Special)
@@ -382,7 +382,7 @@ namespace ManagedDoom
                     // Hell slime damage.
                     if (player.Powers[(int)PowerType.IronFeet] == 0)
                     {
-                        if ((world.LevelTime & 0x1f) == 0)
+                        if ((_world.LevelTime & 0x1f) == 0)
                         {
                             ti.DamageMobj(player.Mobj, null, null, 10);
                         }
@@ -393,7 +393,7 @@ namespace ManagedDoom
                     // Nukage damage.
                     if (player.Powers[(int)PowerType.IronFeet] == 0)
                     {
-                        if ((world.LevelTime & 0x1f) == 0)
+                        if ((_world.LevelTime & 0x1f) == 0)
                         {
                             ti.DamageMobj(player.Mobj, null, null, 5);
                         }
@@ -404,9 +404,9 @@ namespace ManagedDoom
                 // Super hell slime damage.
                 case 4:
                     // Strobe hurt.
-                    if (player.Powers[(int)PowerType.IronFeet] == 0 || (world.Random.Next() < 5))
+                    if (player.Powers[(int)PowerType.IronFeet] == 0 || (_world.Random.Next() < 5))
                     {
-                        if ((world.LevelTime & 0x1f) == 0)
+                        if ((_world.LevelTime & 0x1f) == 0)
                         {
                             ti.DamageMobj(player.Mobj, null, null, 20);
                         }
@@ -422,13 +422,13 @@ namespace ManagedDoom
                 case 11:
                     // Exit super damage for E1M8 finale.
                     player.Cheats &= ~CheatFlags.GodMode;
-                    if ((world.LevelTime & 0x1f) == 0)
+                    if ((_world.LevelTime & 0x1f) == 0)
                     {
                         ti.DamageMobj(player.Mobj, null, null, 20);
                     }
                     if (player.Health <= 10)
                     {
-                        world.ExitLevel();
+                        _world.ExitLevel();
                     }
                     break;
 
@@ -438,7 +438,7 @@ namespace ManagedDoom
         }
 
 
-        private static readonly Angle ang5 = new(Angle.Ang90.Data / 18);
+        private static readonly Angle _ang5 = new(Angle.Ang90.Data / 18);
 
         /// <summary>
         /// Fall on your face when dying.
@@ -460,7 +460,7 @@ namespace ManagedDoom
             }
 
             player.DeltaViewHeight = Fixed.Zero;
-            onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
+            _onGround = (player.Mobj.Z <= player.Mobj.FloorZ);
             CalcHeight(player);
 
             if (player.Attacker != null && player.Attacker != player.Mobj)
@@ -471,7 +471,7 @@ namespace ManagedDoom
 
                 Angle delta = angle - player.Mobj.Angle;
 
-                if (delta < ang5 || delta.Data > (-ang5).Data)
+                if (delta < _ang5 || delta.Data > (-_ang5).Data)
                 {
                     // Looking at killer, so fade damage flash down.
                     player.Mobj.Angle = angle;
@@ -483,11 +483,11 @@ namespace ManagedDoom
                 }
                 else if (delta < Angle.Ang180)
                 {
-                    player.Mobj.Angle += ang5;
+                    player.Mobj.Angle += _ang5;
                 }
                 else
                 {
-                    player.Mobj.Angle -= ang5;
+                    player.Mobj.Angle -= _ang5;
                 }
             }
             else if (player.DamageCount > 0)
@@ -535,7 +535,7 @@ namespace ManagedDoom
 
             if (player.PendingWeapon == WeaponType.Chainsaw)
             {
-                world.StartSound(player.Mobj, Sfx.SAWUP, SfxType.Weapon);
+                _world.StartSound(player.Mobj, Sfx.SAWUP, SfxType.Weapon);
             }
 
             MobjState newState = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
@@ -577,7 +577,7 @@ namespace ManagedDoom
                 // Modified handling.
                 if (stateDef.PlayerAction != null)
                 {
-                    stateDef.PlayerAction(world, player, psp);
+                    stateDef.PlayerAction(_world, player, psp);
                     if (psp.State == null)
                     {
                         break;
@@ -647,13 +647,13 @@ namespace ManagedDoom
             // Default death sound.
             Sfx sound = Sfx.PLDETH;
 
-            if ((world.Options.GameMode == GameMode.Commercial) && (player.Health < -50))
+            if ((_world.Options.GameMode == GameMode.Commercial) && (player.Health < -50))
             {
                 // If the player dies less than -50% without gibbing.
                 sound = Sfx.PDIEHI;
             }
 
-            world.StartSound(player, sound, SfxType.Voice);
+            _world.StartSound(player, sound, SfxType.Voice);
         }
     }
 }

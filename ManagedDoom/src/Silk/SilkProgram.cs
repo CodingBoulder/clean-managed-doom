@@ -1,43 +1,49 @@
 ﻿using System;
 
-namespace ManagedDoom.Silk
+namespace ManagedDoom.Silk;
+
+public static class SilkProgram
 {
-    public static class SilkProgram
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.BackgroundColor = ConsoleColor.DarkGreen;
+        Console.WriteLine(ApplicationInfo.Title);
+        Console.ResetColor();
+
+        try
         {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine(ApplicationInfo.Title);
-            Console.ResetColor();
+            string quitMessage;
 
-            try
+            using (var app = new SilkDoom(new CommandLineArgs(args)))
             {
-                string? quitMessage = null;
-
-                using (var app = new SilkDoom(new CommandLineArgs(args)))
-                {
-                    app.Run();
-                    quitMessage = app.QuitMessage;
-                }
-
-                if (quitMessage != null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(quitMessage);
-                    Console.ResetColor();
-                    Console.Write("Press any key to exit.");
-                    Console.ReadKey();
-                }
+                app.Run();
+                quitMessage = app.QuitMessage;
             }
-            catch (Exception e)
+
+            if (!string.IsNullOrWhiteSpace(quitMessage))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e);
-                Console.ResetColor();
-                Console.Write("Press any key to exit.");
-                Console.ReadKey();
+                ExitMessage(
+                    ConsoleColor.Green,
+                    quitMessage);
             }
         }
+        catch (Exception e)
+        {
+            ExitMessage(
+                ConsoleColor.Red,
+                e.ToString());
+        }
+    }
+
+    private static void ExitMessage(
+        ConsoleColor consoleColor,
+        string? quitMessage)
+    {
+        Console.ForegroundColor = consoleColor;
+        Console.WriteLine(quitMessage);
+        Console.ResetColor();
+        Console.Write("Press any key to exit.");
+        Console.ReadKey();
     }
 }
