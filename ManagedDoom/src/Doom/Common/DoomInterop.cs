@@ -23,8 +23,8 @@ namespace ManagedDoom
     {
         public static string ToString(byte[] data, int offset, int maxLength)
         {
-            var length = 0;
-            for (var i = 0; i < maxLength; i++)
+            int length = 0;
+            for (int i = 0; i < maxLength; i++)
             {
                 if (data[offset + i] == 0)
                 {
@@ -32,10 +32,10 @@ namespace ManagedDoom
                 }
                 length++;
             }
-            var chars = new char[length];
-            for (var i = 0; i < chars.Length; i++)
+            char[] chars = new char[length];
+            for (int i = 0; i < chars.Length; i++)
             {
-                var c = data[offset + i];
+                byte c = data[offset + i];
                 if ('a' <= c && c <= 'z')
                 {
                     c -= 0x20;

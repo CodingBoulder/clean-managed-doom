@@ -21,25 +21,25 @@ namespace ManagedDoom.Video
 {
     public sealed class FinaleRenderer
     {
-        private Wad wad;
-        private IFlatLookup flats;
-        private ISpriteLookup sprites;
+        private readonly Wad? _wad;
+        private readonly IFlatLookup _flats;
+        private readonly ISpriteLookup _sprites;
 
-        private DrawScreen screen;
-        private int scale;
+        private readonly DrawScreen _screen;
+        private readonly int _scale;
 
-        private PatchCache cache;
+        private readonly PatchCache _cache;
 
         public FinaleRenderer(GameContent content, DrawScreen screen)
         {
-            wad = content.Wad;
-            flats = content.Flats;
-            sprites = content.Sprites;
+            _wad = content.Wad;
+            _flats = content.Flats;
+            _sprites = content.Sprites;
 
-            this.screen = screen;
-            scale = screen.Width / 320;
+            _screen = screen;
+            _scale = screen.Width / 320;
 
-            cache = new PatchCache(wad);
+            _cache = new PatchCache(_wad);
         }
 
         public void Render(Finale finale)
@@ -79,14 +79,14 @@ namespace ManagedDoom.Video
 
         private void RenderTextScreen(Finale finale)
         {
-            FillFlat(flats[finale.Flat]);
+            FillFlat(_flats[finale.Flat]);
 
             // Draw some of the text onto the screen.
-            var cx = 10 * scale;
-            var cy = 17 * scale;
-            var ch = 0;
+            int cx = 10 * _scale;
+            int cy = 17 * _scale;
+            int ch = 0;
 
-            var count = (finale.Count - 10) / Finale.TextSpeed;
+            int count = (finale.Count - 10) / Finale.TextSpeed;
             if (count < 0)
             {
                 count = 0;
@@ -99,24 +99,24 @@ namespace ManagedDoom.Video
                     break;
                 }
 
-                var c = finale.Text[ch++];
+                char c = finale.Text[ch++];
 
                 if (c == '\n')
                 {
-                    cx = 10 * scale;
-                    cy += 11 * scale;
+                    cx = 10 * _scale;
+                    cy += 11 * _scale;
                     continue;
                 }
 
-                screen.DrawChar(c, cx, cy, scale);
+                _screen.DrawChar(c, cx, cy, _scale);
 
-                cx += screen.MeasureChar(c, scale);
+                cx += _screen.MeasureChar(c, _scale);
             }
         }
 
         private void BunnyScroll(Finale finale)
         {
-            var scroll = 320 - finale.Scrolled;
+            int scroll = 320 - finale.Scrolled;
             DrawPatch("PFUB2", scroll - 320, 0);
             DrawPatch("PFUB1", scroll, 0);
 
@@ -154,19 +154,19 @@ namespace ManagedDoom.Video
 
         private void FillFlat(Flat flat)
         {
-            var src = flat.Data;
-            var dst = screen.Data;
-            var scale = screen.Width / 320;
-            var xFrac = Fixed.One / scale - Fixed.Epsilon;
-            var step = Fixed.One / scale;
-            for (var x = 0; x < screen.Width; x++)
+            byte[] src = flat.Data;
+            byte[] dst = _screen.Data;
+            int scale = _screen.Width / 320;
+            Fixed xFrac = Fixed.One / scale - Fixed.Epsilon;
+            Fixed step = Fixed.One / scale;
+            for (int x = 0; x < _screen.Width; x++)
             {
-                var yFrac = Fixed.One / scale - Fixed.Epsilon;
-                var p = screen.Height * x;
-                for (var y = 0; y < screen.Height; y++)
+                Fixed yFrac = Fixed.One / scale - Fixed.Epsilon;
+                int p = _screen.Height * x;
+                for (int y = 0; y < _screen.Height; y++)
                 {
-                    var spotX = xFrac.ToIntFloor() & 0x3F;
-                    var spotY = yFrac.ToIntFloor() & 0x3F;
+                    int spotX = xFrac.ToIntFloor() & 0x3F;
+                    int spotY = yFrac.ToIntFloor() & 0x3F;
                     dst[p] = src[(spotY << 6) + spotX];
                     yFrac += step;
                     p++;
@@ -177,39 +177,39 @@ namespace ManagedDoom.Video
 
         private void DrawPatch(string name, int x, int y)
         {
-            var scale = screen.Width / 320;
-            screen.DrawPatch(cache[name], scale * x, scale * y, scale);
+            int scale = _screen.Width / 320;
+            _screen.DrawPatch(_cache[name], scale * x, scale * y, scale);
         }
 
         private void RenderCast(Finale finale)
         {
             DrawPatch("BOSSBACK", 0, 0);
 
-            var frame = finale.CastState.Frame & 0x7fff;
-            var patch = sprites[finale.CastState.Sprite].Frames[frame].Patches[0];
-            if (sprites[finale.CastState.Sprite].Frames[frame].Flip[0])
+            int frame = finale.CastState.Frame & 0x7fff;
+            Patch patch = _sprites[finale.CastState.Sprite].Frames[frame].Patches[0];
+            if (_sprites[finale.CastState.Sprite].Frames[frame].Flip[0])
             {
-                screen.DrawPatchFlip(
+                _screen.DrawPatchFlip(
                     patch,
-                    screen.Width / 2,
-                    screen.Height - scale * 30,
-                    scale);
+                    _screen.Width / 2,
+                    _screen.Height - _scale * 30,
+                    _scale);
             }
             else
             {
-                screen.DrawPatch(
+                _screen.DrawPatch(
                     patch,
-                    screen.Width / 2,
-                    screen.Height - scale * 30,
-                    scale);
+                    _screen.Width / 2,
+                    _screen.Height - _scale * 30,
+                    _scale);
             }
 
-            var width = screen.MeasureText(finale.CastName, scale);
-            screen.DrawText(
+            int width = _screen.MeasureText(finale.CastName, _scale);
+            _screen.DrawText(
                 finale.CastName,
-                (screen.Width - width) / 2,
-                screen.Height - scale * 13,
-                scale);
+                (_screen.Width - width) / 2,
+                _screen.Height - _scale * 13,
+                _scale);
         }
     }
 }

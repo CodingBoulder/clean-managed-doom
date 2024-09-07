@@ -10,21 +10,23 @@ namespace ManagedDoomTest.CompatibilityTests
         public void E1M1()
         {
             using var content = GameContent.CreateDummy(WadPath.Doom1);
-            var options = new GameOptions();
-            options.Skill = GameSkill.Hard;
-            options.Episode = 1;
-            options.Map = 1;
+            var options = new GameOptions
+            {
+                Skill = GameSkill.Hard,
+                Episode = 1,
+                Map = 1
+            };
             options.Players[0].InGame = true;
 
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, options);
             game.DeferedInitNew();
 
-            var tics = 350;
+            int tics = 350;
 
-            var aggMobjHash = 0;
-            var aggSectorHash = 0;
-            for (var i = 0; i < tics; i++)
+            int aggMobjHash = 0;
+            int aggSectorHash = 0;
+            for (int i = 0; i < tics; i++)
             {
                 game.Update(cmds);
                 aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(game.World));
@@ -41,19 +43,21 @@ namespace ManagedDoomTest.CompatibilityTests
         public void Map01()
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2);
-            var options = new GameOptions();
-            options.Skill = GameSkill.Hard;
-            options.Map = 1;
+            var options = new GameOptions
+            {
+                Skill = GameSkill.Hard,
+                Map = 1
+            };
             options.Players[0].InGame = true;
 
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, options);
             game.DeferedInitNew();
 
-            var tics = 350;
+            int tics = 350;
 
-            var aggMobjHash = 0;
-            for (var i = 0; i < tics; i++)
+            int aggMobjHash = 0;
+            for (int i = 0; i < tics; i++)
             {
                 game.Update(cmds);
                 aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(game.World));
@@ -67,21 +71,23 @@ namespace ManagedDoomTest.CompatibilityTests
         public void Map11Nomonsters()
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2);
-            var options = new GameOptions();
-            options.Skill = GameSkill.Medium;
-            options.Map = 11;
-            options.NoMonsters = true;
+            var options = new GameOptions
+            {
+                Skill = GameSkill.Medium,
+                Map = 11,
+                NoMonsters = true
+            };
             options.Players[0].InGame = true;
 
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, options);
             game.DeferedInitNew();
 
-            var tics = 350;
+            int tics = 350;
 
-            var aggMobjHash = 0;
-            var aggSectorHash = 0;
-            for (var i = 0; i < tics; i++)
+            int aggMobjHash = 0;
+            int aggSectorHash = 0;
+            for (int i = 0; i < tics; i++)
             {
                 game.Update(cmds);
                 aggMobjHash = DoomDebug.CombineHash(aggMobjHash, DoomDebug.GetMobjHash(game.World));

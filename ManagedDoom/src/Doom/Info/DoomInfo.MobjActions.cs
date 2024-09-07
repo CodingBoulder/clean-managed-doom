@@ -253,10 +253,12 @@ namespace ManagedDoom
                 world.MonsterBehavior.BrainScream(actor);
             }
 
+#pragma warning disable IDE0060 // Remove unused parameter
             public void BrainDie(World world, Mobj actor)
             {
-                world.MonsterBehavior.BrainDie(actor);
+                world.MonsterBehavior.BrainDie();
             }
+#pragma warning restore IDE0060 // Remove unused parameter
 
             public void BrainAwake(World world, Mobj actor)
             {

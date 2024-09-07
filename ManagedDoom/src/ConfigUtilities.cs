@@ -25,8 +25,8 @@ namespace ManagedDoom
 {
     public static class ConfigUtilities
     {
-        private static readonly string[] iwadNames = new string[]
-        {
+        private static readonly string[] iwadNames =
+        [
             "DOOM2.WAD",
             "PLUTONIA.WAD",
             "TNT.WAD",
@@ -34,34 +34,37 @@ namespace ManagedDoom
             "DOOM1.WAD",
             "FREEDOOM2.WAD",
             "FREEDOOM1.WAD"
-        };
+        ];
 
-        public static string GetExeDirectory()
+        public static string? GetExeDirectory()
         {
-            return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            //return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule!.FileName);
+            return Path.GetDirectoryName(Environment.ProcessPath);
         }
 
         public static string GetConfigPath()
         {
-            return Path.Combine(GetExeDirectory(), "managed-doom.cfg");
+            return Path.Combine(
+                GetExeDirectory() ?? string.Empty,
+                "managed-doom.cfg");
         }
 
         public static string GetDefaultIwadPath()
         {
-            var exeDirectory = GetExeDirectory();
-            foreach (var name in iwadNames)
+            string? exeDirectory = GetExeDirectory();
+            foreach (string name in iwadNames)
             {
-                var path = Path.Combine(exeDirectory, name);
+                string path = Path.Combine(exeDirectory, name);
                 if (File.Exists(path))
                 {
                     return path;
                 }
             }
 
-            var currentDirectory = Directory.GetCurrentDirectory();
-            foreach (var name in iwadNames)
+            string currentDirectory = Directory.GetCurrentDirectory();
+            foreach (string name in iwadNames)
             {
-                var path = Path.Combine(currentDirectory, name);
+                string path = Path.Combine(currentDirectory, name);
                 if (File.Exists(path))
                 {
                     return path;
@@ -73,7 +76,7 @@ namespace ManagedDoom
 
         public static bool IsIwad(string path)
         {
-            var name = Path.GetFileName(path).ToUpper();
+            string name = Path.GetFileName(path).ToUpper();
             return iwadNames.Contains(name);
         }
 
@@ -92,7 +95,7 @@ namespace ManagedDoom
 
             if (args.file.Present)
             {
-                foreach (var path in args.file.Value)
+                foreach (string path in args.file.Value)
                 {
                     wadPaths.Add(path);
                 }

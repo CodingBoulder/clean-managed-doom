@@ -24,11 +24,11 @@ namespace ManagedDoom
 {
     public sealed class TextureLookup : ITextureLookup
     {
-        private List<Texture> textures;
-        private Dictionary<string, Texture> nameToTexture;
-        private Dictionary<string, int> nameToNumber;
+        private List<Texture> _textures;
+        private Dictionary<string, Texture> _nameToTexture;
+        private Dictionary<string, int> _nameToNumber;
 
-        private int[] switchList;
+        private int[] _switchList;
 
         public void Initialize(Wad wad)
         {
@@ -39,7 +39,7 @@ namespace ManagedDoom
                 InitLookup(wad);
                 InitSwitchList();
 
-                Console.WriteLine("OK (" + textures.Count + " textures)");
+                Console.WriteLine("OK (" + _textures.Count + " textures)");
             }
             catch (Exception e)
             {
@@ -50,29 +50,29 @@ namespace ManagedDoom
 
         private void InitLookup(Wad wad)
         {
-            textures = [];
-            nameToTexture = [];
-            nameToNumber = [];
+            _textures = [];
+            _nameToTexture = [];
+            _nameToNumber = [];
 
-            var patches = LoadPatches(wad);
+            Patch[] patches = LoadPatches(wad);
 
-            for (var n = 1; n <= 2; n++)
+            for (int n = 1; n <= 2; n++)
             {
-                var lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
+                int lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
                 if (lumpNumber == -1)
                 {
                     break;
                 }
 
-                var data = wad.ReadLump(lumpNumber);
-                var count = BitConverter.ToInt32(data, 0);
-                for (var i = 0; i < count; i++)
+                byte[] data = wad.ReadLump(lumpNumber);
+                int count = BitConverter.ToInt32(data, 0);
+                for (int i = 0; i < count; i++)
                 {
-                    var offset = BitConverter.ToInt32(data, 4 + 4 * i);
+                    int offset = BitConverter.ToInt32(data, 4 + 4 * i);
                     var texture = Texture.FromData(data, offset, patches);
-                    nameToNumber.TryAdd(texture.Name, textures.Count);
-                    textures.Add(texture);
-                    nameToTexture.TryAdd(texture.Name, texture);
+                    _nameToNumber.TryAdd(texture.Name, _textures.Count);
+                    _textures.Add(texture);
+                    _nameToTexture.TryAdd(texture.Name, texture);
                 }
             }
         }
@@ -80,17 +80,17 @@ namespace ManagedDoom
         private void InitSwitchList()
         {
             var list = new List<int>();
-            foreach (var tuple in DoomInfo.SwitchNames)
+            foreach (Tuple<DoomString, DoomString> tuple in DoomInfo.SwitchNames)
             {
-                var texNum1 = GetNumber(tuple.Item1);
-                var texNum2 = GetNumber(tuple.Item2);
+                int texNum1 = GetNumber(tuple.Item1);
+                int texNum2 = GetNumber(tuple.Item2);
                 if (texNum1 != -1 && texNum2 != -1)
                 {
                     list.Add(texNum1);
                     list.Add(texNum2);
                 }
             }
-            switchList = list.ToArray();
+            _switchList = list.ToArray();
         }
 
         public int GetNumber(string name)
@@ -100,8 +100,7 @@ namespace ManagedDoom
                 return 0;
             }
 
-            int number;
-            if (nameToNumber.TryGetValue(name, out number))
+            if (_nameToNumber.TryGetValue(name, out int number))
             {
                 return number;
             }
@@ -113,11 +112,11 @@ namespace ManagedDoom
 
         private static Patch[] LoadPatches(Wad wad)
         {
-            var patchNames = LoadPatchNames(wad);
+            string[] patchNames = LoadPatchNames(wad);
             var patches = new Patch[patchNames.Length];
-            for (var i = 0; i < patches.Length; i++)
+            for (int i = 0; i < patches.Length; i++)
             {
-                var name = patchNames[i];
+                string name = patchNames[i];
 
                 // This check is necessary to avoid crash in DOOM1.WAD.
                 if (wad.GetLumpNumber(name) == -1)
@@ -125,7 +124,7 @@ namespace ManagedDoom
                     continue;
                 }
 
-                var data = wad.ReadLump(name);
+                byte[] data = wad.ReadLump(name);
                 patches[i] = Patch.FromData(name, data);
             }
             return patches;
@@ -133,10 +132,10 @@ namespace ManagedDoom
 
         private static string[] LoadPatchNames(Wad wad)
         {
-            var data = wad.ReadLump("PNAMES");
-            var count = BitConverter.ToInt32(data, 0);
-            var names = new string[count];
-            for (var i = 0; i < names.Length; i++)
+            byte[] data = wad.ReadLump("PNAMES");
+            int count = BitConverter.ToInt32(data, 0);
+            string[] names = new string[count];
+            for (int i = 0; i < names.Length; i++)
             {
                 names[i] = DoomInterop.ToString(data, 4 + 8 * i, 8);
             }
@@ -145,17 +144,17 @@ namespace ManagedDoom
 
         public IEnumerator<Texture> GetEnumerator()
         {
-            return textures.GetEnumerator();
+            return _textures.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return textures.GetEnumerator();
+            return _textures.GetEnumerator();
         }
 
-        public int Count => textures.Count;
-        public Texture this[int num] => textures[num];
-        public Texture this[string name] => nameToTexture[name];
-        public int[] SwitchList => switchList;
+        public int Count => _textures.Count;
+        public Texture this[int num] => _textures[num];
+        public Texture this[string name] => _nameToTexture[name];
+        public int[] SwitchList => _switchList;
     }
 }

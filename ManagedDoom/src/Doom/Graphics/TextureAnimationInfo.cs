@@ -21,25 +21,25 @@ namespace ManagedDoom
 {
     public sealed class TextureAnimationInfo
     {
-        private bool isTexture;
-        private int picNum;
-        private int basePic;
-        private int numPics;
-        private int speed;
+        private readonly bool _isTexture;
+        private readonly int _picNum;
+        private readonly int _basePic;
+        private readonly int _numPics;
+        private readonly int _speed;
 
         public TextureAnimationInfo(bool isTexture, int picNum, int basePic, int numPics, int speed)
         {
-            this.isTexture = isTexture;
-            this.picNum = picNum;
-            this.basePic = basePic;
-            this.numPics = numPics;
-            this.speed = speed;
+            _isTexture = isTexture;
+            _picNum = picNum;
+            _basePic = basePic;
+            _numPics = numPics;
+            _speed = speed;
         }
 
-        public bool IsTexture => isTexture;
-        public int PicNum => picNum;
-        public int BasePic => basePic;
-        public int NumPics => numPics;
-        public int Speed => speed;
+        public bool IsTexture => _isTexture;
+        public int PicNum => _picNum;
+        public int BasePic => _basePic;
+        public int NumPics => _numPics;
+        public int Speed => _speed;
     }
 }

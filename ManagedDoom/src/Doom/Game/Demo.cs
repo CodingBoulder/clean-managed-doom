@@ -22,52 +22,54 @@ namespace ManagedDoom
 {
     public sealed class Demo
     {
-        private int p;
-        private byte[] data;
+        private int _p;
+        private readonly byte[] _data;
 
-        private GameOptions options;
+        private readonly GameOptions _options;
 
-        private int playerCount;
+        private readonly int _playerCount;
 
         public Demo(byte[] data)
         {
-            p = 0;
+            _p = 0;
 
-            if (data[p++] != 109)
+            if (data[_p++] != 109)
             {
                 throw new Exception("Demo is from a different game version!");
             }
 
-            this.data = data;
+            _data = data;
 
-            options = new GameOptions();
-            options.Skill = (GameSkill)data[p++];
-            options.Episode = data[p++];
-            options.Map = data[p++];
-            options.Deathmatch = data[p++];
-            options.RespawnMonsters = data[p++] != 0;
-            options.FastMonsters = data[p++] != 0;
-            options.NoMonsters = data[p++] != 0;
-            options.ConsolePlayer = data[p++];
-
-            options.Players[0].InGame = data[p++] != 0;
-            options.Players[1].InGame = data[p++] != 0;
-            options.Players[2].InGame = data[p++] != 0;
-            options.Players[3].InGame = data[p++] != 0;
-
-            options.DemoPlayback = true;
-
-            playerCount = 0;
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            _options = new GameOptions
             {
-                if (options.Players[i].InGame)
+                Skill = (GameSkill)data[_p++],
+                Episode = data[_p++],
+                Map = data[_p++],
+                Deathmatch = data[_p++],
+                RespawnMonsters = data[_p++] != 0,
+                FastMonsters = data[_p++] != 0,
+                NoMonsters = data[_p++] != 0,
+                ConsolePlayer = data[_p++]
+            };
+
+            _options.Players[0].InGame = data[_p++] != 0;
+            _options.Players[1].InGame = data[_p++] != 0;
+            _options.Players[2].InGame = data[_p++] != 0;
+            _options.Players[3].InGame = data[_p++] != 0;
+
+            _options.DemoPlayback = true;
+
+            _playerCount = 0;
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
+            {
+                if (_options.Players[i].InGame)
                 {
-                    playerCount++;
+                    _playerCount++;
                 }
             }
-            if (playerCount >= 2)
+            if (_playerCount >= 2)
             {
-                options.NetGame = true;
+                _options.NetGame = true;
             }
         }
 
@@ -77,37 +79,37 @@ namespace ManagedDoom
 
         public bool ReadCmd(TicCmd[] cmds)
         {
-            if (p == data.Length)
+            if (_p == _data.Length)
             {
                 return false;
             }
 
-            if (data[p] == 0x80)
+            if (_data[_p] == 0x80)
             {
                 return false;
             }
 
-            if (p + 4 * playerCount > data.Length)
+            if (_p + 4 * _playerCount > _data.Length)
             {
                 return false;
             }
 
-            var players = options.Players;
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            Player[] players = _options.Players;
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (players[i].InGame)
                 {
-                    var cmd = cmds[i];
-                    cmd.ForwardMove = (sbyte)data[p++];
-                    cmd.SideMove = (sbyte)data[p++];
-                    cmd.AngleTurn = (short)(data[p++] << 8);
-                    cmd.Buttons = data[p++];
+                    TicCmd cmd = cmds[i];
+                    cmd.ForwardMove = (sbyte)_data[_p++];
+                    cmd.SideMove = (sbyte)_data[_p++];
+                    cmd.AngleTurn = (short)(_data[_p++] << 8);
+                    cmd.Buttons = _data[_p++];
                 }
             }
 
             return true;
         }
 
-        public GameOptions Options => options;
+        public GameOptions Options => _options;
     }
 }

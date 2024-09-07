@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class ThingMovement
     {
-        private World world;
+        private readonly World world;
 
         public ThingMovement(World world)
         {
@@ -55,7 +55,7 @@ namespace ManagedDoom
         private Fixed currentDropoffZ;
         private bool floatOk;
 
-        private LineDef currentCeilingLine;
+        private LineDef? currentCeilingLine;
 
         public int crossedSpecialCount;
         public LineDef[] crossedSpecials;
@@ -78,16 +78,16 @@ namespace ManagedDoom
         /// </summary>
         public void SetThingPosition(Mobj thing)
         {
-            var map = world.Map;
+            Map map = world.Map;
 
-            var subsector = Geometry.PointInSubsector(thing.X, thing.Y, map);
+            Subsector subsector = Geometry.PointInSubsector(thing.X, thing.Y, map);
 
             thing.Subsector = subsector;
 
             // Invisible things don't go into the sector links.
             if ((thing.Flags & MobjFlags.NoSector) == 0)
             {
-                var sector = subsector.Sector;
+                Sector sector = subsector.Sector;
 
                 thing.SectorPrev = null;
                 thing.SectorNext = sector.ThingList;
@@ -103,11 +103,11 @@ namespace ManagedDoom
             // Inert things don't need to be in blockmap.
             if ((thing.Flags & MobjFlags.NoBlockMap) == 0)
             {
-                var index = map.BlockMap.GetIndex(thing.X, thing.Y);
+                int index = map.BlockMap.GetIndex(thing.X, thing.Y);
 
                 if (index != -1)
                 {
-                    var link = map.BlockMap.ThingLists[index];
+                    Mobj? link = map.BlockMap.ThingLists[index];
 
                     thing.BlockPrev = null;
                     thing.BlockNext = link;
@@ -136,7 +136,7 @@ namespace ManagedDoom
         /// </summary>
         public void UnsetThingPosition(Mobj thing)
         {
-            var map = world.Map;
+            Map map = world.Map;
 
             // Invisible things don't go into the sector links.
             if ((thing.Flags & MobjFlags.NoSector) == 0)
@@ -172,7 +172,7 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    var index = map.BlockMap.GetIndex(thing.X, thing.Y);
+                    int index = map.BlockMap.GetIndex(thing.X, thing.Y);
 
                     if (index != -1)
                     {
@@ -188,7 +188,7 @@ namespace ManagedDoom
         /// </summary>
         private bool CheckLine(LineDef line)
         {
-            var mc = world.MapCollision;
+            MapCollision mc = world.MapCollision;
 
             if (currentBox.Right() <= line.BoundingBox.Left() ||
                 currentBox.Left() >= line.BoundingBox.Right() ||
@@ -271,7 +271,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            var blockDist = thing.Radius + currentThing.Radius;
+            Fixed blockDist = thing.Radius + currentThing.Radius;
 
             if (Fixed.Abs(thing.X - currentX) >= blockDist ||
                 Fixed.Abs(thing.Y - currentY) >= blockDist)
@@ -289,7 +289,7 @@ namespace ManagedDoom
             // Check for skulls slamming into things.
             if ((currentThing.Flags & MobjFlags.SkullFly) != 0)
             {
-                var damage = ((world.Random.Next() % 8) + 1) * currentThing.Info.Damage;
+                int damage = ((world.Random.Next() % 8) + 1) * currentThing.Info.Damage;
 
                 world.ThingInteraction.DamageMobj(thing, currentThing, currentThing, damage);
 
@@ -344,7 +344,7 @@ namespace ManagedDoom
                 }
 
                 // Damage / explode.
-                var damage = ((world.Random.Next() % 8) + 1) * currentThing.Info.Damage;
+                int damage = ((world.Random.Next() % 8) + 1) * currentThing.Info.Damage;
                 world.ThingInteraction.DamageMobj(thing, currentThing, currentThing.Target, damage);
 
                 // Don't traverse any more.
@@ -354,7 +354,7 @@ namespace ManagedDoom
             // Check for special pickup.
             if ((thing.Flags & MobjFlags.Special) != 0)
             {
-                var solid = (thing.Flags & MobjFlags.Solid) != 0;
+                bool solid = (thing.Flags & MobjFlags.Solid) != 0;
                 if ((currentFlags & MobjFlags.PickUp) != 0)
                 {
                     // Can remove thing.
@@ -391,8 +391,8 @@ namespace ManagedDoom
         /// </summary>
         public bool CheckPosition(Mobj thing, Fixed x, Fixed y)
         {
-            var map = world.Map;
-            var bm = map.BlockMap;
+            Map map = world.Map;
+            BlockMap bm = map.BlockMap;
 
             currentThing = thing;
             currentFlags = thing.Flags;
@@ -405,7 +405,7 @@ namespace ManagedDoom
             currentBox[Box.Right] = x + currentThing.Radius;
             currentBox[Box.Left] = x - currentThing.Radius;
 
-            var newSubsector = Geometry.PointInSubsector(x, y, map);
+            Subsector newSubsector = Geometry.PointInSubsector(x, y, map);
 
             currentCeilingLine = null;
 
@@ -414,7 +414,7 @@ namespace ManagedDoom
             currentFloorZ = currentDropoffZ = newSubsector.Sector.FloorHeight;
             currentCeilingZ = newSubsector.Sector.CeilingHeight;
 
-            var validCount = world.GetNewValidCount();
+            int validCount = world.GetNewValidCount();
 
             crossedSpecialCount = 0;
 
@@ -428,14 +428,14 @@ namespace ManagedDoom
             // mapblocks based on their origin point, and can overlap into adjacent blocks by up
             // to MaxThingRadius units.
             {
-                var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConst.MaxThingRadius);
-                var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConst.MaxThingRadius);
-                var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConst.MaxThingRadius);
-                var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConst.MaxThingRadius);
+                int blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConst.MaxThingRadius);
+                int blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConst.MaxThingRadius);
+                int blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConst.MaxThingRadius);
+                int blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConst.MaxThingRadius);
 
-                for (var bx = blockX1; bx <= blockX2; bx++)
+                for (int bx = blockX1; bx <= blockX2; bx++)
                 {
-                    for (var by = blockY1; by <= blockY2; by++)
+                    for (int by = blockY1; by <= blockY2; by++)
                     {
                         if (!map.BlockMap.IterateThings(bx, by, checkThingFunc))
                         {
@@ -447,14 +447,14 @@ namespace ManagedDoom
 
             // Check lines.
             {
-                var blockX1 = bm.GetBlockX(currentBox[Box.Left]);
-                var blockX2 = bm.GetBlockX(currentBox[Box.Right]);
-                var blockY1 = bm.GetBlockY(currentBox[Box.Bottom]);
-                var blockY2 = bm.GetBlockY(currentBox[Box.Top]);
+                int blockX1 = bm.GetBlockX(currentBox[Box.Left]);
+                int blockX2 = bm.GetBlockX(currentBox[Box.Right]);
+                int blockY1 = bm.GetBlockY(currentBox[Box.Bottom]);
+                int blockY2 = bm.GetBlockY(currentBox[Box.Top]);
 
-                for (var bx = blockX1; bx <= blockX2; bx++)
+                for (int bx = blockX1; bx <= blockX2; bx++)
                 {
-                    for (var by = blockY1; by <= blockY2; by++)
+                    for (int by = blockY1; by <= blockY2; by++)
                     {
                         if (!map.BlockMap.IterateLines(bx, by, checkLineFunc, validCount))
                         {
@@ -518,8 +518,8 @@ namespace ManagedDoom
             // so link the thing into its new position.
             UnsetThingPosition(thing);
 
-            var oldx = thing.X;
-            var oldy = thing.Y;
+            Fixed oldx = thing.X;
+            Fixed oldy = thing.Y;
             thing.FloorZ = currentFloorZ;
             thing.CeilingZ = currentCeilingZ;
             thing.X = x;
@@ -533,9 +533,9 @@ namespace ManagedDoom
                 while (crossedSpecialCount-- > 0)
                 {
                     // See if the line was crossed.
-                    var line = crossedSpecials[crossedSpecialCount];
-                    var newSide = Geometry.PointOnLineSide(thing.X, thing.Y, line);
-                    var oldSide = Geometry.PointOnLineSide(oldx, oldy, line);
+                    LineDef line = crossedSpecials[crossedSpecialCount];
+                    int newSide = Geometry.PointOnLineSide(thing.X, thing.Y, line);
+                    int oldSide = Geometry.PointOnLineSide(oldx, oldy, line);
                     if (newSide != oldSide)
                     {
                         if (line.Special != 0)
@@ -550,8 +550,8 @@ namespace ManagedDoom
         }
 
 
-        private static readonly Fixed stopSpeed = new Fixed(0x1000);
-        private static readonly Fixed friction = new Fixed(0xe800);
+        private static readonly Fixed stopSpeed = new(0x1000);
+        private static readonly Fixed friction = new(0xe800);
 
         public void XYMovement(Mobj thing)
         {
@@ -569,7 +569,7 @@ namespace ManagedDoom
                 return;
             }
 
-            var player = thing.Player;
+            Player? player = thing.Player;
 
             if (thing.MomX > maxMove)
             {
@@ -589,8 +589,8 @@ namespace ManagedDoom
                 thing.MomY = -maxMove;
             }
 
-            var moveX = thing.MomX;
-            var moveY = thing.MomY;
+            Fixed moveX = thing.MomX;
+            Fixed moveY = thing.MomY;
 
             do
             {
@@ -692,8 +692,8 @@ namespace ManagedDoom
             }
             else
             {
-                thing.MomX = thing.MomX * friction;
-                thing.MomY = thing.MomY * friction;
+                thing.MomX *= friction;
+                thing.MomY *= friction;
             }
         }
 
@@ -717,11 +717,11 @@ namespace ManagedDoom
                 if ((thing.Flags & MobjFlags.SkullFly) == 0 &&
                     (thing.Flags & MobjFlags.InFloat) == 0)
                 {
-                    var dist = Geometry.AproxDistance(
+                    Fixed dist = Geometry.AproxDistance(
                         thing.X - thing.Target.X,
                         thing.Y - thing.Target.Y);
 
-                    var delta = (thing.Target.Z + (thing.Height >> 1)) - thing.Z;
+                    Fixed delta = (thing.Target.Z + (thing.Height >> 1)) - thing.Z;
 
                     if (delta < Fixed.Zero && dist < -(delta * 3))
                     {
@@ -743,7 +743,7 @@ namespace ManagedDoom
                 // The lost soul bounce fix below is based on Chocolate Doom's implementation.
                 //
 
-                var correctLostSoulBounce = world.Options.GameVersion >= GameVersion.Ultimate;
+                bool correctLostSoulBounce = world.Options.GameVersion >= GameVersion.Ultimate;
 
                 if (correctLostSoulBounce && (thing.Flags & MobjFlags.SkullFly) != 0)
                 {
@@ -830,10 +830,12 @@ namespace ManagedDoom
         ////////////////////////////////////////////////////////////
 
         private Fixed bestSlideFrac;
-        private Fixed secondSlideFrac;
-
         private LineDef bestSlideLine;
+
+#pragma warning disable IDE0052 // Remove unread private members
+        private Fixed secondSlideFrac;
         private LineDef secondSlideLine;
+#pragma warning restore IDE0052 // Remove unread private members
 
         private Mobj slideThing;
         private Fixed slideMoveX;
@@ -864,24 +866,24 @@ namespace ManagedDoom
                 return;
             }
 
-            var side = Geometry.PointOnLineSide(slideThing.X, slideThing.Y, line);
+            int side = Geometry.PointOnLineSide(slideThing.X, slideThing.Y, line);
 
-            var lineAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, line.Dx, line.Dy);
+            Angle lineAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, line.Dx, line.Dy);
             if (side == 1)
             {
                 lineAngle += Angle.Ang180;
             }
 
-            var moveAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, slideMoveX, slideMoveY);
+            Angle moveAngle = Geometry.PointToAngle(Fixed.Zero, Fixed.Zero, slideMoveX, slideMoveY);
 
-            var deltaAngle = moveAngle - lineAngle;
+            Angle deltaAngle = moveAngle - lineAngle;
             if (deltaAngle > Angle.Ang180)
             {
                 deltaAngle += Angle.Ang180;
             }
 
-            var moveDist = Geometry.AproxDistance(slideMoveX, slideMoveY);
-            var newDist = moveDist * Trig.Cos(deltaAngle);
+            Fixed moveDist = Geometry.AproxDistance(slideMoveX, slideMoveY);
+            Fixed newDist = moveDist * Trig.Cos(deltaAngle);
 
             slideMoveX = newDist * Trig.Cos(lineAngle);
             slideMoveY = newDist * Trig.Sin(lineAngle);
@@ -889,14 +891,14 @@ namespace ManagedDoom
 
         private bool SlideTraverse(Intercept intercept)
         {
-            var mc = world.MapCollision;
+            MapCollision mc = world.MapCollision;
 
             if (intercept.Line == null)
             {
                 throw new Exception("ThingMovement.SlideTraverse: Not a line?");
             }
 
-            var line = intercept.Line;
+            LineDef line = intercept.Line;
 
             if ((line.Flags & LineFlags.TwoSided) == 0)
             {
@@ -933,8 +935,8 @@ namespace ManagedDoom
             // This line doesn't block movement.
             return true;
 
-            // The line does block movement, see if it is closer than best so far.
-            isBlocking:
+        // The line does block movement, see if it is closer than best so far.
+        isBlocking:
             if (intercept.Frac < bestSlideFrac)
             {
                 secondSlideFrac = bestSlideFrac;
@@ -954,13 +956,13 @@ namespace ManagedDoom
         /// </summary>
         private void SlideMove(Mobj thing)
         {
-            var pt = world.PathTraversal;
+            PathTraversal pt = world.PathTraversal;
 
             slideThing = thing;
 
-            var hitCount = 0;
+            int hitCount = 0;
 
-            retry:
+        retry:
             // Don't loop forever.
             if (++hitCount == 3)
             {
@@ -1023,8 +1025,8 @@ namespace ManagedDoom
             bestSlideFrac = new Fixed(bestSlideFrac.Data - 0x800);
             if (bestSlideFrac > Fixed.Zero)
             {
-                var newX = thing.MomX * bestSlideFrac;
-                var newY = thing.MomY * bestSlideFrac;
+                Fixed newX = thing.MomX * bestSlideFrac;
+                Fixed newY = thing.MomY * bestSlideFrac;
 
                 if (!TryMove(thing, thing.X + newX, thing.Y + newY))
                 {
@@ -1091,7 +1093,7 @@ namespace ManagedDoom
                 return true;
             }
 
-            var blockDist = thing.Radius + currentThing.Radius;
+            Fixed blockDist = thing.Radius + currentThing.Radius;
             var dx = Fixed.Abs(thing.X - currentX);
             var dy = Fixed.Abs(thing.Y - currentY);
             if (dx >= blockDist || dy >= blockDist)
@@ -1131,7 +1133,7 @@ namespace ManagedDoom
             currentBox[Box.Right] = x + currentThing.Radius;
             currentBox[Box.Left] = x - currentThing.Radius;
 
-            var ss = Geometry.PointInSubsector(x, y, world.Map);
+            Subsector ss = Geometry.PointInSubsector(x, y, world.Map);
 
             currentCeilingLine = null;
 
@@ -1140,20 +1142,20 @@ namespace ManagedDoom
             currentFloorZ = currentDropoffZ = ss.Sector.FloorHeight;
             currentCeilingZ = ss.Sector.CeilingHeight;
 
-            var validcount = world.GetNewValidCount();
+            int validcount = world.GetNewValidCount();
 
             crossedSpecialCount = 0;
 
             // Stomp on any things contacted.
-            var bm = world.Map.BlockMap;
-            var blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConst.MaxThingRadius);
-            var blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConst.MaxThingRadius);
-            var blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConst.MaxThingRadius);
-            var blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConst.MaxThingRadius);
+            BlockMap bm = world.Map.BlockMap;
+            int blockX1 = bm.GetBlockX(currentBox[Box.Left] - GameConst.MaxThingRadius);
+            int blockX2 = bm.GetBlockX(currentBox[Box.Right] + GameConst.MaxThingRadius);
+            int blockY1 = bm.GetBlockY(currentBox[Box.Bottom] - GameConst.MaxThingRadius);
+            int blockY2 = bm.GetBlockY(currentBox[Box.Top] + GameConst.MaxThingRadius);
 
-            for (var bx = blockX1; bx <= blockX2; bx++)
+            for (int bx = blockX1; bx <= blockX2; bx++)
             {
-                for (var by = blockY1; by <= blockY2; by++)
+                for (int by = blockY1; by <= blockY2; by++)
                 {
                     if (!bm.IterateThings(bx, by, stompThingFunc))
                     {

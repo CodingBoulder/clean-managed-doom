@@ -22,16 +22,14 @@ namespace ManagedDoom.Video
 {
     public sealed class MenuRenderer
     {
-        private static readonly char[] cursor = { '_' };
+        private static readonly char[] cursor = ['_'];
 
-        private Wad wad;
-        private DrawScreen screen;
+        private readonly DrawScreen screen;
 
-        private PatchCache cache;
+        private readonly PatchCache cache;
 
         public MenuRenderer(Wad wad, DrawScreen screen)
         {
-            this.wad = wad;
             this.screen = screen;
 
             cache = new PatchCache(wad);
@@ -84,7 +82,7 @@ namespace ManagedDoom.Video
 
         private void DrawSelectableMenu(SelectableMenu selectable)
         {
-            for (var i = 0; i < selectable.Name.Count; i++)
+            for (int i = 0; i < selectable.Name.Count; i++)
             {
                 DrawMenuPatch(
                     selectable.Name[i],
@@ -92,19 +90,19 @@ namespace ManagedDoom.Video
                     selectable.TitleY[i]);
             }
 
-            foreach (var item in selectable.Items)
+            foreach (MenuItem item in selectable.Items)
             {
                 DrawMenuItem(selectable.Menu, item);
             }
 
-            var choice = selectable.Choice;
-            var skull = selectable.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            MenuItem choice = selectable.Choice;
+            string skull = selectable.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
             DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
         }
 
         private void DrawSaveMenu(SaveMenu save)
         {
-            for (var i = 0; i < save.Name.Count; i++)
+            for (int i = 0; i < save.Name.Count; i++)
             {
                 DrawMenuPatch(
                     save.Name[i],
@@ -112,19 +110,19 @@ namespace ManagedDoom.Video
                     save.TitleY[i]);
             }
 
-            foreach (var item in save.Items)
+            foreach (MenuItem item in save.Items)
             {
                 DrawMenuItem(save.Menu, item);
             }
 
-            var choice = save.Choice;
-            var skull = save.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            MenuItem choice = save.Choice;
+            string skull = save.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
             DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
         }
 
         private void DrawLoadMenu(LoadMenu load)
         {
-            for (var i = 0; i < load.Name.Count; i++)
+            for (int i = 0; i < load.Name.Count; i++)
             {
                 DrawMenuPatch(
                     load.Name[i],
@@ -132,13 +130,13 @@ namespace ManagedDoom.Video
                     load.TitleY[i]);
             }
 
-            foreach (var item in load.Items)
+            foreach (MenuItem item in load.Items)
             {
                 DrawMenuItem(load.Menu, item);
             }
 
-            var choice = load.Choice;
-            var skull = load.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            MenuItem choice = load.Choice;
+            string skull = load.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
             DrawMenuPatch(skull, choice.SkullX, choice.SkullY);
         }
 
@@ -171,13 +169,13 @@ namespace ManagedDoom.Video
 
         private void DrawMenuPatch(string name, int x, int y)
         {
-            var scale = screen.Width / 320;
+            int scale = screen.Width / 320;
             screen.DrawPatch(cache[name], scale * x, scale * y, scale);
         }
 
         private void DrawMenuText(IReadOnlyList<char> text, int x, int y)
         {
-            var scale = screen.Width / 320;
+            int scale = screen.Width / 320;
             screen.DrawText(text, scale * x, scale * y, scale);
         }
 
@@ -197,35 +195,35 @@ namespace ManagedDoom.Video
             DrawMenuPatch(item.Name, item.ItemX, item.ItemY);
 
             DrawMenuPatch("M_THERML", item.SliderX, item.SliderY);
-            for (var i = 0; i < item.SliderLength; i++)
+            for (int i = 0; i < item.SliderLength; i++)
             {
-                var x = item.SliderX + 8 * (1 + i);
+                int x = item.SliderX + 8 * (1 + i);
                 DrawMenuPatch("M_THERMM", x, item.SliderY);
             }
 
-            var end = item.SliderX + 8 * (1 + item.SliderLength);
+            int end = item.SliderX + 8 * (1 + item.SliderLength);
             DrawMenuPatch("M_THERMR", end, item.SliderY);
 
-            var pos = item.SliderX + 8 * (1 + item.SliderPosition);
+            int pos = item.SliderX + 8 * (1 + item.SliderPosition);
             DrawMenuPatch("M_THERMO", pos, item.SliderY);
         }
 
-        private char[] emptyText = "EMPTY SLOT".ToCharArray();
+        private readonly char[] emptyText = "EMPTY SLOT".ToCharArray();
 
         private void DrawTextBoxMenuItem(TextBoxMenuItem item, int tics)
         {
-            var length = 24;
+            int length = 24;
             DrawMenuPatch("M_LSLEFT", item.ItemX, item.ItemY);
-            for (var i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
-                var x = item.ItemX + 8 * (1 + i);
+                int x = item.ItemX + 8 * (1 + i);
                 DrawMenuPatch("M_LSCNTR", x, item.ItemY);
             }
             DrawMenuPatch("M_LSRGHT", item.ItemX + 8 * (1 + length), item.ItemY);
 
             if (!item.Editing)
             {
-                var text = item.Text != null ? item.Text : emptyText;
+                IReadOnlyList<char> text = item.Text ?? emptyText;
                 DrawMenuText(text, item.ItemX + 8, item.ItemY);
             }
             else
@@ -233,7 +231,7 @@ namespace ManagedDoom.Video
                 DrawMenuText(item.Text, item.ItemX + 8, item.ItemY);
                 if (tics / 3 % 2 == 0)
                 {
-                    var textWidth = screen.MeasureText(item.Text, 1);
+                    int textWidth = screen.MeasureText(item.Text, 1);
                     DrawMenuText(cursor, item.ItemX + 8 + textWidth, item.ItemY);
                 }
             }
@@ -241,20 +239,20 @@ namespace ManagedDoom.Video
 
         private void DrawText(IReadOnlyList<string> text)
         {
-            var scale = screen.Width / 320;
-            var height = 7 * scale * text.Count;
+            int scale = screen.Width / 320;
+            int height = 7 * scale * text.Count;
 
-            for (var i = 0; i < text.Count; i++)
+            for (int i = 0; i < text.Count; i++)
             {
-                var x = (screen.Width - screen.MeasureText(text[i], scale)) / 2;
-                var y = (screen.Height - height) / 2 + 7 * scale * (i + 1);
+                int x = (screen.Width - screen.MeasureText(text[i], scale)) / 2;
+                int y = (screen.Height - height) / 2 + 7 * scale * (i + 1);
                 screen.DrawText(text[i], x, y, scale);
             }
         }
 
         private void DrawHelp(HelpScreen help)
         {
-            var skull = help.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
+            string skull = help.Menu.Tics / 8 % 2 == 0 ? "M_SKULL1" : "M_SKULL2";
 
             if (help.Menu.Options.GameMode == GameMode.Commercial)
             {

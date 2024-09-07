@@ -17,20 +17,20 @@ namespace ManagedDoom.Silk
 #if !WINDOWS_RELEASE
         public void Run()
         {
-            if (args.timedemo.Present)
+            if (_args.timedemo.Present)
             {
-                window.UpdatesPerSecond = 0;
-                window.FramesPerSecond = 0;
+                _window.UpdatesPerSecond = 0;
+                _window.FramesPerSecond = 0;
             }
             else
             {
-                config.video_fpsscale = Math.Clamp(config.video_fpsscale, 1, 100);
-                var targetFps = 35 * config.video_fpsscale;
-                window.UpdatesPerSecond = targetFps;
-                window.FramesPerSecond = targetFps;
+                _config.video_fpsscale = Math.Clamp(_config.video_fpsscale, 1, 100);
+                int targetFps = 35 * _config.video_fpsscale;
+                _window.UpdatesPerSecond = targetFps;
+                _window.FramesPerSecond = targetFps;
             }
 
-            window.Run();
+            _window.Run();
 
             Quit();
         }

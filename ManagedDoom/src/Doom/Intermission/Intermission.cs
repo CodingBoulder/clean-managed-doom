@@ -22,11 +22,11 @@ namespace ManagedDoom
 {
     public sealed class Intermission
     {
-        private GameOptions options;
+        private readonly GameOptions options;
 
         // Contains information passed into intermission.
-        private IntermissionInfo info;
-        private PlayerScores[] scores;
+        private readonly IntermissionInfo info;
+        private readonly PlayerScores[] scores;
 
         // Used to accelerate or skip a stage.
         private bool accelerateStage;
@@ -34,10 +34,10 @@ namespace ManagedDoom
         // Specifies current state.
         private IntermissionState state;
 
-        private int[] killCount;
-        private int[] itemCount;
-        private int[] secretCount;
-        private int[] fragCount;
+        private readonly int[] killCount;
+        private readonly int[] itemCount;
+        private readonly int[] secretCount;
+        private readonly int[] fragCount;
         private int timeCount;
         private int parCount;
         private int pauseCount;
@@ -48,8 +48,8 @@ namespace ManagedDoom
         private bool doFrags;
 
         private int dmState;
-        private int[][] dmFragCount;
-        private int[] dmTotalCount;
+        private readonly int[][] dmFragCount;
+        private readonly int[] dmTotalCount;
 
         private DoomRandom random;
         private Animation[] animations;
@@ -76,7 +76,7 @@ namespace ManagedDoom
             fragCount = new int[Player.MaxPlayerCount];
 
             dmFragCount = new int[Player.MaxPlayerCount][];
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 dmFragCount[i] = new int[Player.MaxPlayerCount];
             }
@@ -103,7 +103,7 @@ namespace ManagedDoom
         ////////////////////////////////////////////////////////////
         // Initialization
         ////////////////////////////////////////////////////////////
-        
+
         private void InitSinglePLayerStats()
         {
             state = IntermissionState.StatCount;
@@ -124,8 +124,8 @@ namespace ManagedDoom
             ngState = 1;
             pauseCount = GameConst.TicRate;
 
-            var frags = 0;
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            int frags = 0;
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (!options.Players[i].InGame)
                 {
@@ -149,11 +149,11 @@ namespace ManagedDoom
             dmState = 1;
             pauseCount = GameConst.TicRate;
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (options.Players[i].InGame)
                 {
-                    for (var j = 0; j < Player.MaxPlayerCount; j++)
+                    for (int j = 0; j < Player.MaxPlayerCount; j++)
                     {
                         if (options.Players[j].InGame)
                         {
@@ -203,7 +203,7 @@ namespace ManagedDoom
             if (animations == null)
             {
                 animations = new Animation[AnimationInfo.Episodes[info.Episode].Count];
-                for (var i = 0; i < animations.Length; i++)
+                for (int i = 0; i < animations.Length; i++)
                 {
                     animations[i] = new Animation(this, AnimationInfo.Episodes[info.Episode][i], i);
                 }
@@ -211,7 +211,7 @@ namespace ManagedDoom
                 random = new DoomRandom();
             }
 
-            foreach (var animation in animations)
+            foreach (Animation animation in animations)
             {
                 animation.Reset(bgCount);
             }
@@ -416,7 +416,7 @@ namespace ManagedDoom
             {
                 accelerateStage = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!options.Players[i].InGame)
                     {
@@ -442,7 +442,7 @@ namespace ManagedDoom
 
                 stillTicking = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!options.Players[i].InGame)
                     {
@@ -475,7 +475,7 @@ namespace ManagedDoom
 
                 stillTicking = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!options.Players[i].InGame)
                     {
@@ -508,7 +508,7 @@ namespace ManagedDoom
 
                 stillTicking = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!options.Players[i].InGame)
                     {
@@ -548,7 +548,7 @@ namespace ManagedDoom
 
                 stillTicking = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!options.Players[i].InGame)
                     {
@@ -556,7 +556,7 @@ namespace ManagedDoom
                     }
 
                     fragCount[i] += 1;
-                    var sum = GetFragSum(i);
+                    int sum = GetFragSum(i);
                     if (fragCount[i] >= sum)
                     {
                         fragCount[i] = sum;
@@ -610,11 +610,11 @@ namespace ManagedDoom
             {
                 accelerateStage = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (options.Players[i].InGame)
                     {
-                        for (var j = 0; j < Player.MaxPlayerCount; j++)
+                        for (int j = 0; j < Player.MaxPlayerCount; j++)
                         {
                             if (options.Players[j].InGame)
                             {
@@ -640,11 +640,11 @@ namespace ManagedDoom
 
                 stillticking = false;
 
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (options.Players[i].InGame)
                     {
-                        for (var j = 0; j < Player.MaxPlayerCount; j++)
+                        for (int j = 0; j < Player.MaxPlayerCount; j++)
                         {
                             if (options.Players[j].InGame && dmFragCount[i][j] != scores[i].Frags[j])
                             {
@@ -759,7 +759,7 @@ namespace ManagedDoom
                 return;
             }
 
-            foreach (var a in animations)
+            foreach (Animation a in animations)
             {
                 a.Update(bgCount);
             }
@@ -774,9 +774,9 @@ namespace ManagedDoom
         private void CheckForAccelerate()
         {
             // Check for button presses to skip delays.
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
-                var player = options.Players[i];
+                Player player = options.Players[i];
                 if (player.InGame)
                 {
                     if ((player.Cmd.Buttons & TicCmdButtons.Attack) != 0)
@@ -816,9 +816,9 @@ namespace ManagedDoom
 
         private int GetFragSum(int playerNumber)
         {
-            var frags = 0;
+            int frags = 0;
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (options.Players[i].InGame && i != playerNumber)
                 {
@@ -838,7 +838,7 @@ namespace ManagedDoom
         }
 
 
-        
+
         public GameOptions Options => options;
         public IntermissionInfo Info => info;
         public IntermissionState State => state;

@@ -21,17 +21,10 @@ namespace ManagedDoom
 {
     public sealed class MapCollision
     {
-        private World world;
-
-        private Fixed openTop;
-        private Fixed openBottom;
-        private Fixed openRange;
-        private Fixed lowFloor;
-
-        public MapCollision(World world)
-        {
-            this.world = world;
-        }
+        private Fixed _openTop;
+        private Fixed _openBottom;
+        private Fixed _openRange;
+        private Fixed _lowFloor;
 
         /// <summary>
         /// Sets opentop and openbottom to the window through a two sided line.
@@ -41,39 +34,39 @@ namespace ManagedDoom
             if (line.BackSide == null)
             {
                 // If the line is single sided, nothing can pass through.
-                openRange = Fixed.Zero;
+                _openRange = Fixed.Zero;
                 return;
             }
 
-            var front = line.FrontSector;
-            var back = line.BackSector;
+            Sector? front = line.FrontSector;
+            Sector? back = line.BackSector;
 
             if (front.CeilingHeight < back.CeilingHeight)
             {
-                openTop = front.CeilingHeight;
+                _openTop = front.CeilingHeight;
             }
             else
             {
-                openTop = back.CeilingHeight;
+                _openTop = back.CeilingHeight;
             }
 
             if (front.FloorHeight > back.FloorHeight)
             {
-                openBottom = front.FloorHeight;
-                lowFloor = back.FloorHeight;
+                _openBottom = front.FloorHeight;
+                _lowFloor = back.FloorHeight;
             }
             else
             {
-                openBottom = back.FloorHeight;
-                lowFloor = front.FloorHeight;
+                _openBottom = back.FloorHeight;
+                _lowFloor = front.FloorHeight;
             }
 
-            openRange = openTop - openBottom;
+            _openRange = _openTop - _openBottom;
         }
 
-        public Fixed OpenTop => openTop;
-        public Fixed OpenBottom => openBottom;
-        public Fixed OpenRange => openRange;
-        public Fixed LowFloor => lowFloor;
+        public Fixed OpenTop => _openTop;
+        public Fixed OpenBottom => _openBottom;
+        public Fixed OpenRange => _openRange;
+        public Fixed LowFloor => _lowFloor;
     }
 }

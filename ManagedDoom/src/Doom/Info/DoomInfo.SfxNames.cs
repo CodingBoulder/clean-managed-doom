@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly DoomString[] SfxNames = new DoomString[]
-        {
+        public static readonly DoomString[] SfxNames =
+        [
             new DoomString("none"),
             new DoomString("pistol"),
             new DoomString("shotgn"),
@@ -132,6 +132,6 @@ namespace ManagedDoom
             new DoomString("skesit"),
             new DoomString("skeatk"),
             new DoomString("radio")
-        };
+        ];
     }
 }

@@ -23,30 +23,25 @@ namespace ManagedDoom
 {
     public sealed class Thinkers
     {
-        private World world;
-
-        public Thinkers(World world)
+        public Thinkers()
         {
-            this.world = world;
-
             InitThinkers();
         }
 
-
-        private Thinker cap;
+        private Thinker _cap;
 
         private void InitThinkers()
         {
-            cap = new Thinker();
-            cap.Prev = cap.Next = cap;
+            _cap = new Thinker();
+            _cap.Prev = _cap.Next = _cap;
         }
 
         public void Add(Thinker thinker)
         {
-            cap.Prev.Next = thinker;
-            thinker.Next = cap;
-            thinker.Prev = cap.Prev;
-            cap.Prev = thinker;
+            _cap.Prev.Next = thinker;
+            thinker.Next = _cap;
+            thinker.Prev = _cap.Prev;
+            _cap.Prev = thinker;
         }
 
         public void Remove(Thinker thinker)
@@ -56,8 +51,8 @@ namespace ManagedDoom
 
         public void Run()
         {
-            var current = cap.Next;
-            while (current != cap)
+            Thinker current = _cap.Next;
+            while (current != _cap)
             {
                 if (current.ThinkerState == ThinkerState.Removed)
                 {
@@ -78,8 +73,8 @@ namespace ManagedDoom
 
         public void UpdateFrameInterpolationInfo()
         {
-            var current = cap.Next;
-            while (current != cap)
+            Thinker current = _cap.Next;
+            while (current != _cap)
             {
                 current.UpdateFrameInterpolationInfo();
                 current = current.Next;
@@ -88,7 +83,7 @@ namespace ManagedDoom
 
         public void Reset()
         {
-            cap.Prev = cap.Next = cap;
+            _cap.Prev = _cap.Next = _cap;
         }
 
         public ThinkerEnumerator GetEnumerator()
@@ -100,25 +95,25 @@ namespace ManagedDoom
 
         public struct ThinkerEnumerator : IEnumerator<Thinker>
         {
-            private Thinkers thinkers;
-            private Thinker current;
+            private readonly Thinkers _thinkers;
+            private Thinker _current;
 
             public ThinkerEnumerator(Thinkers thinkers)
             {
-                this.thinkers = thinkers;
-                current = thinkers.cap;
+                _thinkers = thinkers;
+                _current = thinkers._cap;
             }
 
             public bool MoveNext()
             {
                 while (true)
                 {
-                    current = current.Next;
-                    if (current == thinkers.cap)
+                    _current = _current.Next;
+                    if (_current == _thinkers._cap)
                     {
                         return false;
                     }
-                    else if (current.ThinkerState != ThinkerState.Removed)
+                    else if (_current.ThinkerState != ThinkerState.Removed)
                     {
                         return true;
                     }
@@ -127,14 +122,14 @@ namespace ManagedDoom
 
             public void Reset()
             {
-                current = thinkers.cap;
+                _current = _thinkers._cap;
             }
 
             public void Dispose()
             {
             }
 
-            public Thinker Current => current;
+            public Thinker Current => _current;
 
             object IEnumerator.Current => throw new NotImplementedException();
         }

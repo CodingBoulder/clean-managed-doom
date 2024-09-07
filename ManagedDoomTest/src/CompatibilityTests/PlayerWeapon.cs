@@ -11,12 +11,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\punch_test.wad");
             var demo = new Demo(@"data\punch_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -39,12 +39,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\chainsaw_test.wad");
             var demo = new Demo(@"data\chainsaw_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -67,12 +67,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\shotgun_test.wad");
             var demo = new Demo(@"data\shotgun_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -95,12 +95,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\supershotgun_test.wad");
             var demo = new Demo(@"data\supershotgun_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -123,12 +123,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\chaingun_test.wad");
             var demo = new Demo(@"data\chaingun_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -151,12 +151,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\rocket_test.wad");
             var demo = new Demo(@"data\rocket_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -179,12 +179,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\plasma_test.wad");
             var demo = new Demo(@"data\plasma_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -207,12 +207,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\bfg_test.wad");
             var demo = new Demo(@"data\bfg_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {
@@ -235,12 +235,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\sky_shoot_test.wad");
             var demo = new Demo(@"data\sky_shoot_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastHash = 0;
-            var aggHash = 0;
+            int lastHash = 0;
+            int aggHash = 0;
 
             while (true)
             {

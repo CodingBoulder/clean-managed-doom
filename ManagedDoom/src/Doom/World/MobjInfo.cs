@@ -21,29 +21,29 @@ namespace ManagedDoom
 {
     public sealed class MobjInfo
     {
-        private int doomEdNum;
-        private MobjState spawnState;
-        private int spawnHealth;
-        private MobjState seeState;
-        private Sfx seeSound;
-        private int reactionTime;
-        private Sfx attackSound;
-        private MobjState painState;
-        private int painChance;
-        private Sfx painSound;
-        private MobjState meleeState;
-        private MobjState missileState;
-        private MobjState deathState;
-        private MobjState xdeathState;
-        private Sfx deathSound;
-        private int speed;
-        private Fixed radius;
-        private Fixed height;
-        private int mass;
-        private int damage;
-        private Sfx activeSound;
-        private MobjFlags flags;
-        private MobjState raiseState;
+        private int _doomEdNum;
+        private MobjState _spawnState;
+        private int _spawnHealth;
+        private MobjState _seeState;
+        private Sfx _seeSound;
+        private int _reactionTime;
+        private Sfx _attackSound;
+        private MobjState _painState;
+        private int _painChance;
+        private Sfx _painSound;
+        private MobjState _meleeState;
+        private MobjState _missileState;
+        private MobjState _deathState;
+        private MobjState _xdeathState;
+        private Sfx _deathSound;
+        private int _speed;
+        private Fixed _radius;
+        private Fixed _height;
+        private int _mass;
+        private int _damage;
+        private Sfx _activeSound;
+        private MobjFlags _flags;
+        private MobjState _raiseState;
 
         public MobjInfo(
             int doomEdNum,
@@ -70,167 +70,167 @@ namespace ManagedDoom
             MobjFlags flags,
             MobjState raiseState)
         {
-            this.doomEdNum = doomEdNum;
-            this.spawnState = spawnState;
-            this.spawnHealth = spawnHealth;
-            this.seeState = seeState;
-            this.seeSound = seeSound;
-            this.reactionTime = reactionTime;
-            this.attackSound = attackSound;
-            this.painState = painState;
-            this.painChance = painChance;
-            this.painSound = painSound;
-            this.meleeState = meleeState;
-            this.missileState = missileState;
-            this.deathState = deathState;
-            this.xdeathState = xdeathState;
-            this.deathSound = deathSound;
-            this.speed = speed;
-            this.radius = radius;
-            this.height = height;
-            this.mass = mass;
-            this.damage = damage;
-            this.activeSound = activeSound;
-            this.flags = flags;
-            this.raiseState = raiseState;
+            _doomEdNum = doomEdNum;
+            _spawnState = spawnState;
+            _spawnHealth = spawnHealth;
+            _seeState = seeState;
+            _seeSound = seeSound;
+            _reactionTime = reactionTime;
+            _attackSound = attackSound;
+            _painState = painState;
+            _painChance = painChance;
+            _painSound = painSound;
+            _meleeState = meleeState;
+            _missileState = missileState;
+            _deathState = deathState;
+            _xdeathState = xdeathState;
+            _deathSound = deathSound;
+            _speed = speed;
+            _radius = radius;
+            _height = height;
+            _mass = mass;
+            _damage = damage;
+            _activeSound = activeSound;
+            _flags = flags;
+            _raiseState = raiseState;
         }
 
         public int DoomEdNum
         {
-            get => doomEdNum;
-            set => doomEdNum = value;
+            get => _doomEdNum;
+            set => _doomEdNum = value;
         }
 
         public MobjState SpawnState
         {
-            get => spawnState;
-            set => spawnState = value;
+            get => _spawnState;
+            set => _spawnState = value;
         }
 
         public int SpawnHealth
         {
-            get => spawnHealth;
-            set => spawnHealth = value;
+            get => _spawnHealth;
+            set => _spawnHealth = value;
         }
 
         public MobjState SeeState
         {
-            get => seeState;
-            set => seeState = value;
+            get => _seeState;
+            set => _seeState = value;
         }
 
         public Sfx SeeSound
         {
-            get => seeSound;
-            set => seeSound = value;
+            get => _seeSound;
+            set => _seeSound = value;
         }
 
         public int ReactionTime
         {
-            get => reactionTime;
-            set => reactionTime = value;
+            get => _reactionTime;
+            set => _reactionTime = value;
         }
 
         public Sfx AttackSound
         {
-            get => attackSound;
-            set => attackSound = value;
+            get => _attackSound;
+            set => _attackSound = value;
         }
 
         public MobjState PainState
         {
-            get => painState;
-            set => painState = value;
+            get => _painState;
+            set => _painState = value;
         }
 
         public int PainChance
         {
-            get => painChance;
-            set => painChance = value;
+            get => _painChance;
+            set => _painChance = value;
         }
 
         public Sfx PainSound
         {
-            get => painSound;
-            set => painSound = value;
+            get => _painSound;
+            set => _painSound = value;
         }
 
         public MobjState MeleeState
         {
-            get => meleeState;
-            set => meleeState = value;
+            get => _meleeState;
+            set => _meleeState = value;
         }
 
         public MobjState MissileState
         {
-            get => missileState;
-            set => missileState = value;
+            get => _missileState;
+            set => _missileState = value;
         }
 
         public MobjState DeathState
         {
-            get => deathState;
-            set => deathState = value;
+            get => _deathState;
+            set => _deathState = value;
         }
 
         public MobjState XdeathState
         {
-            get => xdeathState;
-            set => xdeathState = value;
+            get => _xdeathState;
+            set => _xdeathState = value;
         }
 
         public Sfx DeathSound
         {
-            get => deathSound;
-            set => deathSound = value;
+            get => _deathSound;
+            set => _deathSound = value;
         }
 
         public int Speed
         {
-            get => speed;
-            set => speed = value;
+            get => _speed;
+            set => _speed = value;
         }
 
         public Fixed Radius
         {
-            get => radius;
-            set => radius = value;
+            get => _radius;
+            set => _radius = value;
         }
 
         public Fixed Height
         {
-            get => height;
-            set => height = value;
+            get => _height;
+            set => _height = value;
         }
 
         public int Mass
         {
-            get => mass;
-            set => mass = value;
+            get => _mass;
+            set => _mass = value;
         }
 
         public int Damage
         {
-            get => damage;
-            set => damage = value;
+            get => _damage;
+            set => _damage = value;
         }
 
         public Sfx ActiveSound
         {
-            get => activeSound;
-            set => activeSound = value;
+            get => _activeSound;
+            set => _activeSound = value;
         }
 
         public MobjFlags Flags
         {
-            get => flags;
-            set => flags = value;
+            get => _flags;
+            set => _flags = value;
         }
 
         public MobjState Raisestate
         {
-            get => raiseState;
-            set => raiseState = value;
+            get => _raiseState;
+            set => _raiseState = value;
         }
     }
 }

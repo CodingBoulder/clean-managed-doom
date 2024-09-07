@@ -21,31 +21,31 @@ namespace ManagedDoom
 {
     public sealed partial class World
     {
-        private GameOptions options;
-        private DoomGame game;
-        private DoomRandom random;
+        private readonly GameOptions options;
+        private readonly DoomGame? game;
+        private readonly DoomRandom random;
 
-        private Map map;
+        private readonly Map map;
 
-        private Thinkers thinkers;
-        private Specials specials;
-        private ThingAllocation thingAllocation;
-        private ThingMovement thingMovement;
-        private ThingInteraction thingInteraction;
-        private MapCollision mapCollision;
-        private MapInteraction mapInteraction;
-        private PathTraversal pathTraversal;
-        private Hitscan hitscan;
-        private VisibilityCheck visibilityCheck;
-        private SectorAction sectorAction;
-        private PlayerBehavior playerBehavior;
-        private ItemPickup itemPickup;
-        private WeaponBehavior weaponBehavior;
-        private MonsterBehavior monsterBehavior;
-        private LightingChange lightingChange;
-        private StatusBar statusBar;
-        private AutoMap autoMap;
-        private Cheat cheat;
+        private readonly Thinkers thinkers;
+        private readonly Specials specials;
+        private readonly ThingAllocation thingAllocation;
+        private readonly ThingMovement thingMovement;
+        private readonly ThingInteraction thingInteraction;
+        private readonly MapCollision mapCollision;
+        private readonly MapInteraction mapInteraction;
+        private readonly PathTraversal pathTraversal;
+        private readonly Hitscan hitscan;
+        private readonly VisibilityCheck visibilityCheck;
+        private readonly SectorAction sectorAction;
+        private readonly PlayerBehavior playerBehavior;
+        private readonly ItemPickup itemPickup;
+        private readonly WeaponBehavior weaponBehavior;
+        private readonly MonsterBehavior monsterBehavior;
+        private readonly LightingChange lightingChange;
+        private readonly StatusBar statusBar;
+        private readonly AutoMap autoMap;
+        private readonly Cheat cheat;
 
         private int totalKills;
         private int totalItems;
@@ -62,22 +62,22 @@ namespace ManagedDoom
 
         // This is for vanilla compatibility.
         // See SubstNullMobj().
-        private Mobj dummy;
+        private readonly Mobj dummy;
 
-        public World(GameContent resorces, GameOptions options, DoomGame game)
+        public World(GameContent resorces, GameOptions options, DoomGame? game)
         {
             this.options = options;
             this.game = game;
-            this.random = options.Random;
+            random = options.Random;
 
             map = new Map(resorces, this);
 
-            thinkers = new Thinkers(this);
+            thinkers = new Thinkers();
             specials = new Specials(this);
             thingAllocation = new ThingAllocation(this);
             thingMovement = new ThingMovement(this);
             thingInteraction = new ThingInteraction(this);
-            mapCollision = new MapCollision(this);
+            mapCollision = new MapCollision();
             mapInteraction = new MapInteraction(this);
             pathTraversal = new PathTraversal(this);
             hitscan = new Hitscan(this);
@@ -95,7 +95,7 @@ namespace ManagedDoom
             options.IntermissionInfo.TotalFrags = 0;
             options.IntermissionInfo.ParTime = 180;
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 options.Players[i].KillCount = 0;
                 options.Players[i].SecretCount = 0;
@@ -114,7 +114,7 @@ namespace ManagedDoom
             // If deathmatch, randomly spawn the active players.
             if (options.Deathmatch != 0)
             {
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (options.Players[i].InGame)
                     {
@@ -142,9 +142,9 @@ namespace ManagedDoom
 
         public UpdateResult Update()
         {
-            var players = options.Players;
+            Player[] players = options.Players;
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (players[i].InGame)
                 {
@@ -153,12 +153,12 @@ namespace ManagedDoom
             }
             thinkers.UpdateFrameInterpolationInfo();
 
-            foreach (var sector in map.Sectors)
+            foreach (Sector sector in map.Sectors)
             {
                 sector.UpdateFrameInterpolationInfo();
             }
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (players[i].InGame)
                 {
@@ -195,11 +195,11 @@ namespace ManagedDoom
 
         private void LoadThings()
         {
-            for (var i = 0; i < map.Things.Length; i++)
+            for (int i = 0; i < map.Things.Length; i++)
             {
-                var mt = map.Things[i];
+                MapThing mt = map.Things[i];
 
-                var spawn = true;
+                bool spawn = true;
 
                 // Do not spawn cool, new monsters if not commercial.
                 if (options.GameMode != GameMode.Commercial)
@@ -337,7 +337,7 @@ namespace ManagedDoom
         }
 
         public GameOptions Options => options;
-        public DoomGame Game => game;
+        public DoomGame? Game => game;
         public DoomRandom Random => random;
 
         public Map Map => map;

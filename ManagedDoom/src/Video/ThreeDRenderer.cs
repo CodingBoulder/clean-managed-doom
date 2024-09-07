@@ -24,16 +24,16 @@ namespace ManagedDoom.Video
     {
         public static readonly int MaxScreenSize = 9;
 
-        private ColorMap colorMap;
-        private ITextureLookup textures;
-        private IFlatLookup flats;
-        private ISpriteLookup sprites;
+        private readonly ColorMap colorMap;
+        private readonly ITextureLookup textures;
+        private readonly IFlatLookup flats;
+        private readonly ISpriteLookup sprites;
 
-        private DrawScreen screen;
-        private int screenWidth;
-        private int screenHeight;
-        private byte[] screenData;
-        private int drawScale;
+        private readonly DrawScreen screen;
+        private readonly int screenWidth;
+        private readonly int screenHeight;
+        private readonly byte[] screenData;
+        private readonly int drawScale;
 
         private int windowSize;
 
@@ -70,25 +70,25 @@ namespace ManagedDoom.Video
 
         private void SetWindowSize(int size)
         {
-            var scale = screenWidth / 320;
+            int scale = screenWidth / 320;
             if (size < 7)
             {
-                var width = scale * (96 + 32 * size);
-                var height = scale * (48 + 16 * size);
-                var x = (screenWidth - width) / 2;
-                var y = (screenHeight - StatusBarRenderer.Height * scale - height) / 2;
+                int width = scale * (96 + 32 * size);
+                int height = scale * (48 + 16 * size);
+                int x = (screenWidth - width) / 2;
+                int y = (screenHeight - StatusBarRenderer.Height * scale - height) / 2;
                 ResetWindow(x, y, width, height);
             }
             else if (size == 7)
             {
-                var width = screenWidth;
-                var height = screenHeight - StatusBarRenderer.Height * scale;
+                int width = screenWidth;
+                int height = screenHeight - StatusBarRenderer.Height * scale;
                 ResetWindow(0, 0, width, height);
             }
             else
             {
-                var width = screenWidth;
-                var height = screenHeight;
+                int width = screenWidth;
+                int height = screenHeight;
                 ResetWindow(0, 0, width, height);
             }
 
@@ -150,9 +150,9 @@ namespace ManagedDoom.Video
 
         private void ResetWallRendering()
         {
-            var focalLength = centerXFrac / Trig.Tan(Trig.FineAngleCount / 4 + FineFov / 2);
+            Fixed focalLength = centerXFrac / Trig.Tan(Trig.FineAngleCount / 4 + FineFov / 2);
 
-            for (var i = 0; i < Trig.FineAngleCount / 2; i++)
+            for (int i = 0; i < Trig.FineAngleCount / 2; i++)
             {
                 int t;
 
@@ -181,9 +181,9 @@ namespace ManagedDoom.Video
                 angleToX[i] = t;
             }
 
-            for (var x = 0; x < windowWidth; x++)
+            for (int x = 0; x < windowWidth; x++)
             {
-                var i = 0;
+                int i = 0;
                 while (angleToX[i] > x)
                 {
                     i++;
@@ -191,7 +191,7 @@ namespace ManagedDoom.Video
                 xToAngle[x] = new Angle((uint)(i << Trig.AngleToFineShift)) - Angle.Ang90;
             }
 
-            for (var i = 0; i < Trig.FineAngleCount / 2; i++)
+            for (int i = 0; i < Trig.FineAngleCount / 2; i++)
             {
                 if (angleToX[i] == -1)
                 {
@@ -218,7 +218,7 @@ namespace ManagedDoom.Video
         private Fixed planeBaseXScale;
         private Fixed planeBaseYScale;
 
-        private Sector ceilingPrevSector;
+        private Sector? ceilingPrevSector;
         private int ceilingPrevX;
         private int ceilingPrevY1;
         private int ceilingPrevY2;
@@ -228,7 +228,7 @@ namespace ManagedDoom.Video
         private Fixed[] ceilingYStep;
         private byte[][] ceilingLights;
 
-        private Sector floorPrevSector;
+        private Sector? floorPrevSector;
         private int floorPrevX;
         private int floorPrevY1;
         private int floorPrevY2;
@@ -258,12 +258,12 @@ namespace ManagedDoom.Video
         {
             for (int i = 0; i < windowHeight; i++)
             {
-                var dy = Fixed.FromInt(i - windowHeight / 2) + Fixed.One / 2;
+                Fixed dy = Fixed.FromInt(i - windowHeight / 2) + Fixed.One / 2;
                 dy = Fixed.Abs(dy);
                 planeYSlope[i] = Fixed.FromInt(windowWidth / 2) / dy;
             }
 
-            for (var i = 0; i < windowWidth; i++)
+            for (int i = 0; i < windowWidth; i++)
             {
                 var cos = Fixed.Abs(Trig.Cos(xToAngle[i]));
                 planeDistScale[i] = Fixed.One / cos;
@@ -272,7 +272,7 @@ namespace ManagedDoom.Video
 
         private void ClearPlaneRendering()
         {
-            var angle = viewAngle - Angle.Ang90;
+            Angle angle = viewAngle - Angle.Ang90;
             planeBaseXScale = Trig.Cos(angle) / centerXFrac;
             planeBaseYScale = -(Trig.Sin(angle) / centerXFrac);
 
@@ -301,8 +301,8 @@ namespace ManagedDoom.Video
         private void ResetSkyRendering()
         {
             // The code below is based on PrBoom+' sky rendering implementation.
-            var num = (long)Fixed.FracUnit * screenWidth * 200;
-            var den = windowWidth * screenHeight;
+            long num = (long)Fixed.FracUnit * screenWidth * 200;
+            int den = windowWidth * screenHeight;
             skyInvScale = new Fixed((int)(num / den));
         }
 
@@ -339,25 +339,25 @@ namespace ManagedDoom.Video
             diminishingZLight = new byte[lightLevelCount][][];
             fixedLight = new byte[lightLevelCount][][];
 
-            for (var i = 0; i < lightLevelCount; i++)
+            for (int i = 0; i < lightLevelCount; i++)
             {
                 diminishingScaleLight[i] = new byte[maxScaleLight][];
                 diminishingZLight[i] = new byte[maxZLight][];
                 fixedLight[i] = new byte[Math.Max(maxScaleLight, maxZLight)][];
             }
 
-            var distMap = 2;
+            int distMap = 2;
 
             // Calculate the light levels to use for each level / distance combination.
-            for (var i = 0; i < lightLevelCount; i++)
+            for (int i = 0; i < lightLevelCount; i++)
             {
-                var start = ((lightLevelCount - 1 - i) * 2) * colorMapCount / lightLevelCount;
-                for (var j = 0; j < maxZLight; j++)
+                int start = ((lightLevelCount - 1 - i) * 2) * colorMapCount / lightLevelCount;
+                for (int j = 0; j < maxZLight; j++)
                 {
-                    var scale = Fixed.FromInt(320 / 2) / new Fixed((j + 1) << zLightShift);
+                    Fixed scale = Fixed.FromInt(320 / 2) / new Fixed((j + 1) << zLightShift);
                     scale = new Fixed(scale.Data >> scaleLightShift);
 
-                    var level = start - scale.Data / distMap;
+                    int level = start - scale.Data / distMap;
                     if (level < 0)
                     {
                         level = 0;
@@ -374,15 +374,15 @@ namespace ManagedDoom.Video
 
         private void ResetLighting()
         {
-            var distMap = 2;
+            int distMap = 2;
 
             // Calculate the light levels to use for each level / scale combination.
-            for (var i = 0; i < lightLevelCount; i++)
+            for (int i = 0; i < lightLevelCount; i++)
             {
-                var start = ((lightLevelCount - 1 - i) * 2) * colorMapCount / lightLevelCount;
-                for (var j = 0; j < maxScaleLight; j++)
+                int start = ((lightLevelCount - 1 - i) * 2) * colorMapCount / lightLevelCount;
+                for (int j = 0; j < maxScaleLight; j++)
                 {
-                    var level = start - j * 320 / windowWidth / distMap;
+                    int level = start - j * 320 / windowWidth / distMap;
                     if (level < 0)
                     {
                         level = 0;
@@ -403,13 +403,15 @@ namespace ManagedDoom.Video
             {
                 scaleLight = diminishingScaleLight;
                 zLight = diminishingZLight;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 fixedLight[0][0] = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
             else if (fixedLight[0][0] != colorMap[fixedColorMap])
             {
-                for (var i = 0; i < lightLevelCount; i++)
+                for (int i = 0; i < lightLevelCount; i++)
                 {
-                    for (var j = 0; j < fixedLight[i].Length; j++)
+                    for (int j = 0; j < fixedLight[i].Length; j++)
                     {
                         fixedLight[i][j] = colorMap[fixedColorMap];
                     }
@@ -446,7 +448,7 @@ namespace ManagedDoom.Video
             lowerClip = new short[screenWidth];
 
             clipRanges = new ClipRange[256];
-            for (var i = 0; i < clipRanges.Length; i++)
+            for (int i = 0; i < clipRanges.Length; i++)
             {
                 clipRanges[i] = new ClipRange();
             }
@@ -454,7 +456,7 @@ namespace ManagedDoom.Video
             clipData = new short[128 * screenWidth];
 
             visWallRanges = new VisWallRange[512];
-            for (var i = 0; i < visWallRanges.Length; i++)
+            for (int i = 0; i < visWallRanges.Length; i++)
             {
                 visWallRanges[i] = new VisWallRange();
             }
@@ -462,13 +464,13 @@ namespace ManagedDoom.Video
 
         private void ResetRenderingHistory()
         {
-            for (var i = 0; i < windowWidth; i++)
+            for (int i = 0; i < windowWidth; i++)
             {
                 clipData[i] = -1;
             }
             negOneArray = 0;
 
-            for (var i = windowWidth; i < 2 * windowWidth; i++)
+            for (int i = windowWidth; i < 2 * windowWidth; i++)
             {
                 clipData[i] = (short)windowHeight;
             }
@@ -477,11 +479,11 @@ namespace ManagedDoom.Video
 
         private void ClearRenderingHistory()
         {
-            for (var x = 0; x < windowWidth; x++)
+            for (int x = 0; x < windowWidth; x++)
             {
                 upperClip[x] = -1;
             }
-            for (var x = 0; x < windowWidth; x++)
+            for (int x = 0; x < windowWidth; x++)
             {
                 lowerClip[x] = (short)windowHeight;
             }
@@ -513,7 +515,7 @@ namespace ManagedDoom.Video
         private void InitSpriteRendering()
         {
             visSprites = new VisSprite[256];
-            for (var i = 0; i < visSprites.Length; i++)
+            for (int i = 0; i < visSprites.Length; i++)
             {
                 visSprites[i] = new VisSprite();
             }
@@ -553,8 +555,8 @@ namespace ManagedDoom.Video
         // Fuzz effect
         ////////////////////////////////////////////////////////////
 
-        private static sbyte[] fuzzTable = new sbyte[]
-        {
+        private static readonly sbyte[] fuzzTable =
+        [
             1, -1,  1, -1,  1,  1, -1,
             1,  1, -1,  1,  1,  1, -1,
             1,  1,  1, -1, -1, -1, -1,
@@ -562,7 +564,7 @@ namespace ManagedDoom.Video
             1, -1,  1,  1, -1, -1,  1,
             1, -1, -1, -1, -1,  1,  1,
             1,  1, -1,  1,  1, -1,  1
-        };
+        ];
 
         private int fuzzPos;
 
@@ -586,13 +588,13 @@ namespace ManagedDoom.Video
             greenToGray = new byte[256];
             greenToBrown = new byte[256];
             greenToRed = new byte[256];
-            for (var i = 0; i < 256; i++)
+            for (int i = 0; i < 256; i++)
             {
                 greenToGray[i] = (byte)i;
                 greenToBrown[i] = (byte)i;
                 greenToRed[i] = (byte)i;
             }
-            for (var i = 112; i < 128; i++)
+            for (int i = 112; i < 128; i++)
             {
                 greenToGray[i] -= 16;
                 greenToBrown[i] -= 48;
@@ -639,21 +641,21 @@ namespace ManagedDoom.Video
 
         private void FillBackScreen()
         {
-            var fillHeight = screenHeight - drawScale * StatusBarRenderer.Height;
+            int fillHeight = screenHeight - drawScale * StatusBarRenderer.Height;
             FillRect(0, 0, windowX, fillHeight);
             FillRect(screenWidth - windowX, 0, windowX, fillHeight);
             FillRect(windowX, 0, screenWidth - 2 * windowX, windowY);
             FillRect(windowX, fillHeight - windowY, screenWidth - 2 * windowX, windowY);
 
-            var step = 8 * drawScale;
+            int step = 8 * drawScale;
 
-            for (var x = windowX; x < screenWidth - windowX; x += step)
+            for (int x = windowX; x < screenWidth - windowX; x += step)
             {
                 screen.DrawPatch(borderTop, x, windowY - step, drawScale);
                 screen.DrawPatch(borderBottom, x, fillHeight - windowY, drawScale);
             }
 
-            for (var y = windowY; y < fillHeight - windowY; y += step)
+            for (int y = windowY; y < fillHeight - windowY; y += step)
             {
                 screen.DrawPatch(borderLeft, windowX - step, y, drawScale);
                 screen.DrawPatch(borderRight, screenWidth - windowX, y, drawScale);
@@ -667,20 +669,20 @@ namespace ManagedDoom.Video
 
         private void FillRect(int x, int y, int width, int height)
         {
-            var data = backFlat.Data;
+            byte[] data = backFlat.Data;
 
-            var srcX = x / drawScale;
-            var srcY = y / drawScale;
+            int srcX = x / drawScale;
+            int srcY = y / drawScale;
 
-            var invScale = Fixed.One / drawScale;
-            var xFrac = invScale - Fixed.Epsilon;
+            Fixed invScale = Fixed.One / drawScale;
+            Fixed xFrac = invScale - Fixed.Epsilon;
 
-            for (var i = 0; i < width; i++)
+            for (int i = 0; i < width; i++)
             {
-                var src = ((srcX + xFrac.ToIntFloor()) & 63) << 6;
-                var dst = screenHeight * (x + i) + y;
-                var yFrac = invScale - Fixed.Epsilon;
-                for (var j = 0; j < height; j++)
+                int src = ((srcX + xFrac.ToIntFloor()) & 63) << 6;
+                int dst = screenHeight * (x + i) + y;
+                Fixed yFrac = invScale - Fixed.Epsilon;
+                for (int j = 0; j < height; j++)
                 {
                     screenData[dst + j] = data[src | ((srcY + yFrac.ToIntFloor()) & 63)];
                     yFrac += invScale;
@@ -761,10 +763,10 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var bsp = world.Map.Nodes[node];
+            Node bsp = world.Map.Nodes[node];
 
             // Decide which side the view point is on.
-            var side = Geometry.PointOnSide(viewX, viewY, bsp);
+            int side = Geometry.PointOnSide(viewX, viewY, bsp);
 
             // Recursively divide front space.
             RenderBspNode(bsp.Children[side]);
@@ -780,11 +782,11 @@ namespace ManagedDoom.Video
 
         private void DrawSubsector(int subsector)
         {
-            var target = world.Map.Subsectors[subsector];
+            Subsector target = world.Map.Subsectors[subsector];
 
             AddSprites(target.Sector, validCount);
 
-            for (var i = 0; i < target.SegCount; i++)
+            for (int i = 0; i < target.SegCount; i++)
             {
                 DrawSeg(world.Map.Segs[target.FirstSeg + i]);
             }
@@ -793,19 +795,19 @@ namespace ManagedDoom.Video
 
 
         private static readonly int[][] viewPosToFrustumTangent =
-        {
-            new[] { 3, 0, 2, 1 },
-            new[] { 3, 0, 2, 0 },
-            new[] { 3, 1, 2, 0 },
-            new[] { 0 },
-            new[] { 2, 0, 2, 1 },
-            new[] { 0, 0, 0, 0 },
-            new[] { 3, 1, 3, 0 },
-            new[] { 0 },
-            new[] { 2, 0, 3, 1 },
-            new[] { 2, 1, 3, 1 },
-            new[] { 2, 1, 3, 0 }
-        };
+        [
+            [3, 0, 2, 1],
+            [3, 0, 2, 0],
+            [3, 1, 2, 0],
+            [0],
+            [2, 0, 2, 1],
+            [0, 0, 0, 0],
+            [3, 1, 3, 0],
+            [0],
+            [2, 0, 3, 1],
+            [2, 1, 3, 1],
+            [2, 1, 3, 0]
+        ];
 
         private bool IsPotentiallyVisible(Fixed[] bbox)
         {
@@ -840,22 +842,22 @@ namespace ManagedDoom.Video
                 by = 2;
             }
 
-            var viewPos = (by << 2) + bx;
+            int viewPos = (by << 2) + bx;
             if (viewPos == 5)
             {
                 return true;
             }
 
-            var x1 = bbox[viewPosToFrustumTangent[viewPos][0]];
-            var y1 = bbox[viewPosToFrustumTangent[viewPos][1]];
-            var x2 = bbox[viewPosToFrustumTangent[viewPos][2]];
-            var y2 = bbox[viewPosToFrustumTangent[viewPos][3]];
+            Fixed x1 = bbox[viewPosToFrustumTangent[viewPos][0]];
+            Fixed y1 = bbox[viewPosToFrustumTangent[viewPos][1]];
+            Fixed x2 = bbox[viewPosToFrustumTangent[viewPos][2]];
+            Fixed y2 = bbox[viewPosToFrustumTangent[viewPos][3]];
 
             // Check clip list for an open space.
-            var angle1 = Geometry.PointToAngle(viewX, viewY, x1, y1) - viewAngle;
-            var angle2 = Geometry.PointToAngle(viewX, viewY, x2, y2) - viewAngle;
+            Angle angle1 = Geometry.PointToAngle(viewX, viewY, x1, y1) - viewAngle;
+            Angle angle2 = Geometry.PointToAngle(viewX, viewY, x2, y2) - viewAngle;
 
-            var span = angle1 - angle2;
+            Angle span = angle1 - angle2;
 
             // Sitting on a line?
             if (span >= Angle.Ang180)
@@ -863,7 +865,7 @@ namespace ManagedDoom.Video
                 return true;
             }
 
-            var tSpan1 = angle1 + clipAngle;
+            Angle tSpan1 = angle1 + clipAngle;
 
             if (tSpan1 > clipAngle2)
             {
@@ -878,7 +880,7 @@ namespace ManagedDoom.Video
                 angle1 = clipAngle;
             }
 
-            var tSpan2 = clipAngle - angle2;
+            Angle tSpan2 = clipAngle - angle2;
             if (tSpan2 > clipAngle2)
             {
                 tSpan2 -= clipAngle2;
@@ -894,8 +896,8 @@ namespace ManagedDoom.Video
 
             // Find the first clippost that touches the source post
             // (adjacent pixels are touching).
-            var sx1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
-            var sx2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
+            int sx1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
+            int sx2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
 
             // Does not cross a pixel.
             if (sx1 == sx2)
@@ -905,7 +907,7 @@ namespace ManagedDoom.Video
 
             sx2--;
 
-            var start = 0;
+            int start = 0;
             while (clipRanges[start].Last < sx2)
             {
                 start++;
@@ -925,12 +927,12 @@ namespace ManagedDoom.Video
         private void DrawSeg(Seg seg)
         {
             // OPTIMIZE: quickly reject orthogonal back sides.
-            var angle1 = Geometry.PointToAngle(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
-            var angle2 = Geometry.PointToAngle(viewX, viewY, seg.Vertex2.X, seg.Vertex2.Y);
+            Angle angle1 = Geometry.PointToAngle(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
+            Angle angle2 = Geometry.PointToAngle(viewX, viewY, seg.Vertex2.X, seg.Vertex2.Y);
 
             // Clip to view edges.
             // OPTIMIZE: make constant out of 2 * clipangle (FIELDOFVIEW).
-            var span = angle1 - angle2;
+            Angle span = angle1 - angle2;
 
             // Back side? I.e. backface culling?
             if (span >= Angle.Ang180)
@@ -939,12 +941,12 @@ namespace ManagedDoom.Video
             }
 
             // Global angle needed by segcalc.
-            var rwAngle1 = angle1;
+            Angle rwAngle1 = angle1;
 
             angle1 -= viewAngle;
             angle2 -= viewAngle;
 
-            var tSpan1 = angle1 + clipAngle;
+            Angle tSpan1 = angle1 + clipAngle;
             if (tSpan1 > clipAngle2)
             {
                 tSpan1 -= clipAngle2;
@@ -958,7 +960,7 @@ namespace ManagedDoom.Video
                 angle1 = clipAngle;
             }
 
-            var tSpan2 = clipAngle - angle2;
+            Angle tSpan2 = clipAngle - angle2;
             if (tSpan2 > clipAngle2)
             {
                 tSpan2 -= clipAngle2;
@@ -973,8 +975,8 @@ namespace ManagedDoom.Video
             }
 
             // The seg is in the view range, but not necessarily visible.
-            var x1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
-            var x2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
+            int x1 = angleToX[(angle1 + Angle.Ang90).Data >> Trig.AngleToFineShift];
+            int x2 = angleToX[(angle2 + Angle.Ang90).Data >> Trig.AngleToFineShift];
 
             // Does not cross a pixel?
             if (x1 == x2)
@@ -982,11 +984,11 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var frontSector = seg.FrontSector;
-            var backSector = seg.BackSector;
+            Sector? frontSector = seg.FrontSector;
+            Sector? backSector = seg.BackSector;
 
-            var frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
-            var frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
+            Fixed frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
+            Fixed frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
 
             // Single sided line?
             if (backSector == null)
@@ -995,8 +997,8 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var backSectorFloorHeight = backSector.GetInterpolatedFloorHeight(frameFrac);
-            var backSectorCeilingHeight = backSector.GetInterpolatedCeilingHeight(frameFrac);
+            Fixed backSectorFloorHeight = backSector.GetInterpolatedFloorHeight(frameFrac);
+            Fixed backSectorCeilingHeight = backSector.GetInterpolatedCeilingHeight(frameFrac);
 
             // Closed door.
             if (backSectorCeilingHeight <= frontSectorFloorHeight ||
@@ -1098,9 +1100,9 @@ namespace ManagedDoom.Video
             // Adjust the clip size.
             clipRanges[start].Last = x2;
 
-            // Remove start + 1 to next from the clip list,
-            // because start now covers their area.
-            crunch:
+        // Remove start + 1 to next from the clip list,
+        // because start now covers their area.
+        crunch:
             if (next == start)
             {
                 // Post just extended past the bottom of one post.
@@ -1169,8 +1171,8 @@ namespace ManagedDoom.Video
 
         private Fixed ScaleFromGlobalAngle(Angle visAngle, Angle viewAngle, Angle rwNormal, Fixed rwDistance)
         {
-            var num = projection * Trig.Sin(Angle.Ang90 + (visAngle - rwNormal));
-            var den = rwDistance * Trig.Sin(Angle.Ang90 + (visAngle - viewAngle));
+            Fixed num = projection * Trig.Sin(Angle.Ang90 + (visAngle - rwNormal));
+            Fixed den = rwDistance * Trig.Sin(Angle.Ang90 + (visAngle - viewAngle));
 
             Fixed scale;
             if (den.Data > num.Data >> 16)
@@ -1214,36 +1216,36 @@ namespace ManagedDoom.Video
             }
 
             // Make some aliases to shorten the following code.
-            var line = seg.LineDef;
-            var side = seg.SideDef;
-            var frontSector = seg.FrontSector;
+            LineDef? line = seg.LineDef;
+            SideDef? side = seg.SideDef;
+            Sector? frontSector = seg.FrontSector;
 
-            var frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
-            var frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
+            Fixed frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
+            Fixed frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
 
             // Mark the segment as visible for auto map.
             line.Flags |= LineFlags.Mapped;
 
             // Calculate the relative plane heights of front and back sector.
-            var worldFrontZ1 = frontSectorCeilingHeight - viewZ;
-            var worldFrontZ2 = frontSectorFloorHeight - viewZ;
+            Fixed worldFrontZ1 = frontSectorCeilingHeight - viewZ;
+            Fixed worldFrontZ2 = frontSectorFloorHeight - viewZ;
 
             // Check which parts must be rendered.
-            var drawWall = side.MiddleTexture != 0;
-            var drawCeiling = worldFrontZ1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
-            var drawFloor = worldFrontZ2 < Fixed.Zero;
+            bool drawWall = side.MiddleTexture != 0;
+            bool drawCeiling = worldFrontZ1 > Fixed.Zero || frontSector.CeilingFlat == flats.SkyFlatNumber;
+            bool drawFloor = worldFrontZ2 < Fixed.Zero;
 
             //
             // Determine how the wall textures are vertically aligned.
             //
 
-            var wallTexture = textures[world.Specials.TextureTranslation[side.MiddleTexture]];
-            var wallWidthMask = wallTexture.Width - 1;
+            Texture wallTexture = textures[world.Specials.TextureTranslation[side.MiddleTexture]];
+            int wallWidthMask = wallTexture.Width - 1;
 
             Fixed middleTextureAlt;
             if ((line.Flags & LineFlags.DontPegBottom) != 0)
             {
-                var vTop = frontSectorFloorHeight + Fixed.FromInt(wallTexture.Height);
+                Fixed vTop = frontSectorFloorHeight + Fixed.FromInt(wallTexture.Height);
                 middleTextureAlt = vTop - viewZ;
             }
             else
@@ -1256,7 +1258,7 @@ namespace ManagedDoom.Video
             // Calculate the scaling factors of the left and right edges of the wall range.
             //
 
-            var rwNormalAngle = seg.Angle + Angle.Ang90;
+            Angle rwNormalAngle = seg.Angle + Angle.Ang90;
 
             var offsetAngle = Angle.Abs(rwNormalAngle - rwAngle1);
             if (offsetAngle > Angle.Ang90)
@@ -1264,13 +1266,13 @@ namespace ManagedDoom.Video
                 offsetAngle = Angle.Ang90;
             }
 
-            var distAngle = Angle.Ang90 - offsetAngle;
+            Angle distAngle = Angle.Ang90 - offsetAngle;
 
-            var hypotenuse = Geometry.PointToDist(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
+            Fixed hypotenuse = Geometry.PointToDist(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
 
-            var rwDistance = hypotenuse * Trig.Sin(distAngle);
+            Fixed rwDistance = hypotenuse * Trig.Sin(distAngle);
 
-            var rwScale = ScaleFromGlobalAngle(viewAngle + xToAngle[x1], viewAngle, rwNormalAngle, rwDistance);
+            Fixed rwScale = ScaleFromGlobalAngle(viewAngle + xToAngle[x1], viewAngle, rwNormalAngle, rwDistance);
 
             Fixed scale1 = rwScale;
             Fixed scale2;
@@ -1291,7 +1293,7 @@ namespace ManagedDoom.Video
             // and which color map is used according to the light level (if necessary).
             //
 
-            var textureOffsetAngle = rwNormalAngle - rwAngle1;
+            Angle textureOffsetAngle = rwNormalAngle - rwAngle1;
             if (textureOffsetAngle > Angle.Ang180)
             {
                 textureOffsetAngle = -textureOffsetAngle;
@@ -1301,16 +1303,16 @@ namespace ManagedDoom.Video
                 textureOffsetAngle = Angle.Ang90;
             }
 
-            var rwOffset = hypotenuse * Trig.Sin(textureOffsetAngle);
+            Fixed rwOffset = hypotenuse * Trig.Sin(textureOffsetAngle);
             if (rwNormalAngle - rwAngle1 < Angle.Ang180)
             {
                 rwOffset = -rwOffset;
             }
             rwOffset += seg.Offset + side.TextureOffset;
 
-            var rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
+            Angle rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
 
-            var wallLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
+            int wallLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
             if (seg.Vertex1.Y == seg.Vertex2.Y)
             {
                 wallLightLevel--;
@@ -1320,7 +1322,7 @@ namespace ManagedDoom.Video
                 wallLightLevel++;
             }
 
-            var wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, lightLevelCount - 1)];
+            byte[][] wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, lightLevelCount - 1)];
 
             //
             // Determine where on the screen the wall is drawn.
@@ -1331,23 +1333,23 @@ namespace ManagedDoom.Video
             worldFrontZ2 >>= 4;
 
             // The Y positions of the top / bottom edges of the wall on the screen.
-            var wallY1Frac = (centerYFrac >> 4) - worldFrontZ1 * rwScale;
-            var wallY1Step = -(rwScaleStep * worldFrontZ1);
-            var wallY2Frac = (centerYFrac >> 4) - worldFrontZ2 * rwScale;
-            var wallY2Step = -(rwScaleStep * worldFrontZ2);
+            Fixed wallY1Frac = (centerYFrac >> 4) - worldFrontZ1 * rwScale;
+            Fixed wallY1Step = -(rwScaleStep * worldFrontZ1);
+            Fixed wallY2Frac = (centerYFrac >> 4) - worldFrontZ2 * rwScale;
+            Fixed wallY2Step = -(rwScaleStep * worldFrontZ2);
 
             //
             // Determine which color map is used for the plane according to the light level.
             //
 
-            var planeLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
-            var planeLights = zLight[Math.Clamp(planeLightLevel, 0, lightLevelCount - 1)];
+            int planeLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
+            byte[][] planeLights = zLight[Math.Clamp(planeLightLevel, 0, lightLevelCount - 1)];
 
             //
             // Prepare to record the rendering history.
             //
 
-            var visWallRange = visWallRanges[visWallRangeCount];
+            VisWallRange visWallRange = visWallRanges[visWallRangeCount];
             visWallRangeCount++;
 
             visWallRange.Seg = seg;
@@ -1369,39 +1371,39 @@ namespace ManagedDoom.Video
             // Floor and ceiling.
             //
 
-            var ceilingFlat = flats[world.Specials.FlatTranslation[frontSector.CeilingFlat]];
-            var floorFlat = flats[world.Specials.FlatTranslation[frontSector.FloorFlat]];
+            Flat ceilingFlat = flats[world.Specials.FlatTranslation[frontSector.CeilingFlat]];
+            Flat floorFlat = flats[world.Specials.FlatTranslation[frontSector.FloorFlat]];
 
             //
             // Now the rendering is carried out.
             //
 
-            for (var x = x1; x <= x2; x++)
+            for (int x = x1; x <= x2; x++)
             {
-                var drawWallY1 = (wallY1Frac.Data + heightUnit - 1) >> heightBits;
-                var drawWallY2 = wallY2Frac.Data >> heightBits;
+                int drawWallY1 = (wallY1Frac.Data + heightUnit - 1) >> heightBits;
+                int drawWallY2 = wallY2Frac.Data >> heightBits;
 
                 if (drawCeiling)
                 {
-                    var cy1 = upperClip[x] + 1;
-                    var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
+                    int cy1 = upperClip[x] + 1;
+                    int cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
                     DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2, frontSectorCeilingHeight);
                 }
 
                 if (drawWall)
                 {
-                    var wy1 = Math.Max(drawWallY1, upperClip[x] + 1);
-                    var wy2 = Math.Min(drawWallY2, lowerClip[x] - 1);
+                    int wy1 = Math.Max(drawWallY1, upperClip[x] + 1);
+                    int wy2 = Math.Min(drawWallY2, lowerClip[x] - 1);
 
-                    var angle = rwCenterAngle + xToAngle[x];
+                    Angle angle = rwCenterAngle + xToAngle[x];
                     angle = new Angle(angle.Data & 0x7FFFFFFF);
 
-                    var textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).ToIntFloor();
-                    var source = wallTexture.Composite.Columns[textureColumn & wallWidthMask];
+                    int textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).ToIntFloor();
+                    Column[] source = wallTexture.Composite.Columns[textureColumn & wallWidthMask];
 
                     if (source.Length > 0)
                     {
-                        var lightIndex = rwScale.Data >> scaleLightShift;
+                        int lightIndex = rwScale.Data >> scaleLightShift;
                         if (lightIndex >= maxScaleLight)
                         {
                             lightIndex = maxScaleLight - 1;
@@ -1414,8 +1416,8 @@ namespace ManagedDoom.Video
 
                 if (drawFloor)
                 {
-                    var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
-                    var fy2 = lowerClip[x] - 1;
+                    int fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
+                    int fy2 = lowerClip[x] - 1;
                     DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2, frontSectorFloorHeight);
                 }
 
@@ -1435,7 +1437,7 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var range = x2 - x1 + 1;
+            int range = x2 - x1 + 1;
 
             if (clipDataLength + 3 * range >= clipData.Length)
             {
@@ -1444,25 +1446,25 @@ namespace ManagedDoom.Video
             }
 
             // Make some aliases to shorten the following code.
-            var line = seg.LineDef;
-            var side = seg.SideDef;
-            var frontSector = seg.FrontSector;
-            var backSector = seg.BackSector;
+            LineDef? line = seg.LineDef;
+            SideDef? side = seg.SideDef;
+            Sector? frontSector = seg.FrontSector;
+            Sector? backSector = seg.BackSector;
 
-            var frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
-            var frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
-            var backSectorFloorHeight = backSector.GetInterpolatedFloorHeight(frameFrac);
-            var backSectorCeilingHeight = backSector.GetInterpolatedCeilingHeight(frameFrac);
+            Fixed frontSectorFloorHeight = frontSector.GetInterpolatedFloorHeight(frameFrac);
+            Fixed frontSectorCeilingHeight = frontSector.GetInterpolatedCeilingHeight(frameFrac);
+            Fixed backSectorFloorHeight = backSector.GetInterpolatedFloorHeight(frameFrac);
+            Fixed backSectorCeilingHeight = backSector.GetInterpolatedCeilingHeight(frameFrac);
 
             // Mark the segment as visible for auto map.
             line.Flags |= LineFlags.Mapped;
 
             // Calculate the relative plane heights of front and back sector.
             // These values are later 4 bits right shifted to calculate the rendering area.
-            var worldFrontZ1 = frontSectorCeilingHeight - viewZ;
-            var worldFrontZ2 = frontSectorFloorHeight - viewZ;
-            var worldBackZ1 = backSectorCeilingHeight - viewZ;
-            var worldBackZ2 = backSectorFloorHeight - viewZ;
+            Fixed worldFrontZ1 = frontSectorCeilingHeight - viewZ;
+            Fixed worldFrontZ2 = frontSectorFloorHeight - viewZ;
+            Fixed worldBackZ1 = backSectorCeilingHeight - viewZ;
+            Fixed worldBackZ2 = backSectorFloorHeight - viewZ;
 
             // The hack below enables ceiling height change in outdoor area without showing the upper wall.
             if (frontSector.CeilingFlat == flats.SkyFlatNumber &&
@@ -1507,7 +1509,7 @@ namespace ManagedDoom.Video
                 drawFloor = false;
             }
 
-            var drawMaskedTexture = side.MiddleTexture != 0;
+            bool drawMaskedTexture = side.MiddleTexture != 0;
 
             // If nothing must be rendered, we can skip this seg.
             if (!drawUpperWall && !drawCeiling && !drawLowerWall && !drawFloor && !drawMaskedTexture)
@@ -1515,14 +1517,14 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var segTextured = drawUpperWall || drawLowerWall || drawMaskedTexture;
+            bool segTextured = drawUpperWall || drawLowerWall || drawMaskedTexture;
 
             //
             // Determine how the wall textures are vertically aligned (if necessary).
             //
 
             var upperWallTexture = default(Texture);
-            var upperWallWidthMask = default(int);
+            int upperWallWidthMask = default;
             var uperTextureAlt = default(Fixed);
             if (drawUpperWall)
             {
@@ -1535,14 +1537,14 @@ namespace ManagedDoom.Video
                 }
                 else
                 {
-                    var vTop = backSectorCeilingHeight + Fixed.FromInt(upperWallTexture.Height);
+                    Fixed vTop = backSectorCeilingHeight + Fixed.FromInt(upperWallTexture.Height);
                     uperTextureAlt = vTop - viewZ;
                 }
                 uperTextureAlt += side.RowOffset;
             }
 
             var lowerWallTexture = default(Texture);
-            var lowerWallWidthMask = default(int);
+            int lowerWallWidthMask = default;
             var lowerTextureAlt = default(Fixed);
             if (drawLowerWall)
             {
@@ -1564,7 +1566,7 @@ namespace ManagedDoom.Video
             // Calculate the scaling factors of the left and right edges of the wall range.
             //
 
-            var rwNormalAngle = seg.Angle + Angle.Ang90;
+            Angle rwNormalAngle = seg.Angle + Angle.Ang90;
 
             var offsetAngle = Angle.Abs(rwNormalAngle - rwAngle1);
             if (offsetAngle > Angle.Ang90)
@@ -1572,13 +1574,13 @@ namespace ManagedDoom.Video
                 offsetAngle = Angle.Ang90;
             }
 
-            var distAngle = Angle.Ang90 - offsetAngle;
+            Angle distAngle = Angle.Ang90 - offsetAngle;
 
-            var hypotenuse = Geometry.PointToDist(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
+            Fixed hypotenuse = Geometry.PointToDist(viewX, viewY, seg.Vertex1.X, seg.Vertex1.Y);
 
-            var rwDistance = hypotenuse * Trig.Sin(distAngle);
+            Fixed rwDistance = hypotenuse * Trig.Sin(distAngle);
 
-            var rwScale = ScaleFromGlobalAngle(viewAngle + xToAngle[x1], viewAngle, rwNormalAngle, rwDistance);
+            Fixed rwScale = ScaleFromGlobalAngle(viewAngle + xToAngle[x1], viewAngle, rwNormalAngle, rwDistance);
 
             Fixed scale1 = rwScale;
             Fixed scale2;
@@ -1601,10 +1603,10 @@ namespace ManagedDoom.Video
 
             var rwOffset = default(Fixed);
             var rwCenterAngle = default(Angle);
-            var wallLights = default(byte[][]);
+            byte[][]? wallLights = default;
             if (segTextured)
             {
-                var textureOffsetAngle = rwNormalAngle - rwAngle1;
+                Angle textureOffsetAngle = rwNormalAngle - rwAngle1;
                 if (textureOffsetAngle > Angle.Ang180)
                 {
                     textureOffsetAngle = -textureOffsetAngle;
@@ -1623,7 +1625,7 @@ namespace ManagedDoom.Video
 
                 rwCenterAngle = Angle.Ang90 + viewAngle - rwNormalAngle;
 
-                var wallLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
+                int wallLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
                 if (seg.Vertex1.Y == seg.Vertex2.Y)
                 {
                     wallLightLevel--;
@@ -1647,10 +1649,10 @@ namespace ManagedDoom.Video
             worldBackZ2 >>= 4;
 
             // The Y positions of the top / bottom edges of the wall on the screen..
-            var wallY1Frac = (centerYFrac >> 4) - worldFrontZ1 * rwScale;
-            var wallY1Step = -(rwScaleStep * worldFrontZ1);
-            var wallY2Frac = (centerYFrac >> 4) - worldFrontZ2 * rwScale;
-            var wallY2Step = -(rwScaleStep * worldFrontZ2);
+            Fixed wallY1Frac = (centerYFrac >> 4) - worldFrontZ1 * rwScale;
+            Fixed wallY1Step = -(rwScaleStep * worldFrontZ1);
+            Fixed wallY2Frac = (centerYFrac >> 4) - worldFrontZ2 * rwScale;
+            Fixed wallY2Step = -(rwScaleStep * worldFrontZ2);
 
             // The Y position of the top edge of the portal (if visible).
             var portalY1Frac = default(Fixed);
@@ -1690,14 +1692,14 @@ namespace ManagedDoom.Video
             // Determine which color map is used for the plane according to the light level.
             //
 
-            var planeLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
-            var planeLights = zLight[Math.Clamp(planeLightLevel, 0, lightLevelCount - 1)];
+            int planeLightLevel = (frontSector.LightLevel >> lightSegShift) + extraLight;
+            byte[][] planeLights = zLight[Math.Clamp(planeLightLevel, 0, lightLevelCount - 1)];
 
             //
             // Prepare to record the rendering history.
             //
 
-            var visWallRange = visWallRanges[visWallRangeCount];
+            VisWallRange visWallRange = visWallRanges[visWallRangeCount];
             visWallRangeCount++;
 
             visWallRange.Seg = seg;
@@ -1747,7 +1749,7 @@ namespace ManagedDoom.Video
                 visWallRange.Silhouette |= Silhouette.Upper;
             }
 
-            var maskedTextureColumn = default(int);
+            int maskedTextureColumn = default;
             if (drawMaskedTexture)
             {
                 maskedTextureColumn = clipDataLength - x1;
@@ -1768,24 +1770,24 @@ namespace ManagedDoom.Video
             // Floor and ceiling.
             //
 
-            var ceilingFlat = flats[world.Specials.FlatTranslation[frontSector.CeilingFlat]];
-            var floorFlat = flats[world.Specials.FlatTranslation[frontSector.FloorFlat]];
+            Flat ceilingFlat = flats[world.Specials.FlatTranslation[frontSector.CeilingFlat]];
+            Flat floorFlat = flats[world.Specials.FlatTranslation[frontSector.FloorFlat]];
 
             //
             // Now the rendering is carried out.
             //
 
-            for (var x = x1; x <= x2; x++)
+            for (int x = x1; x <= x2; x++)
             {
-                var drawWallY1 = (wallY1Frac.Data + heightUnit - 1) >> heightBits;
-                var drawWallY2 = wallY2Frac.Data >> heightBits;
+                int drawWallY1 = (wallY1Frac.Data + heightUnit - 1) >> heightBits;
+                int drawWallY2 = wallY2Frac.Data >> heightBits;
 
-                var textureColumn = default(int);
-                var lightIndex = default(int);
+                int textureColumn = default;
+                int lightIndex = default;
                 var invScale = default(Fixed);
                 if (segTextured)
                 {
-                    var angle = rwCenterAngle + xToAngle[x];
+                    Angle angle = rwCenterAngle + xToAngle[x];
                     angle = new Angle(angle.Data & 0x7FFFFFFF);
                     textureColumn = (rwOffset - Trig.Tan(angle) * rwDistance).ToIntFloor();
 
@@ -1800,19 +1802,19 @@ namespace ManagedDoom.Video
 
                 if (drawUpperWall)
                 {
-                    var drawUpperWallY1 = (wallY1Frac.Data + heightUnit - 1) >> heightBits;
-                    var drawUpperWallY2 = portalY1Frac.Data >> heightBits;
+                    int drawUpperWallY1 = (wallY1Frac.Data + heightUnit - 1) >> heightBits;
+                    int drawUpperWallY2 = portalY1Frac.Data >> heightBits;
 
                     if (drawCeiling)
                     {
-                        var cy1 = upperClip[x] + 1;
-                        var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
+                        int cy1 = upperClip[x] + 1;
+                        int cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
                         DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2, frontSectorCeilingHeight);
                     }
 
-                    var wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
-                    var wy2 = Math.Min(drawUpperWallY2, lowerClip[x] - 1);
-                    var source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask];
+                    int wy1 = Math.Max(drawUpperWallY1, upperClip[x] + 1);
+                    int wy2 = Math.Min(drawUpperWallY2, lowerClip[x] - 1);
+                    Column[] source = upperWallTexture.Composite.Columns[textureColumn & upperWallWidthMask];
                     if (source.Length > 0)
                     {
                         DrawColumn(source[0], wallLights[lightIndex], x, wy1, wy2, invScale, uperTextureAlt);
@@ -1827,8 +1829,8 @@ namespace ManagedDoom.Video
                 }
                 else if (drawCeiling)
                 {
-                    var cy1 = upperClip[x] + 1;
-                    var cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
+                    int cy1 = upperClip[x] + 1;
+                    int cy2 = Math.Min(drawWallY1 - 1, lowerClip[x] - 1);
                     DrawCeilingColumn(frontSector, ceilingFlat, planeLights, x, cy1, cy2, frontSectorCeilingHeight);
 
                     if (upperClip[x] < cy2)
@@ -1839,12 +1841,12 @@ namespace ManagedDoom.Video
 
                 if (drawLowerWall)
                 {
-                    var drawLowerWallY1 = (portalY2Frac.Data + heightUnit - 1) >> heightBits;
-                    var drawLowerWallY2 = wallY2Frac.Data >> heightBits;
+                    int drawLowerWallY1 = (portalY2Frac.Data + heightUnit - 1) >> heightBits;
+                    int drawLowerWallY2 = wallY2Frac.Data >> heightBits;
 
-                    var wy1 = Math.Max(drawLowerWallY1, upperClip[x] + 1);
-                    var wy2 = Math.Min(drawLowerWallY2, lowerClip[x] - 1);
-                    var source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask];
+                    int wy1 = Math.Max(drawLowerWallY1, upperClip[x] + 1);
+                    int wy2 = Math.Min(drawLowerWallY2, lowerClip[x] - 1);
+                    Column[] source = lowerWallTexture.Composite.Columns[textureColumn & lowerWallWidthMask];
                     if (source.Length > 0)
                     {
                         DrawColumn(source[0], wallLights[lightIndex], x, wy1, wy2, invScale, lowerTextureAlt);
@@ -1852,8 +1854,8 @@ namespace ManagedDoom.Video
 
                     if (drawFloor)
                     {
-                        var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
-                        var fy2 = lowerClip[x] - 1;
+                        int fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
+                        int fy2 = lowerClip[x] - 1;
                         DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2, frontSectorFloorHeight);
                     }
 
@@ -1866,8 +1868,8 @@ namespace ManagedDoom.Video
                 }
                 else if (drawFloor)
                 {
-                    var fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
-                    var fy2 = lowerClip[x] - 1;
+                    int fy1 = Math.Max(drawWallY2 + 1, upperClip[x] + 1);
+                    int fy2 = lowerClip[x] - 1;
                     DrawFloorColumn(frontSector, floorFlat, planeLights, x, fy1, fy2, frontSectorFloorHeight);
 
                     if (lowerClip[x] > drawWallY2 + 1)
@@ -1923,9 +1925,9 @@ namespace ManagedDoom.Video
 
         private void RenderMaskedTextures()
         {
-            for (var i = visWallRangeCount - 1; i >= 0; i--)
+            for (int i = visWallRangeCount - 1; i >= 0; i--)
             {
-                var drawSeg = visWallRanges[i];
+                VisWallRange drawSeg = visWallRanges[i];
                 if (drawSeg.MaskedTextureColumn != -1)
                 {
                     DrawMaskedRange(drawSeg, drawSeg.X1, drawSeg.X2);
@@ -1937,9 +1939,9 @@ namespace ManagedDoom.Video
 
         private void DrawMaskedRange(VisWallRange drawSeg, int x1, int x2)
         {
-            var seg = drawSeg.Seg;
+            Seg seg = drawSeg.Seg;
 
-            var wallLightLevel = (seg.FrontSector.LightLevel >> lightSegShift) + extraLight;
+            int wallLightLevel = (seg.FrontSector.LightLevel >> lightSegShift) + extraLight;
             if (seg.Vertex1.Y == seg.Vertex2.Y)
             {
                 wallLightLevel--;
@@ -1949,10 +1951,10 @@ namespace ManagedDoom.Video
                 wallLightLevel++;
             }
 
-            var wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, lightLevelCount - 1)];
+            byte[][] wallLights = scaleLight[Math.Clamp(wallLightLevel, 0, lightLevelCount - 1)];
 
-            var wallTexture = textures[world.Specials.TextureTranslation[seg.SideDef.MiddleTexture]];
-            var mask = wallTexture.Width - 1;
+            Texture wallTexture = textures[world.Specials.TextureTranslation[seg.SideDef.MiddleTexture]];
+            int mask = wallTexture.Width - 1;
 
             Fixed midTextureAlt;
             if ((seg.LineDef.Flags & LineFlags.DontPegBottom) != 0)
@@ -1965,25 +1967,25 @@ namespace ManagedDoom.Video
             {
                 midTextureAlt = drawSeg.FrontSectorCeilingHeight < drawSeg.BackSectorCeilingHeight
                     ? drawSeg.FrontSectorCeilingHeight : drawSeg.BackSectorCeilingHeight;
-                midTextureAlt = midTextureAlt - viewZ;
+                midTextureAlt -= viewZ;
             }
             midTextureAlt += seg.SideDef.RowOffset;
 
-            var scaleStep = drawSeg.ScaleStep;
-            var scale = drawSeg.Scale1 + (x1 - drawSeg.X1) * scaleStep;
+            Fixed scaleStep = drawSeg.ScaleStep;
+            Fixed scale = drawSeg.Scale1 + (x1 - drawSeg.X1) * scaleStep;
 
-            for (var x = x1; x <= x2; x++)
+            for (int x = x1; x <= x2; x++)
             {
-                var index = Math.Min(scale.Data >> scaleLightShift, maxScaleLight - 1);
+                int index = Math.Min(scale.Data >> scaleLightShift, maxScaleLight - 1);
 
-                var col = clipData[drawSeg.MaskedTextureColumn + x];
+                short col = clipData[drawSeg.MaskedTextureColumn + x];
 
                 if (col != short.MaxValue)
                 {
-                    var topY = centerYFrac - midTextureAlt * scale;
+                    Fixed topY = centerYFrac - midTextureAlt * scale;
                     var invScale = new Fixed((int)(0xffffffffu / (uint)scale.Data));
-                    var ceilClip = clipData[drawSeg.UpperClip + x];
-                    var floorClip = clipData[drawSeg.LowerClip + x];
+                    short ceilClip = clipData[drawSeg.UpperClip + x];
+                    short floorClip = clipData[drawSeg.LowerClip + x];
                     DrawMaskedColumn(
                         wallTexture.Composite.Columns[col & mask],
                         wallLights[index],
@@ -2026,42 +2028,42 @@ namespace ManagedDoom.Video
 
             var height = Fixed.Abs(ceilingHeight - viewZ);
 
-            var flatData = flat.Data;
+            byte[] flatData = flat.Data;
 
             if (sector == ceilingPrevSector && ceilingPrevX == x - 1)
             {
-                var p1 = Math.Max(y1, ceilingPrevY1);
-                var p2 = Math.Min(y2, ceilingPrevY2);
+                int p1 = Math.Max(y1, ceilingPrevY1);
+                int p2 = Math.Min(y2, ceilingPrevY2);
 
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                int pos = screenHeight * (windowX + x) + windowY + y1;
 
-                for (var y = y1; y < p1; y++)
+                for (int y = y1; y < p1; y++)
                 {
-                    var distance = height * planeYSlope[y];
+                    Fixed distance = height * planeYSlope[y];
                     ceilingXStep[y] = distance * planeBaseXScale;
                     ceilingYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * planeDistScale[x];
-                    var angle = viewAngle + xToAngle[x];
-                    var xFrac = viewX + Trig.Cos(angle) * length;
-                    var yFrac = -viewY - Trig.Sin(angle) * length;
+                    Fixed length = distance * planeDistScale[x];
+                    Angle angle = viewAngle + xToAngle[x];
+                    Fixed xFrac = viewX + Trig.Cos(angle) * length;
+                    Fixed yFrac = -viewY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
                     ceilingLights[y] = colorMap;
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
 
-                for (var y = p1; y <= p2; y++)
+                for (int y = p1; y <= p2; y++)
                 {
-                    var xFrac = ceilingXFrac[y] + ceilingXStep[y];
-                    var yFrac = ceilingYFrac[y] + ceilingYStep[y];
+                    Fixed xFrac = ceilingXFrac[y] + ceilingXStep[y];
+                    Fixed yFrac = ceilingYFrac[y] + ceilingYStep[y];
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = ceilingLights[y][flatData[spot]];
                     pos++;
 
@@ -2069,48 +2071,48 @@ namespace ManagedDoom.Video
                     ceilingYFrac[y] = yFrac;
                 }
 
-                for (var y = p2 + 1; y <= y2; y++)
+                for (int y = p2 + 1; y <= y2; y++)
                 {
-                    var distance = height * planeYSlope[y];
+                    Fixed distance = height * planeYSlope[y];
                     ceilingXStep[y] = distance * planeBaseXScale;
                     ceilingYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * planeDistScale[x];
-                    var angle = viewAngle + xToAngle[x];
-                    var xFrac = viewX + Trig.Cos(angle) * length;
-                    var yFrac = -viewY - Trig.Sin(angle) * length;
+                    Fixed length = distance * planeDistScale[x];
+                    Angle angle = viewAngle + xToAngle[x];
+                    Fixed xFrac = viewX + Trig.Cos(angle) * length;
+                    Fixed yFrac = -viewY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
                     ceilingLights[y] = colorMap;
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
             }
             else
             {
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                int pos = screenHeight * (windowX + x) + windowY + y1;
 
-                for (var y = y1; y <= y2; y++)
+                for (int y = y1; y <= y2; y++)
                 {
-                    var distance = height * planeYSlope[y];
+                    Fixed distance = height * planeYSlope[y];
                     ceilingXStep[y] = distance * planeBaseXScale;
                     ceilingYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * planeDistScale[x];
-                    var angle = viewAngle + xToAngle[x];
-                    var xFrac = viewX + Trig.Cos(angle) * length;
-                    var yFrac = -viewY - Trig.Sin(angle) * length;
+                    Fixed length = distance * planeDistScale[x];
+                    Angle angle = viewAngle + xToAngle[x];
+                    Fixed xFrac = viewX + Trig.Cos(angle) * length;
+                    Fixed yFrac = -viewY - Trig.Sin(angle) * length;
                     ceilingXFrac[y] = xFrac;
                     ceilingYFrac[y] = yFrac;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
                     ceilingLights[y] = colorMap;
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
@@ -2144,42 +2146,42 @@ namespace ManagedDoom.Video
 
             var height = Fixed.Abs(floorHeight - viewZ);
 
-            var flatData = flat.Data;
+            byte[] flatData = flat.Data;
 
             if (sector == floorPrevSector && floorPrevX == x - 1)
             {
-                var p1 = Math.Max(y1, floorPrevY1);
-                var p2 = Math.Min(y2, floorPrevY2);
+                int p1 = Math.Max(y1, floorPrevY1);
+                int p2 = Math.Min(y2, floorPrevY2);
 
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                int pos = screenHeight * (windowX + x) + windowY + y1;
 
-                for (var y = y1; y < p1; y++)
+                for (int y = y1; y < p1; y++)
                 {
-                    var distance = height * planeYSlope[y];
+                    Fixed distance = height * planeYSlope[y];
                     floorXStep[y] = distance * planeBaseXScale;
                     floorYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * planeDistScale[x];
-                    var angle = viewAngle + xToAngle[x];
-                    var xFrac = viewX + Trig.Cos(angle) * length;
-                    var yFrac = -viewY - Trig.Sin(angle) * length;
+                    Fixed length = distance * planeDistScale[x];
+                    Angle angle = viewAngle + xToAngle[x];
+                    Fixed xFrac = viewX + Trig.Cos(angle) * length;
+                    Fixed yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
                     floorLights[y] = colorMap;
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
 
-                for (var y = p1; y <= p2; y++)
+                for (int y = p1; y <= p2; y++)
                 {
-                    var xFrac = floorXFrac[y] + floorXStep[y];
-                    var yFrac = floorYFrac[y] + floorYStep[y];
+                    Fixed xFrac = floorXFrac[y] + floorXStep[y];
+                    Fixed yFrac = floorYFrac[y] + floorYStep[y];
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = floorLights[y][flatData[spot]];
                     pos++;
 
@@ -2187,48 +2189,48 @@ namespace ManagedDoom.Video
                     floorYFrac[y] = yFrac;
                 }
 
-                for (var y = p2 + 1; y <= y2; y++)
+                for (int y = p2 + 1; y <= y2; y++)
                 {
-                    var distance = height * planeYSlope[y];
+                    Fixed distance = height * planeYSlope[y];
                     floorXStep[y] = distance * planeBaseXScale;
                     floorYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * planeDistScale[x];
-                    var angle = viewAngle + xToAngle[x];
-                    var xFrac = viewX + Trig.Cos(angle) * length;
-                    var yFrac = -viewY - Trig.Sin(angle) * length;
+                    Fixed length = distance * planeDistScale[x];
+                    Angle angle = viewAngle + xToAngle[x];
+                    Fixed xFrac = viewX + Trig.Cos(angle) * length;
+                    Fixed yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
                     floorLights[y] = colorMap;
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
             }
             else
             {
-                var pos = screenHeight * (windowX + x) + windowY + y1;
+                int pos = screenHeight * (windowX + x) + windowY + y1;
 
-                for (var y = y1; y <= y2; y++)
+                for (int y = y1; y <= y2; y++)
                 {
-                    var distance = height * planeYSlope[y];
+                    Fixed distance = height * planeYSlope[y];
                     floorXStep[y] = distance * planeBaseXScale;
                     floorYStep[y] = distance * planeBaseYScale;
 
-                    var length = distance * planeDistScale[x];
-                    var angle = viewAngle + xToAngle[x];
-                    var xFrac = viewX + Trig.Cos(angle) * length;
-                    var yFrac = -viewY - Trig.Sin(angle) * length;
+                    Fixed length = distance * planeDistScale[x];
+                    Angle angle = viewAngle + xToAngle[x];
+                    Fixed xFrac = viewX + Trig.Cos(angle) * length;
+                    Fixed yFrac = -viewY - Trig.Sin(angle) * length;
                     floorXFrac[y] = xFrac;
                     floorYFrac[y] = yFrac;
 
-                    var colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
+                    byte[] colorMap = planeLights[Math.Min((uint)(distance.Data >> zLightShift), maxZLight - 1)];
                     floorLights[y] = colorMap;
 
-                    var spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
+                    int spot = ((yFrac.Data >> (16 - 6)) & (63 * 64)) + ((xFrac.Data >> 16) & 63);
                     screenData[pos] = colorMap[flatData[spot]];
                     pos++;
                 }
@@ -2259,19 +2261,19 @@ namespace ManagedDoom.Video
             // Framebuffer destination address.
             // Use ylookup LUT to avoid multiply with ScreenWidth.
             // Use columnofs LUT for subwindows? 
-            var pos1 = screenHeight * (windowX + x) + windowY + y1;
-            var pos2 = pos1 + (y2 - y1);
+            int pos1 = screenHeight * (windowX + x) + windowY + y1;
+            int pos2 = pos1 + (y2 - y1);
 
             // Determine scaling, which is the only mapping to be done.
-            var fracStep = invScale;
-            var frac = textureAlt + (y1 - centerY) * fracStep;
+            Fixed fracStep = invScale;
+            Fixed frac = textureAlt + (y1 - centerY) * fracStep;
 
             // Inner loop that does the actual texture mapping,
             // e.g. a DDA-lile scaling.
             // This is as fast as it gets.
-            var source = column.Data;
-            var offset = column.Offset;
-            for (var pos = pos1; pos <= pos2; pos++)
+            byte[] source = column.Data;
+            int offset = column.Offset;
+            for (int pos = pos1; pos <= pos2; pos++)
             {
                 // Re-map color indices from wall texture column
                 // using a lighting/special effects LUT.
@@ -2298,19 +2300,19 @@ namespace ManagedDoom.Video
             // Framebuffer destination address.
             // Use ylookup LUT to avoid multiply with ScreenWidth.
             // Use columnofs LUT for subwindows? 
-            var pos1 = screenHeight * (windowX + x) + windowY + y1;
-            var pos2 = pos1 + (y2 - y1);
+            int pos1 = screenHeight * (windowX + x) + windowY + y1;
+            int pos2 = pos1 + (y2 - y1);
 
             // Determine scaling, which is the only mapping to be done.
-            var fracStep = invScale;
-            var frac = textureAlt + (y1 - centerY) * fracStep;
+            Fixed fracStep = invScale;
+            Fixed frac = textureAlt + (y1 - centerY) * fracStep;
 
             // Inner loop that does the actual texture mapping,
             // e.g. a DDA-lile scaling.
             // This is as fast as it gets.
-            var source = column.Data;
-            var offset = column.Offset;
-            for (var pos = pos1; pos <= pos2; pos++)
+            byte[] source = column.Data;
+            int offset = column.Offset;
+            for (int pos = pos1; pos <= pos2; pos++)
             {
                 // Re-map color indices from wall texture column
                 // using a lighting/special effects LUT.
@@ -2320,7 +2322,6 @@ namespace ManagedDoom.Video
         }
 
         private void DrawFuzzColumn(
-            Column column,
             int x,
             int y1,
             int y2)
@@ -2340,11 +2341,11 @@ namespace ManagedDoom.Video
                 y2 = windowHeight - 2;
             }
 
-            var pos1 = screenHeight * (windowX + x) + windowY + y1;
-            var pos2 = pos1 + (y2 - y1);
+            int pos1 = screenHeight * (windowX + x) + windowY + y1;
+            int pos2 = pos1 + (y2 - y1);
 
-            var map = colorMap[6];
-            for (var pos = pos1; pos <= pos2; pos++)
+            byte[] map = colorMap[6];
+            for (int pos = pos1; pos <= pos2; pos++)
             {
                 screenData[pos] = map[screenData[pos + fuzzTable[fuzzPos]]];
 
@@ -2357,9 +2358,9 @@ namespace ManagedDoom.Video
 
         private void DrawSkyColumn(int x, int y1, int y2)
         {
-            var angle = (viewAngle + xToAngle[x]).Data >> angleToSkyShift;
-            var mask = world.Map.SkyTexture.Width - 1;
-            var source = world.Map.SkyTexture.Composite.Columns[angle & mask];
+            uint angle = (viewAngle + xToAngle[x]).Data >> angleToSkyShift;
+            int mask = world.Map.SkyTexture.Width - 1;
+            Column[] source = world.Map.SkyTexture.Composite.Columns[angle & mask];
             DrawColumn(source[0], colorMap[0], x, y1, y2, skyInvScale, skyTextureAlt);
         }
 
@@ -2374,12 +2375,12 @@ namespace ManagedDoom.Video
             int upperClip,
             int lowerClip)
         {
-            foreach (var column in columns)
+            foreach (Column column in columns)
             {
-                var y1Frac = topY + scale * column.TopDelta;
-                var y2Frac = y1Frac + scale * column.Length;
-                var y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
-                var y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
+                Fixed y1Frac = topY + scale * column.TopDelta;
+                Fixed y2Frac = y1Frac + scale * column.Length;
+                int y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
+                int y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
 
                 y1 = Math.Max(y1, upperClip + 1);
                 y2 = Math.Min(y2, lowerClip - 1);
@@ -2404,12 +2405,12 @@ namespace ManagedDoom.Video
             int upperClip,
             int lowerClip)
         {
-            foreach (var column in columns)
+            foreach (Column column in columns)
             {
-                var y1Frac = topY + scale * column.TopDelta;
-                var y2Frac = y1Frac + scale * column.Length;
-                var y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
-                var y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
+                Fixed y1Frac = topY + scale * column.TopDelta;
+                Fixed y2Frac = y1Frac + scale * column.Length;
+                int y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
+                int y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
 
                 y1 = Math.Max(y1, upperClip + 1);
                 y2 = Math.Min(y2, lowerClip - 1);
@@ -2430,19 +2431,19 @@ namespace ManagedDoom.Video
             int upperClip,
             int lowerClip)
         {
-            foreach (var column in columns)
+            foreach (Column column in columns)
             {
-                var y1Frac = topY + scale * column.TopDelta;
-                var y2Frac = y1Frac + scale * column.Length;
-                var y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
-                var y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
+                Fixed y1Frac = topY + scale * column.TopDelta;
+                Fixed y2Frac = y1Frac + scale * column.Length;
+                int y1 = (y1Frac.Data + Fixed.FracUnit - 1) >> Fixed.FracBits;
+                int y2 = (y2Frac.Data - 1) >> Fixed.FracBits;
 
                 y1 = Math.Max(y1, upperClip + 1);
                 y2 = Math.Min(y2, lowerClip - 1);
 
                 if (y1 <= y2)
                 {
-                    DrawFuzzColumn(column, x, y1, y2);
+                    DrawFuzzColumn(x, y1, y2);
                 }
             }
         }
@@ -2462,11 +2463,11 @@ namespace ManagedDoom.Video
             // Well, now it will be done.
             sector.ValidCount = validCount;
 
-            var spriteLightLevel = (sector.LightLevel >> lightSegShift) + extraLight;
-            var spriteLights = scaleLight[Math.Clamp(spriteLightLevel, 0, lightLevelCount - 1)];
+            int spriteLightLevel = (sector.LightLevel >> lightSegShift) + extraLight;
+            byte[][] spriteLights = scaleLight[Math.Clamp(spriteLightLevel, 0, lightLevelCount - 1)];
 
             // Handle all things in sector.
-            foreach (var thing in sector)
+            foreach (Mobj? thing in sector)
             {
                 ProjectSprite(thing, spriteLights);
             }
@@ -2480,18 +2481,18 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var thingX = thing.GetInterpolatedX(frameFrac);
-            var thingY = thing.GetInterpolatedY(frameFrac);
-            var thingZ = thing.GetInterpolatedZ(frameFrac);
+            Fixed thingX = thing.GetInterpolatedX(frameFrac);
+            Fixed thingY = thing.GetInterpolatedY(frameFrac);
+            Fixed thingZ = thing.GetInterpolatedZ(frameFrac);
 
             // Transform the origin point.
-            var trX = thingX - viewX;
-            var trY = thingY - viewY;
+            Fixed trX = thingX - viewX;
+            Fixed trY = thingY - viewY;
 
-            var gxt = (trX * viewCos);
-            var gyt = -(trY * viewSin);
+            Fixed gxt = (trX * viewCos);
+            Fixed gyt = -(trY * viewSin);
 
-            var tz = gxt - gyt;
+            Fixed tz = gxt - gyt;
 
             // Thing is behind view plane?
             if (tz < minZ)
@@ -2499,11 +2500,11 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var xScale = projection / tz;
+            Fixed xScale = projection / tz;
 
             gxt = -trX * viewSin;
             gyt = trY * viewCos;
-            var tx = -(gyt + gxt);
+            Fixed tx = -(gyt + gxt);
 
             // Too far off the side?
             if (Fixed.Abs(tx) > (tz << 2))
@@ -2511,17 +2512,17 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var spriteDef = sprites[thing.Sprite];
-            var frameNumber = thing.Frame & 0x7F;
-            var spriteFrame = spriteDef.Frames[frameNumber];
+            SpriteDef spriteDef = sprites[thing.Sprite];
+            int frameNumber = thing.Frame & 0x7F;
+            SpriteFrame spriteFrame = spriteDef.Frames[frameNumber];
 
             Patch lump;
             bool flip;
             if (spriteFrame.Rotate)
             {
                 // Choose a different rotation based on player view.
-                var ang = Geometry.PointToAngle(viewX, viewY, thingX, thingY);
-                var rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
+                Angle ang = Geometry.PointToAngle(viewX, viewY, thingX, thingY);
+                uint rot = (ang.Data - thing.Angle.Data + (uint)(Angle.Ang45.Data / 2) * 9) >> 29;
                 lump = spriteFrame.Patches[rot];
                 flip = spriteFrame.Flip[rot];
             }
@@ -2534,7 +2535,7 @@ namespace ManagedDoom.Video
 
             // Calculate edges of the shape.
             tx -= Fixed.FromInt(lump.LeftOffset);
-            var x1 = (centerXFrac + (tx * xScale)).Data >> Fixed.FracBits;
+            int x1 = (centerXFrac + (tx * xScale)).Data >> Fixed.FracBits;
 
             // Off the right side?
             if (x1 > windowWidth)
@@ -2543,7 +2544,7 @@ namespace ManagedDoom.Video
             }
 
             tx += Fixed.FromInt(lump.Width);
-            var x2 = ((centerXFrac + (tx * xScale)).Data >> Fixed.FracBits) - 1;
+            int x2 = ((centerXFrac + (tx * xScale)).Data >> Fixed.FracBits) - 1;
 
             // Off the left side?
             if (x2 < 0)
@@ -2552,7 +2553,7 @@ namespace ManagedDoom.Video
             }
 
             // Store information in a vissprite.
-            var vis = visSprites[visSpriteCount];
+            VisSprite vis = visSprites[visSpriteCount];
             visSpriteCount++;
 
             vis.MobjFlags = thing.Flags;
@@ -2565,7 +2566,7 @@ namespace ManagedDoom.Video
             vis.X1 = x1 < 0 ? 0 : x1;
             vis.X2 = x2 >= windowWidth ? windowWidth - 1 : x2;
 
-            var invScale = Fixed.One / xScale;
+            Fixed invScale = Fixed.One / xScale;
 
             if (flip)
             {
@@ -2606,7 +2607,7 @@ namespace ManagedDoom.Video
         {
             Array.Sort(visSprites, 0, visSpriteCount, visSpriteComparer);
 
-            for (var i = visSpriteCount - 1; i >= 0; i--)
+            for (int i = visSpriteCount - 1; i >= 0; i--)
             {
                 DrawSprite(visSprites[i]);
             }
@@ -2614,7 +2615,7 @@ namespace ManagedDoom.Video
 
         private void DrawSprite(VisSprite sprite)
         {
-            for (var x = sprite.X1; x <= sprite.X2; x++)
+            for (int x = sprite.X1; x <= sprite.X2; x++)
             {
                 lowerClip[x] = -2;
                 upperClip[x] = -2;
@@ -2622,9 +2623,9 @@ namespace ManagedDoom.Video
 
             // Scan drawsegs from end to start for obscuring segs.
             // The first drawseg that has a greater scale is the clip seg.
-            for (var i = visWallRangeCount - 1; i >= 0; i--)
+            for (int i = visWallRangeCount - 1; i >= 0; i--)
             {
-                var wall = visWallRanges[i];
+                VisWallRange wall = visWallRanges[i];
 
                 // Determine if the drawseg obscures the sprite.
                 if (wall.X1 > sprite.X2 ||
@@ -2635,8 +2636,8 @@ namespace ManagedDoom.Video
                     continue;
                 }
 
-                var r1 = wall.X1 < sprite.X1 ? sprite.X1 : wall.X1;
-                var r2 = wall.X2 > sprite.X2 ? sprite.X2 : wall.X2;
+                int r1 = wall.X1 < sprite.X1 ? sprite.X1 : wall.X1;
+                int r2 = wall.X2 > sprite.X2 ? sprite.X2 : wall.X2;
 
                 Fixed lowScale;
                 Fixed scale;
@@ -2665,7 +2666,7 @@ namespace ManagedDoom.Video
                 }
 
                 // Clip this piece of the sprite.
-                var silhouette = wall.Silhouette;
+                Silhouette silhouette = wall.Silhouette;
 
                 if (sprite.GlobalBottomZ >= wall.LowerSilHeight)
                 {
@@ -2680,7 +2681,7 @@ namespace ManagedDoom.Video
                 if (silhouette == Silhouette.Lower)
                 {
                     // Bottom sil.
-                    for (var x = r1; x <= r2; x++)
+                    for (int x = r1; x <= r2; x++)
                     {
                         if (lowerClip[x] == -2)
                         {
@@ -2691,7 +2692,7 @@ namespace ManagedDoom.Video
                 else if (silhouette == Silhouette.Upper)
                 {
                     // Top sil.
-                    for (var x = r1; x <= r2; x++)
+                    for (int x = r1; x <= r2; x++)
                     {
                         if (upperClip[x] == -2)
                         {
@@ -2702,7 +2703,7 @@ namespace ManagedDoom.Video
                 else if (silhouette == Silhouette.Both)
                 {
                     // Both.
-                    for (var x = r1; x <= r2; x++)
+                    for (int x = r1; x <= r2; x++)
                     {
                         if (lowerClip[x] == -2)
                         {
@@ -2719,7 +2720,7 @@ namespace ManagedDoom.Video
             // All clipping has been performed, so draw the sprite.
 
             // Check for unclipped columns.
-            for (var x = sprite.X1; x <= sprite.X2; x++)
+            for (int x = sprite.X1; x <= sprite.X2; x++)
             {
                 if (lowerClip[x] == -2)
                 {
@@ -2733,10 +2734,10 @@ namespace ManagedDoom.Video
 
             if ((sprite.MobjFlags & MobjFlags.Shadow) != 0)
             {
-                var frac = sprite.StartFrac;
-                for (var x = sprite.X1; x <= sprite.X2; x++)
+                Fixed frac = sprite.StartFrac;
+                for (int x = sprite.X1; x <= sprite.X2; x++)
                 {
-                    var textureColumn = frac.ToIntFloor();
+                    int textureColumn = frac.ToIntFloor();
                     DrawMaskedFuzzColumn(
                         sprite.Patch.Columns[textureColumn],
                         x,
@@ -2762,10 +2763,10 @@ namespace ManagedDoom.Video
                         translation = greenToRed;
                         break;
                 }
-                var frac = sprite.StartFrac;
-                for (var x = sprite.X1; x <= sprite.X2; x++)
+                Fixed frac = sprite.StartFrac;
+                for (int x = sprite.X1; x <= sprite.X2; x++)
                 {
-                    var textureColumn = frac.ToIntFloor();
+                    int textureColumn = frac.ToIntFloor();
                     DrawMaskedColumnTranslation(
                         sprite.Patch.Columns[textureColumn],
                         translation,
@@ -2782,10 +2783,10 @@ namespace ManagedDoom.Video
             }
             else
             {
-                var frac = sprite.StartFrac;
-                for (var x = sprite.X1; x <= sprite.X2; x++)
+                Fixed frac = sprite.StartFrac;
+                for (int x = sprite.X1; x <= sprite.X2; x++)
                 {
-                    var textureColumn = frac.ToIntFloor();
+                    int textureColumn = frac.ToIntFloor();
                     DrawMaskedColumn(
                         sprite.Patch.Columns[textureColumn],
                         sprite.ColorMap,
@@ -2806,17 +2807,17 @@ namespace ManagedDoom.Video
         private void DrawPlayerSprite(PlayerSpriteDef psp, byte[][] spriteLights, bool fuzz)
         {
             // Decide which patch to use.
-            var spriteDef = sprites[psp.State.Sprite];
+            SpriteDef spriteDef = sprites[psp.State.Sprite];
 
-            var spriteFrame = spriteDef.Frames[psp.State.Frame & 0x7fff];
+            SpriteFrame spriteFrame = spriteDef.Frames[psp.State.Frame & 0x7fff];
 
-            var lump = spriteFrame.Patches[0];
-            var flip = spriteFrame.Flip[0];
+            Patch lump = spriteFrame.Patches[0];
+            bool flip = spriteFrame.Flip[0];
 
             // Calculate edges of the shape.
-            var tx = psp.Sx - Fixed.FromInt(160);
+            Fixed tx = psp.Sx - Fixed.FromInt(160);
             tx -= Fixed.FromInt(lump.LeftOffset);
-            var x1 = (centerXFrac + tx * weaponScale).Data >> Fixed.FracBits;
+            int x1 = (centerXFrac + tx * weaponScale).Data >> Fixed.FracBits;
 
             // Off the right side?
             if (x1 > windowWidth)
@@ -2825,7 +2826,7 @@ namespace ManagedDoom.Video
             }
 
             tx += Fixed.FromInt(lump.Width);
-            var x2 = ((centerXFrac + tx * weaponScale).Data >> Fixed.FracBits) - 1;
+            int x2 = ((centerXFrac + tx * weaponScale).Data >> Fixed.FracBits) - 1;
 
             // Off the left side?
             if (x2 < 0)
@@ -2834,7 +2835,7 @@ namespace ManagedDoom.Video
             }
 
             // Store information in a vissprite.
-            var vis = weaponSprite;
+            VisSprite vis = weaponSprite;
             vis.MobjFlags = 0;
             // The code below is based on Crispy Doom's weapon rendering code.
             vis.TextureAlt = Fixed.FromInt(100) + Fixed.One / 4 - (psp.Sy - Fixed.FromInt(lump.TopOffset));
@@ -2878,10 +2879,10 @@ namespace ManagedDoom.Video
 
             if (fuzz)
             {
-                var frac = vis.StartFrac;
-                for (var x = vis.X1; x <= vis.X2; x++)
+                Fixed frac = vis.StartFrac;
+                for (int x = vis.X1; x <= vis.X2; x++)
                 {
-                    var texturecolumn = frac.Data >> Fixed.FracBits;
+                    int texturecolumn = frac.Data >> Fixed.FracBits;
                     DrawMaskedFuzzColumn(
                         vis.Patch.Columns[texturecolumn],
                         x,
@@ -2894,10 +2895,10 @@ namespace ManagedDoom.Video
             }
             else
             {
-                var frac = vis.StartFrac;
-                for (var x = vis.X1; x <= vis.X2; x++)
+                Fixed frac = vis.StartFrac;
+                for (int x = vis.X1; x <= vis.X2; x++)
                 {
-                    var texturecolumn = frac.Data >> Fixed.FracBits;
+                    int texturecolumn = frac.Data >> Fixed.FracBits;
                     DrawMaskedColumn(
                         vis.Patch.Columns[texturecolumn],
                         vis.ColorMap,
@@ -2918,7 +2919,7 @@ namespace ManagedDoom.Video
         private void DrawPlayerSprites(Player player)
         {
             // Get light level.
-            var spriteLightLevel = (player.Mobj.Subsector.Sector.LightLevel >> lightSegShift) + extraLight;
+            int spriteLightLevel = (player.Mobj.Subsector.Sector.LightLevel >> lightSegShift) + extraLight;
 
             byte[][] spriteLights;
             if (spriteLightLevel < 0)
@@ -2947,9 +2948,9 @@ namespace ManagedDoom.Video
             }
 
             // Add all active psprites.
-            for (var i = 0; i < (int)PlayerSprite.Count; i++)
+            for (int i = 0; i < (int)PlayerSprite.Count; i++)
             {
-                var psp = player.PlayerSprites[i];
+                PlayerSpriteDef psp = player.PlayerSprites[i];
                 if (psp.State != null)
                 {
                     DrawPlayerSprite(psp, spriteLights, fuzz);
@@ -3052,9 +3053,9 @@ namespace ManagedDoom.Video
 
         private class VisSpriteComparer : IComparer<VisSprite>
         {
-            public int Compare(VisSprite x, VisSprite y)
+            public int Compare(VisSprite? x, VisSprite? y)
             {
-                return y.Scale.Data - x.Scale.Data;
+                return y!.Scale.Data - x!.Scale.Data;
             }
         }
     }

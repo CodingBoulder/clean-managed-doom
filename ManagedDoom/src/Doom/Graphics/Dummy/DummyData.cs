@@ -21,103 +21,101 @@ namespace ManagedDoom
 {
     public class DummyData
     {
-        private Patch dummyPatch;
+        private Patch _dummyPatch;
 
         public Patch GetPatch()
         {
-            if (dummyPatch != null)
+            if (_dummyPatch != null)
             {
-                return dummyPatch;
+                return _dummyPatch;
             }
             else
             {
-                var width = 64;
-                var height = 128;
+                int width = 64;
+                int height = 128;
 
-                var data = new byte[height + 32];
-                for (var y = 0; y < data.Length; y++)
+                byte[] data = new byte[height + 32];
+                for (int y = 0; y < data.Length; y++)
                 {
                     data[y] = y / 32 % 2 == 0 ? (byte)80 : (byte)96;
                 }
 
                 var columns = new Column[width][];
-                var c1 = new Column[] { new Column(0, data, 0, height) };
-                var c2 = new Column[] { new Column(0, data, 32, height) };
-                for (var x = 0; x < width; x++)
+                var c1 = new Column[] { new(0, data, 0, height) };
+                var c2 = new Column[] { new(0, data, 32, height) };
+                for (int x = 0; x < width; x++)
                 {
                     columns[x] = x / 32 % 2 == 0 ? c1 : c2;
                 }
 
-                dummyPatch = new Patch("DUMMY", width, height, 32, 128, columns);
+                _dummyPatch = new Patch("DUMMY", width, height, 32, 128, columns);
 
-                return dummyPatch;
+                return _dummyPatch;
             }
         }
 
-
-
-        private readonly Dictionary<int, Texture> dummyTextures = [];
+        private readonly Dictionary<int, Texture> _dummyTextures = [];
 
         public Texture GetTexture(int height)
         {
-            if (dummyTextures.ContainsKey(height))
+            if (_dummyTextures.TryGetValue(height, out Texture? texture))
             {
-                return dummyTextures[height];
+                return texture;
             }
             else
             {
-                var patch = new TexturePatch[] { new TexturePatch(0, 0, GetPatch()) };
+                var patch = new TexturePatch[] { new(0, 0, GetPatch()) };
 
-                dummyTextures.Add(height, new Texture("DUMMY", false, 64, height, patch));
+                texture = new Texture("DUMMY", false, 64, height, patch);
 
-                return dummyTextures[height];
+                _dummyTextures.Add(height, texture);
+
+                return texture;
             }
         }
 
-
-
-        private Flat dummyFlat;
+        private Flat _dummyFlat;
 
         public Flat GetFlat()
         {
-            if (dummyFlat != null)
+            if (_dummyFlat != null)
             {
-                return dummyFlat;
+                return _dummyFlat;
             }
             else
             {
-                var data = new byte[64 * 64];
-                var spot = 0;
-                for (var y = 0; y < 64; y++)
+                byte[] data = new byte[64 * 64];
+                int spot = 0;
+                for (int y = 0; y < 64; y++)
                 {
-                    for (var x = 0; x < 64; x++)
+                    for (int x = 0; x < 64; x++)
                     {
                         data[spot] = ((x / 32) ^ (y / 32)) == 0 ? (byte)80 : (byte)96;
                         spot++;
                     }
                 }
 
-                dummyFlat = new Flat("DUMMY", data);
+                _dummyFlat = new Flat("DUMMY", data);
 
-                return dummyFlat;
+                return _dummyFlat;
             }
         }
 
 
 
-        private Flat dummySkyFlat;
+        private Flat _dummySkyFlat;
 
         public Flat GetSkyFlat()
         {
-            if (dummySkyFlat != null)
+            if (_dummySkyFlat != null)
             {
-                return dummySkyFlat;
+                return _dummySkyFlat;
             }
             else
             {
-                dummySkyFlat = new Flat("DUMMY", GetFlat().Data);
+                _dummySkyFlat = new Flat("DUMMY", GetFlat().Data);
 
-                return dummySkyFlat;
+                return _dummySkyFlat;
             }
         }
     }

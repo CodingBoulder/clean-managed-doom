@@ -24,22 +24,22 @@ namespace ManagedDoom
     {
         public const int DataSize = 16;
 
-        private string name;
-        private Stream stream;
-        private int position;
-        private int size;
+        private readonly string _name;
+        private readonly Stream _stream;
+        private readonly int _position;
+        private readonly int _size;
 
         public LumpInfo(string name, Stream stream, int position, int size)
         {
-            this.name = name;
-            this.stream = stream;
-            this.position = position;
-            this.size = size;
+            _name = name;
+            _stream = stream;
+            _position = position;
+            _size = size;
         }
 
-        public string Name => name;
-        public Stream Stream => stream;
-        public int Position => position;
-        public int Size => size;
+        public string Name => _name;
+        public Stream Stream => _stream;
+        public int Position => _position;
+        public int Size => _size;
     }
 }

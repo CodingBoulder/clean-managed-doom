@@ -15,206 +15,205 @@
 
 
 
-using System;
-using ManagedDoom.Video;
 using ManagedDoom.Audio;
 using ManagedDoom.UserInput;
+using ManagedDoom.Video;
 
 namespace ManagedDoom
 {
     public sealed class GameOptions
     {
-        private GameVersion gameVersion;
-        private GameMode gameMode;
-        private MissionPack missionPack;
+        private GameVersion _gameVersion;
+        private GameMode _gameMode;
+        private MissionPack _missionPack;
 
-        private Player[] players;
-        private int consolePlayer;
+        private readonly Player[] _players;
+        private int _consolePlayer;
 
-        private int episode;
-        private int map;
-        private GameSkill skill;
+        private int _episode;
+        private int _map;
+        private GameSkill _skill;
 
-        private bool demoPlayback;
-        private bool netGame;
+        private bool _demoPlayback;
+        private bool _netGame;
 
-        private int deathmatch;
-        private bool fastMonsters;
-        private bool respawnMonsters;
-        private bool noMonsters;
+        private int _deathmatch;
+        private bool _fastMonsters;
+        private bool _respawnMonsters;
+        private bool _noMonsters;
 
-        private IntermissionInfo intermissionInfo;
+        private readonly IntermissionInfo _intermissionInfo;
 
-        private DoomRandom random;
+        private readonly DoomRandom _random;
 
-        private IVideo video;
-        private ISound sound;
-        private IMusic music;
-        private IUserInput userInput;
+        private IVideo _video;
+        private ISound _sound;
+        private IMusic _music;
+        private IUserInput _userInput;
 
         public GameOptions()
         {
-            gameVersion = GameVersion.Version109;
-            gameMode = GameMode.Commercial;
-            missionPack = MissionPack.Doom2;
+            _gameVersion = GameVersion.Version109;
+            _gameMode = GameMode.Commercial;
+            _missionPack = MissionPack.Doom2;
 
-            players = new Player[Player.MaxPlayerCount];
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            _players = new Player[Player.MaxPlayerCount];
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
-                players[i] = new Player(i);
+                _players[i] = new Player(i);
             }
-            players[0].InGame = true;
-            consolePlayer = 0;
+            _players[0].InGame = true;
+            _consolePlayer = 0;
 
-            episode = 1;
-            map = 1;
-            skill = GameSkill.Medium;
+            _episode = 1;
+            _map = 1;
+            _skill = GameSkill.Medium;
 
-            demoPlayback = false;
-            netGame = false;
+            _demoPlayback = false;
+            _netGame = false;
 
-            deathmatch = 0;
-            fastMonsters = false;
-            respawnMonsters = false;
-            noMonsters = false;
+            _deathmatch = 0;
+            _fastMonsters = false;
+            _respawnMonsters = false;
+            _noMonsters = false;
 
-            intermissionInfo = new IntermissionInfo();
+            _intermissionInfo = new IntermissionInfo();
 
-            random = new DoomRandom();
+            _random = new DoomRandom();
 
-            video = NullVideo.GetInstance();
-            sound = NullSound.GetInstance();
-            music = NullMusic.GetInstance();
-            userInput = NullUserInput.GetInstance();
+            _video = NullVideo.GetInstance();
+            _sound = NullSound.GetInstance();
+            _music = NullMusic.GetInstance();
+            _userInput = NullUserInput.GetInstance();
         }
 
         public GameOptions(CommandLineArgs args, GameContent content) : this()
         {
             if (args.solonet.Present)
             {
-                netGame = true;
+                _netGame = true;
             }
 
-            gameVersion = content.Wad.GameVersion;
-            gameMode = content.Wad.GameMode;
-            missionPack = content.Wad.MissionPack;
+            _gameVersion = content.Wad.GameVersion;
+            _gameMode = content.Wad.GameMode;
+            _missionPack = content.Wad.MissionPack;
         }
 
         public GameVersion GameVersion
         {
-            get => gameVersion;
-            set => gameVersion = value;
+            get => _gameVersion;
+            set => _gameVersion = value;
         }
 
         public GameMode GameMode
         {
-            get => gameMode;
-            set => gameMode = value;
+            get => _gameMode;
+            set => _gameMode = value;
         }
 
         public MissionPack MissionPack
         {
-            get => missionPack;
-            set => missionPack = value;
+            get => _missionPack;
+            set => _missionPack = value;
         }
 
         public Player[] Players
         {
-            get => players;
+            get => _players;
         }
 
         public int ConsolePlayer
         {
-            get => consolePlayer;
-            set => consolePlayer = value;
+            get => _consolePlayer;
+            set => _consolePlayer = value;
         }
 
         public int Episode
         {
-            get => episode;
-            set => episode = value;
+            get => _episode;
+            set => _episode = value;
         }
 
         public int Map
         {
-            get => map;
-            set => map = value;
+            get => _map;
+            set => _map = value;
         }
 
         public GameSkill Skill
         {
-            get => skill;
-            set => skill = value;
+            get => _skill;
+            set => _skill = value;
         }
 
         public bool DemoPlayback
         {
-            get => demoPlayback;
-            set => demoPlayback = value;
+            get => _demoPlayback;
+            set => _demoPlayback = value;
         }
 
         public bool NetGame
         {
-            get => netGame;
-            set => netGame = value;
+            get => _netGame;
+            set => _netGame = value;
         }
 
         public int Deathmatch
         {
-            get => deathmatch;
-            set => deathmatch = value;
+            get => _deathmatch;
+            set => _deathmatch = value;
         }
 
         public bool FastMonsters
         {
-            get => fastMonsters;
-            set => fastMonsters = value;
+            get => _fastMonsters;
+            set => _fastMonsters = value;
         }
 
         public bool RespawnMonsters
         {
-            get => respawnMonsters;
-            set => respawnMonsters = value;
+            get => _respawnMonsters;
+            set => _respawnMonsters = value;
         }
 
         public bool NoMonsters
         {
-            get => noMonsters;
-            set => noMonsters = value;
+            get => _noMonsters;
+            set => _noMonsters = value;
         }
 
         public IntermissionInfo IntermissionInfo
         {
-            get => intermissionInfo;
+            get => _intermissionInfo;
         }
 
         public DoomRandom Random
         {
-            get => random;
+            get => _random;
         }
 
         public IVideo Video
         {
-            get => video;
-            set => video = value;
+            get => _video;
+            set => _video = value;
         }
 
         public ISound Sound
         {
-            get => sound;
-            set => sound = value;
+            get => _sound;
+            set => _sound = value;
         }
 
         public IMusic Music
         {
-            get => music;
-            set => music = value;
+            get => _music;
+            set => _music = value;
         }
 
         public IUserInput UserInput
         {
-            get => userInput;
-            set => userInput = value;
+            get => _userInput;
+            set => _userInput = value;
         }
     }
 }

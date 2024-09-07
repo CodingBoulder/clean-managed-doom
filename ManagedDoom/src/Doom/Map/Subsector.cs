@@ -21,23 +21,23 @@ namespace ManagedDoom
 {
     public sealed class Subsector
     {
-        private static readonly int dataSize = 4;
+        private static readonly int _dataSize = 4;
 
-        private Sector sector;
-        private int segCount;
-        private int firstSeg;
+        private readonly Sector _sector;
+        private readonly int _segCount;
+        private readonly int _firstSeg;
 
         public Subsector(Sector sector, int segCount, int firstSeg)
         {
-            this.sector = sector;
-            this.segCount = segCount;
-            this.firstSeg = firstSeg;
+            _sector = sector;
+            _segCount = segCount;
+            _firstSeg = firstSeg;
         }
 
         public static Subsector FromData(byte[] data, int offset, Seg[] segs)
         {
-            var segCount = BitConverter.ToInt16(data, offset);
-            var firstSegNumber = BitConverter.ToInt16(data, offset + 2);
+            short segCount = BitConverter.ToInt16(data, offset);
+            short firstSegNumber = BitConverter.ToInt16(data, offset + 2);
 
             return new Subsector(
                 segs[firstSegNumber].SideDef.Sector,
@@ -47,27 +47,27 @@ namespace ManagedDoom
 
         public static Subsector[] FromWad(Wad wad, int lump, Seg[] segs)
         {
-            var length = wad.GetLumpSize(lump);
-            if (length % Subsector.dataSize != 0)
+            int length = wad.GetLumpSize(lump);
+            if (length % Subsector._dataSize != 0)
             {
                 throw new Exception();
             }
 
-            var data = wad.ReadLump(lump);
-            var count = length / Subsector.dataSize;
+            byte[] data = wad.ReadLump(lump);
+            int count = length / Subsector._dataSize;
             var subsectors = new Subsector[count];
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var offset = Subsector.dataSize * i;
+                int offset = Subsector._dataSize * i;
                 subsectors[i] = Subsector.FromData(data, offset, segs);
             }
 
             return subsectors;
         }
 
-        public Sector Sector => sector;
-        public int SegCount => segCount;
-        public int FirstSeg => firstSeg;
+        public Sector Sector => _sector;
+        public int SegCount => _segCount;
+        public int FirstSeg => _firstSeg;
     }
 }

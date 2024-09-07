@@ -11,8 +11,8 @@ namespace ManagedDoomTest.UnitTests
         public void LoadE1M1()
         {
             using var wad = new Wad(WadPath.Doom1);
-            var map = wad.GetLumpNumber("E1M1");
-            var vertices = Vertex.FromWad(wad, map + 4);
+            int map = wad.GetLumpNumber("E1M1");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
 
             Assert.Equal(470, vertices.Length);
 
@@ -30,8 +30,8 @@ namespace ManagedDoomTest.UnitTests
         public void LoadMap01()
         {
             using var wad = new Wad(WadPath.Doom2);
-            var map = wad.GetLumpNumber("MAP01");
-            var vertices = Vertex.FromWad(wad, map + 4);
+            int map = wad.GetLumpNumber("MAP01");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
 
             Assert.Equal(383, vertices.Length);
 

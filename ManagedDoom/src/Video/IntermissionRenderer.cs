@@ -46,26 +46,26 @@ namespace ManagedDoom.Video
         private static readonly int dmVictimsX = 5;
         private static readonly int dmVictimsY = 50;
 
-        private static readonly string[] mapPictures = new string[]
-        {
+        private static readonly string[] mapPictures =
+        [
             "WIMAP0",
             "WIMAP1",
             "WIMAP2"
-        };
+        ];
 
-        private static readonly string[] playerBoxes = new string[]
-        {
+        private static readonly string[] playerBoxes =
+        [
             "STPB0",
             "STPB1",
             "STPB2",
             "STPB3"
-        };
+        ];
 
-        private static readonly string[] youAreHere = new string[]
-        {
+        private static readonly string[] youAreHere =
+        [
             "WIURH0",
             "WIURH1"
-        };
+        ];
 
         private static readonly string[][] doomLevels;
         private static readonly string[] doom2Levels;
@@ -73,45 +73,43 @@ namespace ManagedDoom.Video
         static IntermissionRenderer()
         {
             doomLevels = new string[4][];
-            for (var e = 0; e < 4; e++)
+            for (int e = 0; e < 4; e++)
             {
                 doomLevels[e] = new string[9];
-                for (var m = 0; m < 9; m++)
+                for (int m = 0; m < 9; m++)
                 {
                     doomLevels[e][m] = "WILV" + e + m;
                 }
             }
 
             doom2Levels = new string[32];
-            for (var m = 0; m < 32; m++)
+            for (int m = 0; m < 32; m++)
             {
                 doom2Levels[m] = "CWILV" + m.ToString("00");
             }
         }
 
 
-        private Wad wad;
-        private DrawScreen screen;      
+        private readonly DrawScreen screen;
 
-        private PatchCache cache;
+        private readonly PatchCache cache;
 
-        private Patch minus;
-        private Patch[] numbers;
-        private Patch percent;
-        private Patch colon;
+        private readonly Patch minus;
+        private readonly Patch[] numbers;
+        private readonly Patch percent;
+        private readonly Patch colon;
 
-        private int scale;
+        private readonly int scale;
 
         public IntermissionRenderer(Wad wad, DrawScreen screen)
         {
-            this.wad = wad;
             this.screen = screen;
 
             cache = new PatchCache(wad);
 
             minus = Patch.FromWad(wad, "WIMINUS");
             numbers = new Patch[10];
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 numbers[i] = Patch.FromWad(wad, "WINUM" + i);
             }
@@ -129,7 +127,7 @@ namespace ManagedDoom.Video
 
         private void DrawPatch(string name, int x, int y)
         {
-            var scale = screen.Width / 320;
+            int scale = screen.Width / 320;
             screen.DrawPatch(cache[name], scale * x, scale * y, scale);
         }
 
@@ -182,7 +180,7 @@ namespace ManagedDoom.Video
             }
             else
             {
-                var e = im.Options.Episode - 1;
+                int e = im.Options.Episode - 1;
                 if (e < mapPictures.Length)
                 {
                     DrawPatch(mapPictures[e], 0, 0);
@@ -205,7 +203,7 @@ namespace ManagedDoom.Video
             DrawFinishedLevelName(im);
 
             // Line height.
-            var lineHeight = (3 * numbers[0].Height) / 2;
+            int lineHeight = (3 * numbers[0].Height) / 2;
 
             DrawPatch(
                 "WIOSTK", // KILLS
@@ -272,7 +270,7 @@ namespace ManagedDoom.Video
             // Draw level name.
             DrawFinishedLevelName(im);
 
-            var ngStatsX = 32 + GetWidth("STFST01") / 2;
+            int ngStatsX = 32 + GetWidth("STFST01") / 2;
             if (!im.DoFrags)
             {
                 ngStatsX += 32;
@@ -303,16 +301,16 @@ namespace ManagedDoom.Video
             }
 
             // Draw stats.
-            var y = ngStatsY + GetHeight("WIOSTK");
+            int y = ngStatsY + GetHeight("WIOSTK");
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (!im.Options.Players[i].InGame)
                 {
                     continue;
                 }
 
-                var x = ngStatsX;
+                int x = ngStatsX;
 
                 DrawPatch(
                     playerBoxes[i],
@@ -374,10 +372,10 @@ namespace ManagedDoom.Video
                 dmVictimsY);
 
             // Draw player boxes.
-            var x = dmMatrixX + dmSpacingX;
-            var y = dmMatrixY;
+            int x = dmMatrixX + dmSpacingX;
+            int y = dmMatrixY;
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (im.Options.Players[i].InGame)
                 {
@@ -418,15 +416,15 @@ namespace ManagedDoom.Video
 
             // Draw stats.
             y = dmMatrixY + 10;
-            var w = numbers[0].Width;
+            int w = numbers[0].Width;
 
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 x = dmMatrixX + dmSpacingX;
 
                 if (im.Options.Players[i].InGame)
                 {
-                    for (var j = 0; j < Player.MaxPlayerCount; j++)
+                    for (int j = 0; j < Player.MaxPlayerCount; j++)
                     {
                         if (im.Options.Players[j].InGame)
                         {
@@ -464,29 +462,29 @@ namespace ManagedDoom.Video
                     return;
                 }
 
-                var last = (im.Info.LastLevel == 8) ? im.Info.NextLevel - 1 : im.Info.LastLevel;
+                int last = (im.Info.LastLevel == 8) ? im.Info.NextLevel - 1 : im.Info.LastLevel;
 
                 // Draw a splat on taken cities.
-                for (var i = 0; i <= last; i++)
+                for (int i = 0; i <= last; i++)
                 {
-                    var x = WorldMap.Locations[im.Info.Episode][i].X;
-                    var y = WorldMap.Locations[im.Info.Episode][i].Y;
+                    int x = WorldMap.Locations[im.Info.Episode][i].X;
+                    int y = WorldMap.Locations[im.Info.Episode][i].Y;
                     DrawPatch("WISPLAT", x, y);
                 }
 
                 // Splat the secret level?
                 if (im.Info.DidSecret)
                 {
-                    var x = WorldMap.Locations[im.Info.Episode][8].X;
-                    var y = WorldMap.Locations[im.Info.Episode][8].Y;
+                    int x = WorldMap.Locations[im.Info.Episode][8].X;
+                    int y = WorldMap.Locations[im.Info.Episode][8].Y;
                     DrawPatch("WISPLAT", x, y);
                 }
 
                 // Draw "you are here".
                 if (im.ShowYouAreHere)
                 {
-                    var x = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].X;
-                    var y = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].Y;
+                    int x = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].X;
+                    int y = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].Y;
                     DrawSuitablePatch(youAreHere, x, y);
                 }
             }
@@ -500,13 +498,13 @@ namespace ManagedDoom.Video
 
         private void DrawFinishedLevelName(Intermission intermission)
         {
-            var wbs = intermission.Info;
-            var y = titleY;
+            IntermissionInfo wbs = intermission.Info;
+            int y = titleY;
 
             string levelName;
             if (intermission.Options.GameMode != GameMode.Commercial)
             {
-                var e = intermission.Options.Episode - 1;
+                int e = intermission.Options.Episode - 1;
                 levelName = doomLevels[e][wbs.LastLevel];
             }
             else
@@ -531,13 +529,13 @@ namespace ManagedDoom.Video
 
         private void DrawEnteringLevelName(Intermission im)
         {
-            var wbs = im.Info;
+            IntermissionInfo wbs = im.Info;
             int y = titleY;
 
             string levelName;
             if (im.Options.GameMode != GameMode.Commercial)
             {
-                var e = im.Options.Episode - 1;
+                int e = im.Options.Episode - 1;
                 levelName = doomLevels[e][wbs.NextLevel];
             }
             else
@@ -574,7 +572,7 @@ namespace ManagedDoom.Video
                 {
                     // Figure out number of digits.
                     digits = 0;
-                    var temp = n;
+                    int temp = n;
                     while (temp != 0)
                     {
                         temp /= 10;
@@ -583,7 +581,7 @@ namespace ManagedDoom.Video
                 }
             }
 
-            var neg = n < 0;
+            bool neg = n < 0;
             if (neg)
             {
                 n = -n;
@@ -595,7 +593,7 @@ namespace ManagedDoom.Video
                 return 0;
             }
 
-            var fontWidth = numbers[0].Width;
+            int fontWidth = numbers[0].Width;
 
             // Draw the new number.
             while (digits-- != 0)
@@ -634,11 +632,11 @@ namespace ManagedDoom.Video
 
             if (t <= 61 * 59)
             {
-                var div = 1;
+                int div = 1;
 
                 do
                 {
-                    var n = (t / div) % 60;
+                    int n = (t / div) % 60;
                     x = DrawNumber(x, y, n, 2) - colon.Width;
                     div *= 60;
 
@@ -671,9 +669,9 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            for (var i = 0; i < im.Animations.Length; i++)
+            for (int i = 0; i < im.Animations.Length; i++)
             {
-                var a = im.Animations[i];
+                Animation a = im.Animations[i];
                 if (a.PatchNumber >= 0)
                 {
                     DrawPatch(a.Patches[a.PatchNumber], a.LocationX, a.LocationY);
@@ -683,17 +681,17 @@ namespace ManagedDoom.Video
 
         private void DrawSuitablePatch(IReadOnlyList<string> candidates, int x, int y)
         {
-            var fits = false;
-            var i = 0;
+            bool fits = false;
+            int i = 0;
 
             do
             {
-                var patch = cache[candidates[i]];
+                Patch patch = cache[candidates[i]];
 
-                var left = x - patch.LeftOffset;
-                var top = y - patch.TopOffset;
-                var right = left + patch.Width;
-                var bottom = top + patch.Height;
+                int left = x - patch.LeftOffset;
+                int top = y - patch.TopOffset;
+                int right = left + patch.Width;
+                int bottom = top + patch.Height;
 
                 if (left >= 0 && right < 320 && top >= 0 && bottom < 320)
                 {

@@ -21,16 +21,16 @@ namespace ManagedDoom
 {
     public sealed class Node
     {
-        private static readonly int dataSize = 28;
+        private static readonly int _dataSize = 28;
 
-        private Fixed x;
-        private Fixed y;
-        private Fixed dx;
-        private Fixed dy;
+        private readonly Fixed _x;
+        private readonly Fixed _y;
+        private readonly Fixed _dx;
+        private readonly Fixed _dy;
 
-        private Fixed[][] boundingBox;
+        private readonly Fixed[][] _boundingBox;
 
-        private int[] children;
+        private readonly int[] _children;
 
         public Node(
             Fixed x,
@@ -48,10 +48,10 @@ namespace ManagedDoom
             int frontChild,
             int backChild)
         {
-            this.x = x;
-            this.y = y;
-            this.dx = dx;
-            this.dy = dy;
+            _x = x;
+            _y = y;
+            _dx = dx;
+            _dy = dy;
 
             var frontBoundingBox = new Fixed[4]
             {
@@ -69,35 +69,35 @@ namespace ManagedDoom
                 backBoundingBoxRight
             };
 
-            boundingBox = new Fixed[][]
-            {
+            _boundingBox =
+            [
                 frontBoundingBox,
                 backBoundingBox
-            };
+            ];
 
-            children = new int[]
-            {
+            _children =
+            [
                 frontChild,
                 backChild
-            };
+            ];
         }
 
         public static Node FromData(byte[] data, int offset)
         {
-            var x = BitConverter.ToInt16(data, offset);
-            var y = BitConverter.ToInt16(data, offset + 2);
-            var dx = BitConverter.ToInt16(data, offset + 4);
-            var dy = BitConverter.ToInt16(data, offset + 6);
-            var frontBoundingBoxTop = BitConverter.ToInt16(data, offset + 8);
-            var frontBoundingBoxBottom = BitConverter.ToInt16(data, offset + 10);
-            var frontBoundingBoxLeft = BitConverter.ToInt16(data, offset + 12);
-            var frontBoundingBoxRight = BitConverter.ToInt16(data, offset + 14);
-            var backBoundingBoxTop = BitConverter.ToInt16(data, offset + 16);
-            var backBoundingBoxBottom = BitConverter.ToInt16(data, offset + 18);
-            var backBoundingBoxLeft = BitConverter.ToInt16(data, offset + 20);
-            var backBoundingBoxRight = BitConverter.ToInt16(data, offset + 22);
-            var frontChild = BitConverter.ToInt16(data, offset + 24);
-            var backChild = BitConverter.ToInt16(data, offset + 26);
+            short x = BitConverter.ToInt16(data, offset);
+            short y = BitConverter.ToInt16(data, offset + 2);
+            short dx = BitConverter.ToInt16(data, offset + 4);
+            short dy = BitConverter.ToInt16(data, offset + 6);
+            short frontBoundingBoxTop = BitConverter.ToInt16(data, offset + 8);
+            short frontBoundingBoxBottom = BitConverter.ToInt16(data, offset + 10);
+            short frontBoundingBoxLeft = BitConverter.ToInt16(data, offset + 12);
+            short frontBoundingBoxRight = BitConverter.ToInt16(data, offset + 14);
+            short backBoundingBoxTop = BitConverter.ToInt16(data, offset + 16);
+            short backBoundingBoxBottom = BitConverter.ToInt16(data, offset + 18);
+            short backBoundingBoxLeft = BitConverter.ToInt16(data, offset + 20);
+            short backBoundingBoxRight = BitConverter.ToInt16(data, offset + 22);
+            short frontChild = BitConverter.ToInt16(data, offset + 24);
+            short backChild = BitConverter.ToInt16(data, offset + 26);
 
             return new Node(
                 Fixed.FromInt(x),
@@ -116,21 +116,21 @@ namespace ManagedDoom
                 backChild);
         }
 
-        public static Node[] FromWad(Wad wad, int lump, Subsector[] subsectors)
+        public static Node[] FromWad(Wad wad, int lump)
         {
-            var length = wad.GetLumpSize(lump);
-            if (length % Node.dataSize != 0)
+            int length = wad.GetLumpSize(lump);
+            if (length % Node._dataSize != 0)
             {
                 throw new Exception();
             }
 
-            var data = wad.ReadLump(lump);
-            var count = length / Node.dataSize;
+            byte[] data = wad.ReadLump(lump);
+            int count = length / Node._dataSize;
             var nodes = new Node[count];
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var offset = Node.dataSize * i;
+                int offset = Node._dataSize * i;
                 nodes[i] = Node.FromData(data, offset);
             }
 
@@ -147,11 +147,11 @@ namespace ManagedDoom
             return node ^ unchecked((int)0xFFFF8000);
         }
 
-        public Fixed X => x;
-        public Fixed Y => y;
-        public Fixed Dx => dx;
-        public Fixed Dy => dy;
-        public Fixed[][] BoundingBox => boundingBox;
-        public int[] Children => children;
+        public Fixed X => _x;
+        public Fixed Y => _y;
+        public Fixed Dx => _dx;
+        public Fixed Dy => _dy;
+        public Fixed[][] BoundingBox => _boundingBox;
+        public int[] Children => _children;
     }
 }

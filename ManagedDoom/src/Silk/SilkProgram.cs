@@ -13,7 +13,7 @@ namespace ManagedDoom.Silk
 
             try
             {
-                string quitMessage = null;
+                string? quitMessage = null;
 
                 using (var app = new SilkDoom(new CommandLineArgs(args)))
                 {

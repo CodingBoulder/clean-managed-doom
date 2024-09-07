@@ -29,7 +29,7 @@ namespace ManagedDoom
 
         public static int GetMobjHash(Mobj mobj)
         {
-            var hash = 0;
+            int hash = 0;
 
             hash = CombineHash(hash, mobj.X.Data);
             hash = CombineHash(hash, mobj.Y.Data);
@@ -64,8 +64,8 @@ namespace ManagedDoom
 
         public static int GetMobjHash(World world)
         {
-            var hash = 0;
-            foreach (var thinker in world.Thinkers)
+            int hash = 0;
+            foreach (Thinker thinker in world.Thinkers)
             {
                 var mobj = thinker as Mobj;
                 if (mobj != null)
@@ -114,7 +114,7 @@ namespace ManagedDoom
         public static void DumpMobjCsv(string path, World world)
         {
             using var writer = new System.IO.StreamWriter(path);
-            foreach (var thinker in world.Thinkers)
+            foreach (Thinker thinker in world.Thinkers)
             {
                 var mobj = thinker as Mobj;
                 if (mobj != null)
@@ -126,7 +126,7 @@ namespace ManagedDoom
 
         public static int GetSectorHash(Sector sector)
         {
-            var hash = 0;
+            int hash = 0;
 
             hash = CombineHash(hash, sector.FloorHeight.Data);
             hash = CombineHash(hash, sector.CeilingHeight.Data);
@@ -137,8 +137,8 @@ namespace ManagedDoom
 
         public static int GetSectorHash(World world)
         {
-            var hash = 0;
-            foreach (var sector in world.Map.Sectors)
+            int hash = 0;
+            foreach (Sector sector in world.Map.Sectors)
             {
                 hash = CombineHash(hash, GetSectorHash(sector));
             }

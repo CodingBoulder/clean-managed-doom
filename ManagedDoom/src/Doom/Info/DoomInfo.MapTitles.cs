@@ -24,10 +24,9 @@ namespace ManagedDoom
     {
         public static class MapTitles
         {
-            public static IReadOnlyList<IReadOnlyList<DoomString>> Doom = new DoomString[][]
-            {
-                new DoomString[]
-                {
+            public static IReadOnlyList<IReadOnlyList<DoomString>> Doom =
+            [
+                [
                     Strings.HUSTR_E1M1,
                     Strings.HUSTR_E1M2,
                     Strings.HUSTR_E1M3,
@@ -37,10 +36,9 @@ namespace ManagedDoom
                     Strings.HUSTR_E1M7,
                     Strings.HUSTR_E1M8,
                     Strings.HUSTR_E1M9
-                },
+                ],
 
-                new DoomString[]
-                {
+                [
                     Strings.HUSTR_E2M1,
                     Strings.HUSTR_E2M2,
                     Strings.HUSTR_E2M3,
@@ -50,10 +48,9 @@ namespace ManagedDoom
                     Strings.HUSTR_E2M7,
                     Strings.HUSTR_E2M8,
                     Strings.HUSTR_E2M9
-                },
+                ],
 
-                new DoomString[]
-                {
+                [
                     Strings.HUSTR_E3M1,
                     Strings.HUSTR_E3M2,
                     Strings.HUSTR_E3M3,
@@ -63,10 +60,9 @@ namespace ManagedDoom
                     Strings.HUSTR_E3M7,
                     Strings.HUSTR_E3M8,
                     Strings.HUSTR_E3M9
-                },
+                ],
 
-                new DoomString[]
-                {
+                [
                     Strings.HUSTR_E4M1,
                     Strings.HUSTR_E4M2,
                     Strings.HUSTR_E4M3,
@@ -76,11 +72,11 @@ namespace ManagedDoom
                     Strings.HUSTR_E4M7,
                     Strings.HUSTR_E4M8,
                     Strings.HUSTR_E4M9
-                }
-            };
+                ]
+            ];
 
-            public static IReadOnlyList<DoomString> Doom2 = new DoomString[]
-            {
+            public static IReadOnlyList<DoomString> Doom2 =
+            [
                 Strings.HUSTR_1,
                 Strings.HUSTR_2,
                 Strings.HUSTR_3,
@@ -113,10 +109,10 @@ namespace ManagedDoom
                 Strings.HUSTR_30,
                 Strings.HUSTR_31,
                 Strings.HUSTR_32
-            };
+            ];
 
-            public static IReadOnlyList<DoomString> Plutonia = new DoomString[]
-            {
+            public static IReadOnlyList<DoomString> Plutonia =
+            [
                 Strings.PHUSTR_1,
                 Strings.PHUSTR_2,
                 Strings.PHUSTR_3,
@@ -149,10 +145,10 @@ namespace ManagedDoom
                 Strings.PHUSTR_30,
                 Strings.PHUSTR_31,
                 Strings.PHUSTR_32
-            };
+            ];
 
-            public static IReadOnlyList<DoomString> Tnt = new DoomString[]
-            {
+            public static IReadOnlyList<DoomString> Tnt =
+            [
                 Strings.THUSTR_1,
                 Strings.THUSTR_2,
                 Strings.THUSTR_3,
@@ -185,7 +181,7 @@ namespace ManagedDoom
                 Strings.THUSTR_30,
                 Strings.THUSTR_31,
                 Strings.THUSTR_32
-            };
+            ];
         }
     }
 }

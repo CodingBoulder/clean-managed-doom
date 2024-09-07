@@ -21,26 +21,21 @@ namespace ManagedDoom
 {
     public sealed class Flat
     {
-        private string name;
-        private byte[] data;
+        private readonly string _name;
+        private readonly byte[] _data;
 
         public Flat(string name, byte[] data)
         {
-            this.name = name;
-            this.data = data;
-        }
-
-        public static Flat FromData(string name, byte[] data)
-        {
-            return new Flat(name, data);
+            _name = name;
+            _data = data;
         }
 
         public override string ToString()
         {
-            return name;
+            return _name;
         }
 
-        public string Name => name;
-        public byte[] Data => data;
+        public string Name => _name;
+        public byte[] Data => _data;
     }
 }

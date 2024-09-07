@@ -21,16 +21,16 @@ namespace ManagedDoom.Audio
 {
     public sealed class NullSound : ISound
     {
-        private static NullSound instance;
+        private static NullSound _instance;
 
         public static NullSound GetInstance()
         {
-            if (instance == null)
+            if (_instance == null)
             {
-                instance = new NullSound();
+                _instance = new NullSound();
             }
 
-            return instance;
+            return _instance;
         }
 
         public void SetListener(Mobj listerner)

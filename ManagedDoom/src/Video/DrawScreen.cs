@@ -22,11 +22,11 @@ namespace ManagedDoom.Video
 {
     public sealed class DrawScreen
     {
-        private int width;
-        private int height;
-        private byte[] data;
+        private readonly int width;
+        private readonly int height;
+        private readonly byte[] data;
 
-        private Patch[] chars;
+        private readonly Patch[] chars;
 
         public DrawScreen(Wad wad, int width, int height)
         {
@@ -35,10 +35,10 @@ namespace ManagedDoom.Video
             data = new byte[width * height];
 
             chars = new Patch[128];
-            for (var i = 0; i < chars.Length; i++)
+            for (int i = 0; i < chars.Length; i++)
             {
-                var name = "STCFN" + i.ToString("000");
-                var lump = wad.GetLumpNumber(name);
+                string name = "STCFN" + i.ToString("000");
+                int lump = wad.GetLumpNumber(name);
                 if (lump != -1)
                 {
                     chars[i] = Patch.FromData(name, wad.ReadLump(lump));
@@ -48,24 +48,24 @@ namespace ManagedDoom.Video
 
         public void DrawPatch(Patch patch, int x, int y, int scale)
         {
-            var drawX = x - scale * patch.LeftOffset;
-            var drawY = y - scale * patch.TopOffset;
-            var drawWidth = scale * patch.Width;
+            int drawX = x - scale * patch.LeftOffset;
+            int drawY = y - scale * patch.TopOffset;
+            int drawWidth = scale * patch.Width;
 
-            var i = 0;
-            var frac = Fixed.One / scale - Fixed.Epsilon;
-            var step = Fixed.One / scale;
+            int i = 0;
+            Fixed frac = Fixed.One / scale - Fixed.Epsilon;
+            Fixed step = Fixed.One / scale;
 
             if (drawX < 0)
             {
-                var exceed = -drawX;
+                int exceed = -drawX;
                 frac += exceed * step;
                 i += exceed;
             }
 
             if (drawX + drawWidth > width)
             {
-                var exceed = drawX + drawWidth - width;
+                int exceed = drawX + drawWidth - width;
                 drawWidth -= exceed;
             }
 
@@ -78,30 +78,30 @@ namespace ManagedDoom.Video
 
         public void DrawPatchFlip(Patch patch, int x, int y, int scale)
         {
-            var drawX = x - scale * patch.LeftOffset;
-            var drawY = y - scale * patch.TopOffset;
-            var drawWidth = scale * patch.Width;
+            int drawX = x - scale * patch.LeftOffset;
+            int drawY = y - scale * patch.TopOffset;
+            int drawWidth = scale * patch.Width;
 
-            var i = 0;
-            var frac = Fixed.One / scale - Fixed.Epsilon;
-            var step = Fixed.One / scale;
+            int i = 0;
+            Fixed frac = Fixed.One / scale - Fixed.Epsilon;
+            Fixed step = Fixed.One / scale;
 
             if (drawX < 0)
             {
-                var exceed = -drawX;
+                int exceed = -drawX;
                 frac += exceed * step;
                 i += exceed;
             }
 
             if (drawX + drawWidth > width)
             {
-                var exceed = drawX + drawWidth - width;
+                int exceed = drawX + drawWidth - width;
                 drawWidth -= exceed;
             }
 
             for (; i < drawWidth; i++)
             {
-                var col = patch.Width - frac.ToIntFloor() - 1;
+                int col = patch.Width - frac.ToIntFloor() - 1;
                 DrawColumn(patch.Columns[col], drawX + i, drawY, scale);
                 frac += step;
             }
@@ -109,24 +109,24 @@ namespace ManagedDoom.Video
 
         private void DrawColumn(Column[] source, int x, int y, int scale)
         {
-            var step = Fixed.One / scale;
+            Fixed step = Fixed.One / scale;
 
-            foreach (var column in source)
+            foreach (Column column in source)
             {
-                var exTopDelta = scale * column.TopDelta;
-                var exLength = scale * column.Length;
+                int exTopDelta = scale * column.TopDelta;
+                int exLength = scale * column.Length;
 
-                var sourceIndex = column.Offset;
-                var drawY = y + exTopDelta;
-                var drawLength = exLength;
+                int sourceIndex = column.Offset;
+                int drawY = y + exTopDelta;
+                int drawLength = exLength;
 
-                var i = 0;
-                var p = height * x + drawY;
-                var frac = Fixed.One / scale - Fixed.Epsilon;
+                int i = 0;
+                int p = height * x + drawY;
+                Fixed frac = Fixed.One / scale - Fixed.Epsilon;
 
                 if (drawY < 0)
                 {
-                    var exceed = -drawY;
+                    int exceed = -drawY;
                     p += exceed;
                     frac += exceed * step;
                     i += exceed;
@@ -134,7 +134,7 @@ namespace ManagedDoom.Video
 
                 if (drawY + drawLength > height)
                 {
-                    var exceed = drawY + drawLength - height;
+                    int exceed = drawY + drawLength - height;
                     drawLength -= exceed;
                 }
 
@@ -149,9 +149,9 @@ namespace ManagedDoom.Video
 
         public void DrawText(IReadOnlyList<char> text, int x, int y, int scale)
         {
-            var drawX = x;
-            var drawY = y - 7 * scale;
-            foreach (var ch in text)
+            int drawX = x;
+            int drawY = y - 7 * scale;
+            foreach (char ch in text)
             {
                 if (ch >= chars.Length)
                 {
@@ -164,13 +164,13 @@ namespace ManagedDoom.Video
                     continue;
                 }
 
-                var index = (int)ch;
+                int index = (int)ch;
                 if ('a' <= index && index <= 'z')
                 {
                     index = index - 'a' + 'A';
                 }
 
-                var patch = chars[index];
+                Patch patch = chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -184,8 +184,8 @@ namespace ManagedDoom.Video
 
         public void DrawChar(char ch, int x, int y, int scale)
         {
-            var drawX = x;
-            var drawY = y - 7 * scale;
+            int drawX = x;
+            int drawY = y - 7 * scale;
 
             if (ch >= chars.Length)
             {
@@ -197,13 +197,13 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            var index = (int)ch;
+            int index = (int)ch;
             if ('a' <= index && index <= 'z')
             {
                 index = index - 'a' + 'A';
             }
 
-            var patch = chars[index];
+            Patch patch = chars[index];
             if (patch == null)
             {
                 return;
@@ -214,9 +214,9 @@ namespace ManagedDoom.Video
 
         public void DrawText(string text, int x, int y, int scale)
         {
-            var drawX = x;
-            var drawY = y - 7 * scale;
-            foreach (var ch in text)
+            int drawX = x;
+            int drawY = y - 7 * scale;
+            foreach (char ch in text)
             {
                 if (ch >= chars.Length)
                 {
@@ -229,13 +229,13 @@ namespace ManagedDoom.Video
                     continue;
                 }
 
-                var index = (int)ch;
+                int index = (int)ch;
                 if ('a' <= index && index <= 'z')
                 {
                     index = index - 'a' + 'A';
                 }
 
-                var patch = chars[index];
+                Patch patch = chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -259,13 +259,13 @@ namespace ManagedDoom.Video
                 return 4 * scale;
             }
 
-            var index = (int)ch;
+            int index = (int)ch;
             if ('a' <= index && index <= 'z')
             {
                 index = index - 'a' + 'A';
             }
 
-            var patch = chars[index];
+            Patch patch = chars[index];
             if (patch == null)
             {
                 return 0;
@@ -276,9 +276,9 @@ namespace ManagedDoom.Video
 
         public int MeasureText(IReadOnlyList<char> text, int scale)
         {
-            var width = 0;
+            int width = 0;
 
-            foreach (var ch in text)
+            foreach (char ch in text)
             {
                 if (ch >= chars.Length)
                 {
@@ -291,13 +291,13 @@ namespace ManagedDoom.Video
                     continue;
                 }
 
-                var index = (int)ch;
+                int index = (int)ch;
                 if ('a' <= index && index <= 'z')
                 {
                     index = index - 'a' + 'A';
                 }
 
-                var patch = chars[index];
+                Patch patch = chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -311,9 +311,9 @@ namespace ManagedDoom.Video
 
         public int MeasureText(string text, int scale)
         {
-            var width = 0;
+            int width = 0;
 
-            foreach (var ch in text)
+            foreach (char ch in text)
             {
                 if (ch >= chars.Length)
                 {
@@ -326,13 +326,13 @@ namespace ManagedDoom.Video
                     continue;
                 }
 
-                var index = (int)ch;
+                int index = (int)ch;
                 if ('a' <= index && index <= 'z')
                 {
                     index = index - 'a' + 'A';
                 }
 
-                var patch = chars[index];
+                Patch patch = chars[index];
                 if (patch == null)
                 {
                     continue;
@@ -346,12 +346,12 @@ namespace ManagedDoom.Video
 
         public void FillRect(int x, int y, int w, int h, int color)
         {
-            var x1 = x;
-            var x2 = x + w;
-            for (var drawX = x1; drawX < x2; drawX++)
+            int x1 = x;
+            int x2 = x + w;
+            for (int drawX = x1; drawX < x2; drawX++)
             {
-                var pos = height * drawX + y;
-                for (var i = 0; i < h; i++)
+                int pos = height * drawX + y;
+                for (int i = 0; i < h; i++)
                 {
                     data[pos] = (byte)color;
                     pos++;
@@ -373,7 +373,7 @@ namespace ManagedDoom.Video
 
         private OutCode ComputeOutCode(float x, float y)
         {
-            var code = OutCode.Inside;
+            OutCode code = OutCode.Inside;
 
             if (x < 0)
             {
@@ -398,10 +398,10 @@ namespace ManagedDoom.Video
 
         public void DrawLine(float x1, float y1, float x2, float y2, int color)
         {
-            var outCode1 = ComputeOutCode(x1, y1);
-            var outCode2 = ComputeOutCode(x2, y2);
+            OutCode outCode1 = ComputeOutCode(x1, y1);
+            OutCode outCode2 = ComputeOutCode(x2, y2);
 
-            var accept = false;
+            bool accept = false;
 
             while (true)
             {
@@ -416,10 +416,10 @@ namespace ManagedDoom.Video
                 }
                 else
                 {
-                    var x = 0.0F;
-                    var y = 0.0F;
+                    float x = 0.0F;
+                    float y = 0.0F;
 
-                    var outcodeOut = outCode2 > outCode1 ? outCode2 : outCode1;
+                    OutCode outcodeOut = outCode2 > outCode1 ? outCode2 : outCode1;
 
                     if ((outcodeOut & OutCode.Top) != 0)
                     {
@@ -459,30 +459,30 @@ namespace ManagedDoom.Video
 
             if (accept)
             {
-                var bx1 = Math.Clamp((int)x1, 0, width - 1);
-                var by1 = Math.Clamp((int)y1, 0, height - 1);
-                var bx2 = Math.Clamp((int)x2, 0, width - 1);
-                var by2 = Math.Clamp((int)y2, 0, height - 1);
+                int bx1 = Math.Clamp((int)x1, 0, width - 1);
+                int by1 = Math.Clamp((int)y1, 0, height - 1);
+                int bx2 = Math.Clamp((int)x2, 0, width - 1);
+                int by2 = Math.Clamp((int)y2, 0, height - 1);
                 Bresenham(bx1, by1, bx2, by2, color);
             }
         }
 
         private void Bresenham(int x1, int y1, int x2, int y2, int color)
         {
-            var dx = x2 - x1;
-            var ax = 2 * (dx < 0 ? -dx : dx);
-            var sx = dx < 0 ? -1 : 1;
+            int dx = x2 - x1;
+            int ax = 2 * (dx < 0 ? -dx : dx);
+            int sx = dx < 0 ? -1 : 1;
 
-            var dy = y2 - y1;
-            var ay = 2 * (dy < 0 ? -dy : dy);
-            var sy = dy < 0 ? -1 : 1;
+            int dy = y2 - y1;
+            int ay = 2 * (dy < 0 ? -dy : dy);
+            int sy = dy < 0 ? -1 : 1;
 
-            var x = x1;
-            var y = y1;
+            int x = x1;
+            int y = y1;
 
             if (ax > ay)
             {
-                var d = ay - ax / 2;
+                int d = ay - ax / 2;
 
                 while (true)
                 {
@@ -505,7 +505,7 @@ namespace ManagedDoom.Video
             }
             else
             {
-                var d = ax - ay / 2;
+                int d = ax - ay / 2;
                 while (true)
                 {
                     data[height * x + y] = (byte)color;

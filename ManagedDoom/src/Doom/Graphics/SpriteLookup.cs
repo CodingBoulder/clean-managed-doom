@@ -23,7 +23,7 @@ namespace ManagedDoom
 {
     public sealed class SpriteLookup : ISpriteLookup
     {
-        private SpriteDef[] spriteDefs;
+        private readonly SpriteDef[] _spriteDefs;
 
         public SpriteLookup(Wad wad)
         {
@@ -32,25 +32,25 @@ namespace ManagedDoom
                 Console.Write("Load sprites: ");
 
                 var temp = new Dictionary<string, List<SpriteInfo>>();
-                for (var i = 0; i < (int)Sprite.Count; i++)
+                for (int i = 0; i < (int)Sprite.Count; i++)
                 {
                     temp.TryAdd(DoomInfo.SpriteNames[i], []);
                 }
 
                 var cache = new Dictionary<int, Patch>();
 
-                foreach (var lump in EnumerateSprites(wad))
+                foreach (int lump in EnumerateSprites(wad))
                 {
-                    var name = wad.LumpInfos[lump].Name.Substring(0, 4);
+                    string name = wad.LumpInfos[lump].Name.Substring(0, 4);
 
-                    if (!temp.TryGetValue(name, out List<SpriteInfo> sprites))
+                    if (!temp.TryGetValue(name, out List<SpriteInfo>? sprites))
                     {
                         continue;
                     }
 
                     {
-                        var frame = wad.LumpInfos[lump].Name[4] - 'A';
-                        var rotation = wad.LumpInfos[lump].Name[5] - '0';
+                        int frame = wad.LumpInfos[lump].Name[4] - 'A';
+                        int rotation = wad.LumpInfos[lump].Name[5] - '0';
 
                         while (sprites.Count < frame + 1)
                         {
@@ -59,7 +59,7 @@ namespace ManagedDoom
 
                         if (rotation == 0)
                         {
-                            for (var i = 0; i < 8; i++)
+                            for (int i = 0; i < 8; i++)
                             {
                                 if (sprites[frame].Patches[i] == null)
                                 {
@@ -80,8 +80,8 @@ namespace ManagedDoom
 
                     if (wad.LumpInfos[lump].Name.Length == 8)
                     {
-                        var frame = wad.LumpInfos[lump].Name[6] - 'A';
-                        var rotation = wad.LumpInfos[lump].Name[7] - '0';
+                        int frame = wad.LumpInfos[lump].Name[6] - 'A';
+                        int rotation = wad.LumpInfos[lump].Name[7] - '0';
 
                         while (sprites.Count < frame + 1)
                         {
@@ -90,7 +90,7 @@ namespace ManagedDoom
 
                         if (rotation == 0)
                         {
-                            for (var i = 0; i < 8; i++)
+                            for (int i = 0; i < 8; i++)
                             {
                                 if (sprites[frame].Patches[i] == null)
                                 {
@@ -110,13 +110,13 @@ namespace ManagedDoom
                     }
                 }
 
-                spriteDefs = new SpriteDef[(int)Sprite.Count];
-                for (var i = 0; i < spriteDefs.Length; i++)
+                _spriteDefs = new SpriteDef[(int)Sprite.Count];
+                for (int i = 0; i < _spriteDefs.Length; i++)
                 {
-                    var list = temp[DoomInfo.SpriteNames[i]];
+                    List<SpriteInfo> list = temp[DoomInfo.SpriteNames[i]];
 
                     var frames = new SpriteFrame[list.Count];
-                    for (var j = 0; j < frames.Length; j++)
+                    for (int j = 0; j < frames.Length; j++)
                     {
                         list[j].CheckCompletion();
 
@@ -124,7 +124,7 @@ namespace ManagedDoom
                         frames[j] = frame;
                     }
 
-                    spriteDefs[i] = new SpriteDef(frames);
+                    _spriteDefs[i] = new SpriteDef(frames);
                 }
 
                 Console.WriteLine("OK (" + cache.Count + " sprites)");
@@ -138,11 +138,11 @@ namespace ManagedDoom
 
         private static IEnumerable<int> EnumerateSprites(Wad wad)
         {
-            var spriteSection = false;
+            bool spriteSection = false;
 
-            for (var lump = wad.LumpInfos.Count - 1; lump >= 0; lump--)
+            for (int lump = wad.LumpInfos.Count - 1; lump >= 0; lump--)
             {
-                var name = wad.LumpInfos[lump].Name;
+                string name = wad.LumpInfos[lump].Name;
 
                 if (name.StartsWith("S"))
                 {
@@ -170,9 +170,9 @@ namespace ManagedDoom
 
         private static Patch CachedRead(int lump, Wad wad, Dictionary<int, Patch> cache)
         {
-            if (!cache.TryGetValue(lump, out Patch patch))
+            if (!cache.TryGetValue(lump, out Patch? patch))
             {
-                var name = wad.LumpInfos[lump].Name;
+                string name = wad.LumpInfos[lump].Name;
 
                 patch = Patch.FromData(name, wad.ReadLump(lump));
 
@@ -186,7 +186,7 @@ namespace ManagedDoom
         {
             get
             {
-                return spriteDefs[(int)sprite];
+                return _spriteDefs[(int)sprite];
             }
         }
 
@@ -205,7 +205,7 @@ namespace ManagedDoom
 
             public void CheckCompletion()
             {
-                for (var i = 0; i < Patches.Length; i++)
+                for (int i = 0; i < Patches.Length; i++)
                 {
                     if (Patches[i] == null)
                     {
@@ -216,7 +216,7 @@ namespace ManagedDoom
 
             public bool HasRotation()
             {
-                for (var i = 1; i < Patches.Length; i++)
+                for (int i = 1; i < Patches.Length; i++)
                 {
                     if (Patches[i] != Patches[0])
                     {

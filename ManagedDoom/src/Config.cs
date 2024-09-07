@@ -54,74 +54,62 @@ namespace ManagedDoom
         public string audio_soundfont;
         public bool audio_musiceffect;
 
-        private bool isRestoredFromFile;
+        private readonly bool _isRestoredFromFile;
 
         // Default settings.
         public Config()
         {
             key_forward = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.Up,
                     DoomKey.W
-                });
+                ]);
             key_backward = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.Down,
                     DoomKey.S
-                });
+                ]);
             key_strafeleft = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.A
-                });
+                ]);
             key_straferight = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.D
-                });
+                ]);
             key_turnleft = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.Left
-                });
+                ]);
             key_turnright = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.Right
-                });
+                ]);
             key_fire = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.LControl,
                     DoomKey.RControl
-                },
-                new DoomMouseButton[]
-                {
+                ],
+                [
                     DoomMouseButton.Mouse1
-                });
+                ]);
             key_use = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.Space
-                },
-                new DoomMouseButton[]
-                {
+                ],
+                [
                     DoomMouseButton.Mouse2
-                });
+                ]);
             key_run = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.LShift,
                     DoomKey.RShift
-                });
+                ]);
             key_strafe = new KeyBinding(
-                new DoomKey[]
-                {
+                [
                     DoomKey.LAlt,
                     DoomKey.RAlt
-                });
+                ]);
 
             mouse_sensitivity = 8;
             mouse_disableyaxis = false;
@@ -143,7 +131,7 @@ namespace ManagedDoom
             audio_soundfont = "TimGM6mb.sf2";
             audio_musiceffect = true;
 
-            isRestoredFromFile = false;
+            _isRestoredFromFile = false;
         }
 
         public Config(string path) : this()
@@ -153,9 +141,9 @@ namespace ManagedDoom
                 Console.Write("Restore settings: ");
 
                 var dic = new Dictionary<string, string>();
-                foreach (var line in File.ReadLines(path))
+                foreach (string line in File.ReadLines(path))
                 {
-                    var split = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
+                    string[] split = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
                     if (split.Length == 2)
                     {
                         dic[split[0].Trim()] = split[1].Trim();
@@ -193,7 +181,7 @@ namespace ManagedDoom
                 audio_soundfont = GetString(dic, nameof(audio_soundfont), audio_soundfont);
                 audio_musiceffect = GetBool(dic, nameof(audio_musiceffect), audio_musiceffect);
 
-                isRestoredFromFile = true;
+                _isRestoredFromFile = true;
 
                 Console.WriteLine("OK");
             }
@@ -246,11 +234,9 @@ namespace ManagedDoom
 
         private static int GetInt(Dictionary<string, string> dic, string name, int defaultValue)
         {
-            string stringValue;
-            if (dic.TryGetValue(name, out stringValue))
+            if (dic.TryGetValue(name, out string? stringValue))
             {
-                int value;
-                if (int.TryParse(stringValue, out value))
+                if (int.TryParse(stringValue, out int value))
                 {
                     return value;
                 }
@@ -261,8 +247,7 @@ namespace ManagedDoom
 
         private static string GetString(Dictionary<string, string> dic, string name, string defaultValue)
         {
-            string stringValue;
-            if (dic.TryGetValue(name, out stringValue))
+            if (dic.TryGetValue(name, out string? stringValue))
             {
                 return stringValue;
             }
@@ -272,8 +257,7 @@ namespace ManagedDoom
 
         private static bool GetBool(Dictionary<string, string> dic, string name, bool defaultValue)
         {
-            string stringValue;
-            if (dic.TryGetValue(name, out stringValue))
+            if (dic.TryGetValue(name, out string? stringValue))
             {
                 if (stringValue == "true")
                 {
@@ -290,8 +274,7 @@ namespace ManagedDoom
 
         private static KeyBinding GetKeyBinding(Dictionary<string, string> dic, string name, KeyBinding defaultValue)
         {
-            string stringValue;
-            if (dic.TryGetValue(name, out stringValue))
+            if (dic.TryGetValue(name, out string? stringValue))
             {
                 return KeyBinding.Parse(stringValue);
             }
@@ -304,6 +287,6 @@ namespace ManagedDoom
             return value ? "true" : "false";
         }
 
-        public bool IsRestoredFromFile => isRestoredFromFile;
+        public bool IsRestoredFromFile => _isRestoredFromFile;
     }
 }

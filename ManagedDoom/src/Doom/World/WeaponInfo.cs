@@ -21,12 +21,12 @@ namespace ManagedDoom
 {
     public sealed class WeaponInfo
     {
-        private AmmoType ammo;
-        private MobjState upState;
-        private MobjState downState;
-        private MobjState readyState;
-        private MobjState attackState;
-        private MobjState flashState;
+        private AmmoType _ammo;
+        private MobjState _upState;
+        private MobjState _downState;
+        private MobjState _readyState;
+        private MobjState _attackState;
+        private MobjState _flashState;
 
         public WeaponInfo(
             AmmoType ammo,
@@ -36,48 +36,48 @@ namespace ManagedDoom
             MobjState attackState,
             MobjState flashState)
         {
-            this.ammo = ammo;
-            this.upState = upState;
-            this.downState = downState;
-            this.readyState = readyState;
-            this.attackState = attackState;
-            this.flashState = flashState;
+            _ammo = ammo;
+            _upState = upState;
+            _downState = downState;
+            _readyState = readyState;
+            _attackState = attackState;
+            _flashState = flashState;
         }
 
         public AmmoType Ammo
         {
-            get => ammo;
-            set => ammo = value;
+            get => _ammo;
+            set => _ammo = value;
         }
 
         public MobjState UpState
         {
-            get => upState;
-            set => upState = value;
+            get => _upState;
+            set => _upState = value;
         }
 
         public MobjState DownState
         {
-            get => downState;
-            set => downState = value;
+            get => _downState;
+            set => _downState = value;
         }
 
         public MobjState ReadyState
         {
-            get => readyState;
-            set => readyState = value;
+            get => _readyState;
+            set => _readyState = value;
         }
 
         public MobjState AttackState
         {
-            get => attackState;
-            set => attackState = value;
+            get => _attackState;
+            set => _attackState = value;
         }
 
         public MobjState FlashState
         {
-            get => flashState;
-            set => flashState = value;
+            get => _flashState;
+            set => _flashState = value;
         }
     }
 }

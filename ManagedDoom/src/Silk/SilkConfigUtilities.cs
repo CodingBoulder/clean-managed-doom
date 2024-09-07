@@ -31,7 +31,7 @@ namespace ManagedDoom.Silk
 
             if (!config.IsRestoredFromFile)
             {
-                var vm = GetDefaultVideoMode();
+                VideoMode vm = GetDefaultVideoMode();
                 config.video_screenwidth = vm.Resolution.Value.X;
                 config.video_screenheight = vm.Resolution.Value.Y;
             }
@@ -41,18 +41,18 @@ namespace ManagedDoom.Silk
 
         public static VideoMode GetDefaultVideoMode()
         {
-            var monitor = Monitor.GetMainMonitor(null);
+            IMonitor monitor = Monitor.GetMainMonitor(null);
 
-            var baseWidth = 640;
-            var baseHeight = 400;
+            int baseWidth = 640;
+            int baseHeight = 400;
 
-            var currentWidth = baseWidth;
-            var currentHeight = baseHeight;
+            int currentWidth = baseWidth;
+            int currentHeight = baseHeight;
 
             while (true)
             {
-                var nextWidth = currentWidth + baseWidth;
-                var nextHeight = currentHeight + baseHeight;
+                int nextWidth = currentWidth + baseWidth;
+                int nextHeight = currentHeight + baseHeight;
 
                 if (nextWidth >= 0.9 * monitor.VideoMode.Resolution.Value.X ||
                     nextHeight >= 0.9 * monitor.VideoMode.Resolution.Value.Y)
@@ -67,16 +67,21 @@ namespace ManagedDoom.Silk
             return new VideoMode(new Vector2D<int>(currentWidth, currentHeight));
         }
 
-        public static SilkMusic GetMusicInstance(Config config, GameContent content, AudioDevice device)
+        public static SilkMusic? GetMusicInstance(Config config, GameContent content, AudioDevice device)
         {
-            var sfPath = Path.Combine(ConfigUtilities.GetExeDirectory(), config.audio_soundfont);
+            string sfPath = Path.Combine(
+                ConfigUtilities.GetExeDirectory() ?? string.Empty,
+                config.audio_soundfont);
+
             if (File.Exists(sfPath))
             {
                 return new SilkMusic(config, content, device, sfPath);
             }
             else
             {
-                Console.WriteLine("SoundFont '" + config.audio_soundfont + "' was not found!");
+                Console.WriteLine(
+                    $"SoundFont '{config.audio_soundfont}' was not found at: {sfPath}!");
+
                 return null;
             }
         }

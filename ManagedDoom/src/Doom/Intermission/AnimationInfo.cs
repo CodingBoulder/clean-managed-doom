@@ -22,43 +22,42 @@ namespace ManagedDoom
 {
     public sealed class AnimationInfo
     {
-        private AnimationType type;
-        private int period;
-        private int count;
-        private int x;
-        private int y;
-        private int data;
+        private readonly AnimationType _type;
+        private readonly int _period;
+        private readonly int _count;
+        private readonly int _x;
+        private readonly int _y;
+        private readonly int _data;
 
         public AnimationInfo(AnimationType type, int period, int count, int x, int y)
         {
-            this.type = type;
-            this.period = period;
-            this.count = count;
-            this.x = x;
-            this.y = y;
+            _type = type;
+            _period = period;
+            _count = count;
+            _x = x;
+            _y = y;
         }
 
         public AnimationInfo(AnimationType type, int period, int count, int x, int y, int data)
         {
-            this.type = type;
-            this.period = period;
-            this.count = count;
-            this.x = x;
-            this.y = y;
-            this.data = data;
+            _type = type;
+            _period = period;
+            _count = count;
+            _x = x;
+            _y = y;
+            _data = data;
         }
 
-        public AnimationType Type => type;
-        public int Period => period;
-        public int Count => count;
-        public int X => x;
-        public int Y => y;
-        public int Data => data;
+        public AnimationType Type => _type;
+        public int Period => _period;
+        public int Count => _count;
+        public int X => _x;
+        public int Y => _y;
+        public int Data => _data;
 
-        public static readonly IReadOnlyList<IReadOnlyList<AnimationInfo>> Episodes = new AnimationInfo[][]
-        {
-            new AnimationInfo[]
-            {
+        public static readonly IReadOnlyList<IReadOnlyList<AnimationInfo>> Episodes =
+        [
+            [
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 224, 104),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 184, 160),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 112, 136),
@@ -69,10 +68,9 @@ namespace ManagedDoom
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 136, 16),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 80, 16),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 64, 24)
-            },
+            ],
 
-            new AnimationInfo[]
-            {
+            [
                 new AnimationInfo(AnimationType.Level, GameConst.TicRate / 3, 1, 128, 136, 1),
                 new AnimationInfo(AnimationType.Level, GameConst.TicRate / 3, 1, 128, 136, 2),
                 new AnimationInfo(AnimationType.Level, GameConst.TicRate / 3, 1, 128, 136, 3),
@@ -82,17 +80,16 @@ namespace ManagedDoom
                 new AnimationInfo(AnimationType.Level, GameConst.TicRate / 3, 1, 128, 136, 7),
                 new AnimationInfo(AnimationType.Level, GameConst.TicRate / 3, 3, 192, 144, 8),
                 new AnimationInfo(AnimationType.Level, GameConst.TicRate / 3, 1, 128, 136, 8)
-            },
+            ],
 
-            new AnimationInfo[]
-            {
+            [
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 104, 168),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 40, 136),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 160, 96),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 104, 80),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 3, 3, 120, 32),
                 new AnimationInfo(AnimationType.Always, GameConst.TicRate / 4, 3, 40, 0)
-            }
-        };
+            ]
+        ];
     }
 }

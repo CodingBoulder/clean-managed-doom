@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly DoomString[] BgmNames = new DoomString[]
-        {
+        public static readonly DoomString[] BgmNames =
+        [
             new DoomString("none"),
             new DoomString("e1m1"),
             new DoomString("e1m2"),
@@ -91,6 +91,6 @@ namespace ManagedDoom
             new DoomString("read_m"),
             new DoomString("dm2ttl"),
             new DoomString("dm2int")
-        };
+        ];
     }
 }

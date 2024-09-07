@@ -13,65 +13,65 @@ namespace ManagedDoom.Silk
 {
     public partial class SilkDoom : IDisposable
     {
-        private CommandLineArgs args;
+        private readonly CommandLineArgs _args;
 
-        private Config config;
-        private GameContent content;
+        private readonly Config _config;
+        private readonly GameContent _content;
 
-        private IWindow window;
+        private IWindow? _window;
 
-        private GL gl;
-        private SilkVideo video;
+        private GL? _gl;
+        private SilkVideo? _video;
 
-        private AudioDevice audioDevice;
-        private SilkSound sound;
-        private SilkMusic music;
+        private AudioDevice? _audioDevice;
+        private SilkSound? _sound;
+        private SilkMusic? _music;
 
-        private SilkUserInput userInput;
+        private SilkUserInput? _userInput;
 
-        private Doom doom;
+        private Doom _doom;
 
-        private int fpsScale;
-        private int frameCount;
+        private int _fpsScale;
+        private int _frameCount;
 
-        private Exception exception;
+        private Exception _exception;
 
-        private CancellationTokenSource cancellationTokenSource = new();
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
 
         public SilkDoom(CommandLineArgs args)
         {
             try
             {
-                this.args = args;
+                _args = args;
 
                 GlfwWindowing.RegisterPlatform();
                 GlfwInput.RegisterPlatform();
 
-                config = SilkConfigUtilities.GetConfig();
+                _config = SilkConfigUtilities.GetConfig();
 
                 Wad wad = new(ConfigUtilities.GetWadPaths(args));
 
                 DeHackEd.Initialize(args, wad);
 
-                content = new GameContent(wad);
+                _content = new GameContent(wad);
 
-                content.InitializeAsync(cancellationTokenSource.Token);
+                _content.InitializeAsync(_cancellationTokenSource.Token);
 
-                config.video_screenwidth = Math.Clamp(config.video_screenwidth, 320, 3200);
-                config.video_screenheight = Math.Clamp(config.video_screenheight, 200, 2000);
+                _config.video_screenwidth = Math.Clamp(_config.video_screenwidth, 320, 3200);
+                _config.video_screenheight = Math.Clamp(_config.video_screenheight, 200, 2000);
 
-                var windowOptions = WindowOptions.Default;
-                windowOptions.Size = new Vector2D<int>(config.video_screenwidth, config.video_screenheight);
+                WindowOptions windowOptions = WindowOptions.Default;
+                windowOptions.Size = new Vector2D<int>(_config.video_screenwidth, _config.video_screenheight);
                 windowOptions.Title = ApplicationInfo.Title;
                 windowOptions.VSync = false;
-                windowOptions.WindowState = config.video_fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+                windowOptions.WindowState = _config.video_fullscreen ? WindowState.Fullscreen : WindowState.Normal;
 
-                window = Window.Create(windowOptions);
-                window.Load += OnLoad;
-                window.Update += OnUpdate;
-                window.Render += OnRender;
-                window.Resize += OnResize;
-                window.Closing += OnClose;
+                _window = Window.Create(windowOptions);
+                _window.Load += OnLoad;
+                _window.Update += OnUpdate;
+                _window.Render += OnRender;
+                _window.Resize += OnResize;
+                _window.Closing += OnClose;
             }
             catch (Exception e)
             {
@@ -82,64 +82,64 @@ namespace ManagedDoom.Silk
 
         private void Quit()
         {
-            if (exception != null)
+            if (_exception != null)
             {
-                ExceptionDispatchInfo.Throw(exception);
+                ExceptionDispatchInfo.Throw(_exception);
             }
         }
 
         private void OnLoad()
         {
-            gl = window.CreateOpenGL();
-            gl.ClearColor(0.15F, 0.15F, 0.15F, 1F);
-            gl.Clear(ClearBufferMask.ColorBufferBit);
-            window.SwapBuffers();
+            _gl = _window.CreateOpenGL();
+            _gl.ClearColor(0.15F, 0.15F, 0.15F, 1F);
+            _gl.Clear(ClearBufferMask.ColorBufferBit);
+            _window.SwapBuffers();
 
-            video = new SilkVideo(config, content, window, gl);
+            _video = new SilkVideo(_config, _content, _window, _gl);
 
-            if (!args.nosound.Present && !(args.nosfx.Present && args.nomusic.Present))
+            if (!_args.nosound.Present && !(_args.nosfx.Present && _args.nomusic.Present))
             {
-                audioDevice = new AudioDevice();
-                if (!args.nosfx.Present)
+                _audioDevice = new AudioDevice();
+                if (!_args.nosfx.Present)
                 {
-                    sound = new SilkSound(config, content, audioDevice);
+                    _sound = new SilkSound(_config, _content, _audioDevice);
                 }
-                if (!args.nomusic.Present)
+                if (!_args.nomusic.Present)
                 {
-                    music = SilkConfigUtilities.GetMusicInstance(config, content, audioDevice);
+                    _music = SilkConfigUtilities.GetMusicInstance(_config, _content, _audioDevice);
                 }
             }
 
-            userInput = new SilkUserInput(config, window, this, !args.nomouse.Present);
+            _userInput = new SilkUserInput(_config, _window, this, !_args.nomouse.Present);
 
-            doom = new Doom(args, config, content, video, sound, music, userInput);
+            _doom = new Doom(_args, _config, _content, _video, _sound, _music, _userInput);
 
-            fpsScale = args.timedemo.Present ? 1 : config.video_fpsscale;
-            frameCount = -1;
+            _fpsScale = _args.timedemo.Present ? 1 : _config.video_fpsscale;
+            _frameCount = -1;
         }
 
         private void OnUpdate(double obj)
         {
             try
             {
-                frameCount++;
+                _frameCount++;
 
-                if (frameCount % fpsScale == 0)
+                if (_frameCount % _fpsScale == 0)
                 {
-                    if (doom.Update() == UpdateResult.Completed)
+                    if (_doom.Update() == UpdateResult.Completed)
                     {
-                        window.Close();
+                        _window.Close();
                     }
                 }
             }
             catch (Exception e)
             {
-                exception = e;
+                _exception = e;
             }
 
-            if (exception != null)
+            if (_exception != null)
             {
-                window.Close();
+                _window.Close();
             }
         }
 
@@ -147,84 +147,86 @@ namespace ManagedDoom.Silk
         {
             try
             {
-                var frameFrac = Fixed.FromInt(frameCount % fpsScale + 1) / fpsScale;
-                video.Render(doom, frameFrac);
+                Fixed frameFrac = Fixed.FromInt(_frameCount % _fpsScale + 1) / _fpsScale;
+                _video.Render(_doom, frameFrac);
             }
             catch (Exception e)
             {
-                exception = e;
+                _exception = e;
             }
         }
 
         private void OnResize(Vector2D<int> obj)
         {
-            video.Resize(obj.X, obj.Y);
+            _video.Resize(obj.X, obj.Y);
         }
 
         private void OnClose()
         {
-            if (userInput != null)
+            if (_userInput != null)
             {
-                userInput.Dispose();
-                userInput = null;
+                _userInput.Dispose();
+                _userInput = null;
             }
 
-            if (music != null)
+            if (_music != null)
             {
-                music.Dispose();
-                music = null;
+                _music.Dispose();
+                _music = null;
             }
 
-            if (sound != null)
+            if (_sound != null)
             {
-                sound.Dispose();
-                sound = null;
+                _sound.Dispose();
+                _sound = null;
             }
 
-            if (audioDevice != null)
+            if (_audioDevice != null)
             {
-                audioDevice.Dispose();
-                audioDevice = null;
+                _audioDevice.Dispose();
+                _audioDevice = null;
             }
 
-            if (video != null)
+            if (_video != null)
             {
-                video.Dispose();
-                video = null;
+                _video.Dispose();
+                _video = null;
             }
 
-            if (gl != null)
+            if (_gl != null)
             {
-                gl.Dispose();
-                gl = null;
+                _gl.Dispose();
+                _gl = null;
             }
 
-            config.Save(ConfigUtilities.GetConfigPath());
+            _config.Save(ConfigUtilities.GetConfigPath());
         }
 
         public void KeyDown(Key key)
         {
-            doom.PostEvent(new DoomEvent(EventType.KeyDown, SilkUserInput.SilkToDoom(key)));
+            _doom.PostEvent(new DoomEvent(EventType.KeyDown, SilkUserInput.SilkToDoom(key)));
         }
 
         public void KeyUp(Key key)
         {
-            doom.PostEvent(new DoomEvent(EventType.KeyUp, SilkUserInput.SilkToDoom(key)));
+            _doom.PostEvent(new DoomEvent(EventType.KeyUp, SilkUserInput.SilkToDoom(key)));
         }
 
         public void Dispose()
         {
-            if (window != null)
+            if (_window != null)
             {
-                window.Close();
-                window.Dispose();
-                window = null;
+                _window.Close();
+                _window.Dispose();
+                _window = null;
             }
 
-            cancellationTokenSource.Dispose();
+            _cancellationTokenSource.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
-        public string QuitMessage => doom.QuitMessage;
-        public Exception Exception => exception;
+        public string? QuitMessage => _doom.QuitMessage;
+        public Exception Exception => _exception;
     }
 }

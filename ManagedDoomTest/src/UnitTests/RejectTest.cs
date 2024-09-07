@@ -11,19 +11,19 @@ namespace ManagedDoomTest.UnitTests
             using var wad = new Wad(WadPath.Doom1);
             var flats = new DummyFlatLookup(wad);
             var textures = new DummyTextureLookup(wad);
-            var map = wad.GetLumpNumber("E1M1");
-            var vertices = Vertex.FromWad(wad, map + 4);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
-            var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+            int map = wad.GetLumpNumber("E1M1");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
+            SideDef[] sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+            LineDef[] lines = LineDef.FromWad(wad, map + 2, vertices, sides);
             var reject = Reject.FromWad(wad, map + 9, sectors);
 
-            foreach (var sector in sectors)
+            foreach (Sector sector in sectors)
             {
                 Assert.False(reject.Check(sector, sector));
             }
 
-            foreach (var line in lines)
+            foreach (LineDef line in lines)
             {
                 if (line.BackSector != null)
                 {
@@ -31,12 +31,12 @@ namespace ManagedDoomTest.UnitTests
                 }
             }
 
-            foreach (var s1 in sectors)
+            foreach (Sector s1 in sectors)
             {
-                foreach (var s2 in sectors)
+                foreach (Sector s2 in sectors)
                 {
-                    var result1 = reject.Check(s1, s2);
-                    var result2 = reject.Check(s2, s1);
+                    bool result1 = reject.Check(s1, s2);
+                    bool result2 = reject.Check(s2, s1);
                     Assert.Equal(result1, result2);
                 }
             }
@@ -52,19 +52,19 @@ namespace ManagedDoomTest.UnitTests
             using var wad = new Wad(WadPath.Doom2);
             var flats = new DummyFlatLookup(wad);
             var textures = new DummyTextureLookup(wad);
-            var map = wad.GetLumpNumber("MAP01");
-            var vertices = Vertex.FromWad(wad, map + 4);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
-            var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+            int map = wad.GetLumpNumber("MAP01");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
+            SideDef[] sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+            LineDef[] lines = LineDef.FromWad(wad, map + 2, vertices, sides);
             var reject = Reject.FromWad(wad, map + 9, sectors);
 
-            foreach (var sector in sectors)
+            foreach (Sector sector in sectors)
             {
                 Assert.False(reject.Check(sector, sector));
             }
 
-            foreach (var line in lines)
+            foreach (LineDef line in lines)
             {
                 if (line.BackSector != null)
                 {
@@ -72,12 +72,12 @@ namespace ManagedDoomTest.UnitTests
                 }
             }
 
-            foreach (var s1 in sectors)
+            foreach (Sector s1 in sectors)
             {
-                foreach (var s2 in sectors)
+                foreach (Sector s2 in sectors)
                 {
-                    var result1 = reject.Check(s1, s2);
-                    var result2 = reject.Check(s2, s1);
+                    bool result1 = reject.Check(s1, s2);
+                    bool result2 = reject.Check(s2, s1);
                     Assert.Equal(result1, result2);
                 }
             }

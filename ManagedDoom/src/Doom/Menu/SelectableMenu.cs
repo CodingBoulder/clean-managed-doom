@@ -22,15 +22,15 @@ namespace ManagedDoom
 {
     public sealed class SelectableMenu : MenuDef
     {
-        private string[] name;
-        private int[] titleX;
-        private int[] titleY;
-        private MenuItem[] items;
+        private readonly string[] name;
+        private readonly int[] titleX;
+        private readonly int[] titleY;
+        private readonly MenuItem[] items;
 
         private int index;
         private MenuItem choice;
 
-        private TextInput textInput;
+        private TextInput? textInput;
 
         public SelectableMenu(
             DoomMenu menu,
@@ -38,9 +38,9 @@ namespace ManagedDoom
             int firstChoice,
             params MenuItem[] items) : base(menu)
         {
-            this.name = new[] { name };
-            this.titleX = new[] { titleX };
-            this.titleY = new[] { titleY };
+            this.name = [name];
+            this.titleX = [titleX];
+            this.titleY = [titleY];
             this.items = items;
 
             index = firstChoice;
@@ -54,9 +54,9 @@ namespace ManagedDoom
             int firstChoice,
             params MenuItem[] items) : base(menu)
         {
-            this.name = new[] { name1, name2 };
-            this.titleX = new[] { titleX1, titleX2 };
-            this.titleY = new[] { titleY1, titleY2 };
+            name = [name1, name2];
+            titleX = [titleX1, titleX2];
+            titleY = [titleY1, titleY2];
             this.items = items;
 
             index = firstChoice;
@@ -65,19 +65,13 @@ namespace ManagedDoom
 
         public override void Open()
         {
-            foreach (var item in items)
+            foreach (MenuItem item in items)
             {
                 var toggle = item as ToggleMenuItem;
-                if (toggle != null)
-                {
-                    toggle.Reset();
-                }
+                toggle?.Reset();
 
                 var slider = item as SliderMenuItem;
-                if (slider != null)
-                {
-                    slider.Reset();
-                }
+                slider?.Reset();
             }
         }
 
@@ -112,7 +106,7 @@ namespace ManagedDoom
 
             if (textInput != null)
             {
-                var result = textInput.DoEvent(e);
+                bool result = textInput.DoEvent(e);
 
                 if (textInput.State == TextInputState.Canceled)
                 {
@@ -189,10 +183,8 @@ namespace ManagedDoom
                 {
                     if (simple.Selectable)
                     {
-                        if (simple.Action != null)
-                        {
-                            simple.Action();
-                        }
+                        simple.Action?.Invoke();
+
                         if (simple.Next != null)
                         {
                             Menu.SetCurrent(simple.Next);

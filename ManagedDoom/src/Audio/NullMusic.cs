@@ -21,16 +21,16 @@ namespace ManagedDoom.Audio
 {
     public sealed class NullMusic : IMusic
     {
-        private static NullMusic instance;
+        private static NullMusic _instance;
 
         public static NullMusic GetInstance()
         {
-            if (instance == null)
+            if (_instance == null)
             {
-                instance = new NullMusic();
+                _instance = new NullMusic();
             }
 
-            return instance;
+            return _instance;
         }
 
         public void StartMusic(Bgm bgm, bool loop)

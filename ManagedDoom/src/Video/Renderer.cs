@@ -22,8 +22,8 @@ namespace ManagedDoom.Video
 {
     public sealed class Renderer
     {
-        private static double[] gammaCorrectionParameters = new double[]
-        {
+        private static readonly double[] gammaCorrectionParameters =
+        [
             1.00,
             0.95,
             0.90,
@@ -35,28 +35,28 @@ namespace ManagedDoom.Video
             0.60,
             0.55,
             0.50
-        };
+        ];
 
-        private Config config;
+        private readonly Config config;
 
-        private Palette palette;
+        private readonly Palette palette;
 
-        private DrawScreen screen;
+        private readonly DrawScreen screen;
 
-        private MenuRenderer menu;
-        private ThreeDRenderer threeD;
-        private StatusBarRenderer statusBar;
-        private IntermissionRenderer intermission;
-        private OpeningSequenceRenderer openingSequence;
-        private AutoMapRenderer autoMap;
-        private FinaleRenderer finale;
+        private readonly MenuRenderer menu;
+        private readonly ThreeDRenderer threeD;
+        private readonly StatusBarRenderer statusBar;
+        private readonly IntermissionRenderer intermission;
+        private readonly OpeningSequenceRenderer openingSequence;
+        private readonly AutoMapRenderer autoMap;
+        private readonly FinaleRenderer finale;
 
-        private Patch pause;
+        private readonly Patch pause;
 
-        private int wipeBandWidth;
-        private int wipeBandCount;
-        private int wipeHeight;
-        private byte[] wipeBuffer;
+        private readonly int wipeBandWidth;
+        private readonly int wipeBandCount;
+        private readonly int wipeHeight;
+        private readonly byte[] wipeBuffer;
 
         public Renderer(Config config, GameContent content)
         {
@@ -86,7 +86,7 @@ namespace ManagedDoom.Video
 
             pause = Patch.FromWad(content.Wad, "M_PAUSE");
 
-            var scale = screen.Width / 320;
+            int scale = screen.Width / 320;
             wipeBandWidth = 2 * scale;
             wipeBandCount = screen.Width / wipeBandWidth + 1;
             wipeHeight = screen.Height / scale;
@@ -116,7 +116,7 @@ namespace ManagedDoom.Video
                     doom.Game.State == GameState.Level &&
                     doom.Game.Paused)
                 {
-                    var scale = screen.Width / 320;
+                    int scale = screen.Width / 320;
                     screen.DrawPatch(
                         pause,
                         (screen.Width - scale * pause.Width) / 2,
@@ -143,8 +143,8 @@ namespace ManagedDoom.Video
 
             if (game.State == GameState.Level)
             {
-                var consolePlayer = game.World.ConsolePlayer;
-                var displayPlayer = game.World.DisplayPlayer;
+                Player consolePlayer = game.World.ConsolePlayer;
+                Player displayPlayer = game.World.DisplayPlayer;
 
                 if (game.World.AutoMap.Visible)
                 {
@@ -168,7 +168,7 @@ namespace ManagedDoom.Video
                 {
                     if (consolePlayer.MessageTime > 0)
                     {
-                        var scale = screen.Width / 320;
+                        int scale = screen.Width / 320;
                         screen.DrawText(consolePlayer.Message, 0, 7 * scale, scale);
                     }
                 }
@@ -194,7 +194,7 @@ namespace ManagedDoom.Video
             RenderDoom(doom, frameFrac);
             RenderMenu(doom);
 
-            var colors = palette[0];
+            uint[] colors = palette[0];
             if (doom.State == DoomState.Game &&
                 doom.Game.State == GameState.Level)
             {
@@ -219,23 +219,23 @@ namespace ManagedDoom.Video
         {
             RenderDoom(doom, Fixed.One);
 
-            var wipe = doom.WipeEffect;
-            var scale = screen.Width / 320;
-            for (var i = 0; i < wipeBandCount - 1; i++)
+            WipeEffect wipe = doom.WipeEffect;
+            int scale = screen.Width / 320;
+            for (int i = 0; i < wipeBandCount - 1; i++)
             {
-                var x1 = wipeBandWidth * i;
-                var x2 = x1 + wipeBandWidth;
-                var y1 = Math.Max(scale * wipe.Y[i], 0);
-                var y2 = Math.Max(scale * wipe.Y[i + 1], 0);
-                var dy = (float)(y2 - y1) / wipeBandWidth;
-                for (var x = x1; x < x2; x++)
+                int x1 = wipeBandWidth * i;
+                int x2 = x1 + wipeBandWidth;
+                int y1 = Math.Max(scale * wipe.Y[i], 0);
+                int y2 = Math.Max(scale * wipe.Y[i + 1], 0);
+                float dy = (float)(y2 - y1) / wipeBandWidth;
+                for (int x = x1; x < x2; x++)
                 {
-                    var y = (int)MathF.Round(y1 + dy * ((x - x1) / 2 * 2));
-                    var copyLength = screen.Height - y;
+                    int y = (int)MathF.Round(y1 + dy * ((x - x1) / 2 * 2));
+                    int copyLength = screen.Height - y;
                     if (copyLength > 0)
                     {
-                        var srcPos = screen.Height * x;
-                        var dstPos = screen.Height * x + y;
+                        int srcPos = screen.Height * x;
+                        int dstPos = screen.Height * x + y;
                         Array.Copy(wipeBuffer, srcPos, screen.Data, dstPos, copyLength);
                     }
                 }
@@ -253,9 +253,9 @@ namespace ManagedDoom.Video
 
         private void WriteData(uint[] colors, byte[] destination)
         {
-            var screenData = screen.Data;
-            var p = MemoryMarshal.Cast<byte, uint>(destination);
-            for (var i = 0; i < p.Length; i++)
+            byte[] screenData = screen.Data;
+            Span<uint> p = MemoryMarshal.Cast<byte, uint>(destination);
+            for (int i = 0; i < p.Length; i++)
             {
                 p[i] = colors[screenData[i]];
             }
@@ -263,12 +263,12 @@ namespace ManagedDoom.Video
 
         private static int GetPaletteNumber(Player player)
         {
-            var count = player.DamageCount;
+            int count = player.DamageCount;
 
             if (player.Powers[(int)PowerType.Strength] != 0)
             {
                 // Slowly fade the berzerk out.
-                var bzc = 12 - (player.Powers[(int)PowerType.Strength] >> 6);
+                int bzc = 12 - (player.Powers[(int)PowerType.Strength] >> 6);
                 if (bzc > count)
                 {
                     count = bzc;

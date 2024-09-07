@@ -21,17 +21,17 @@ namespace ManagedDoom
 {
     public class ToggleMenuItem : MenuItem
     {
-        private string name;
-        private int itemX;
-        private int itemY;
+        private readonly string name;
+        private readonly int itemX;
+        private readonly int itemY;
 
-        private string[] states;
-        private int stateX;
+        private readonly string[] states;
+        private readonly int stateX;
 
         private int stateNumber;
 
-        private Func<int> reset;
-        private Action<int> action;
+        private readonly Func<int> reset;
+        private readonly Action<int> action;
 
         public ToggleMenuItem(
             string name,
@@ -47,7 +47,7 @@ namespace ManagedDoom
             this.itemX = itemX;
             this.itemY = itemY;
 
-            this.states = new[] { state1, state2 };
+            states = [state1, state2];
             this.stateX = stateX;
 
             stateNumber = 0;
@@ -72,10 +72,7 @@ namespace ManagedDoom
                 stateNumber = 0;
             }
 
-            if (action != null)
-            {
-                action(stateNumber);
-            }
+            action?.Invoke(stateNumber);
         }
 
         public void Down()
@@ -86,10 +83,7 @@ namespace ManagedDoom
                 stateNumber = states.Length - 1;
             }
 
-            if (action != null)
-            {
-                action(stateNumber);
-            }
+            action?.Invoke(stateNumber);
         }
 
         public string Name => name;

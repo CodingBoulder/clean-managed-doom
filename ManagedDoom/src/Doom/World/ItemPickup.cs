@@ -21,11 +21,11 @@ namespace ManagedDoom
 {
     public sealed class ItemPickup
     {
-        private World world;
+        private readonly World _world;
 
         public ItemPickup(World world)
         {
-            this.world = world;
+            _world = world;
         }
 
 
@@ -65,14 +65,14 @@ namespace ManagedDoom
                 amount = DoomInfo.AmmoInfos.Clip[(int)ammo] / 2;
             }
 
-            if (world.Options.Skill == GameSkill.Baby ||
-                world.Options.Skill == GameSkill.Nightmare)
+            if (_world.Options.Skill == GameSkill.Baby ||
+                _world.Options.Skill == GameSkill.Nightmare)
             {
                 // Give double ammo in trainer mode, you'll need in nightmare.
                 amount <<= 1;
             }
 
-            var oldammo = player.Ammo[(int)ammo];
+            int oldammo = player.Ammo[(int)ammo];
             player.Ammo[(int)ammo] += amount;
 
             if (player.Ammo[(int)ammo] > player.MaxAmmo[(int)ammo])
@@ -144,7 +144,7 @@ namespace ManagedDoom
         }
 
 
-        private static readonly int bonusAdd = 6;
+        private static readonly int _bonusAdd = 6;
 
         /// <summary>
         /// Give the weapon to the player.
@@ -154,7 +154,7 @@ namespace ManagedDoom
         /// </param>
         public bool GiveWeapon(Player player, WeaponType weapon, bool dropped)
         {
-            if (world.Options.NetGame && (world.Options.Deathmatch != 2) && !dropped)
+            if (_world.Options.NetGame && (_world.Options.Deathmatch != 2) && !dropped)
             {
                 // Leave placed weapons forever on net games.
                 if (player.WeaponOwned[(int)weapon])
@@ -162,10 +162,10 @@ namespace ManagedDoom
                     return false;
                 }
 
-                player.BonusCount += bonusAdd;
+                player.BonusCount += _bonusAdd;
                 player.WeaponOwned[(int)weapon] = true;
 
-                if (world.Options.Deathmatch != 0)
+                if (_world.Options.Deathmatch != 0)
                 {
                     GiveAmmo(player, DoomInfo.WeaponInfos[(int)weapon].Ammo, 5);
                 }
@@ -176,9 +176,9 @@ namespace ManagedDoom
 
                 player.PendingWeapon = weapon;
 
-                if (player == world.ConsolePlayer)
+                if (player == _world.ConsolePlayer)
                 {
-                    world.StartSound(player.Mobj, Sfx.WPNUP, SfxType.Misc);
+                    _world.StartSound(player.Mobj, Sfx.WPNUP, SfxType.Misc);
                 }
 
                 return false;
@@ -251,7 +251,7 @@ namespace ManagedDoom
         /// </returns>
         private bool GiveArmor(Player player, int type)
         {
-            var hits = type * 100;
+            int hits = type * 100;
 
             if (player.ArmorPoints >= hits)
             {
@@ -276,7 +276,7 @@ namespace ManagedDoom
                 return;
             }
 
-            player.BonusCount = bonusAdd;
+            player.BonusCount = _bonusAdd;
             player.Cards[(int)card] = true;
         }
 
@@ -338,7 +338,7 @@ namespace ManagedDoom
         /// </summary>
         public void TouchSpecialThing(Mobj special, Mobj toucher)
         {
-            var delta = special.Z - toucher.Z;
+            Fixed delta = special.Z - toucher.Z;
 
             if (delta > toucher.Height || delta < Fixed.FromInt(-8))
             {
@@ -346,8 +346,8 @@ namespace ManagedDoom
                 return;
             }
 
-            var sound = Sfx.ITEMUP;
-            var player = toucher.Player;
+            Sfx sound = Sfx.ITEMUP;
+            Player? player = toucher.Player;
 
             // Dead thing touching.
             // Can happen with a sliding player corpse.
@@ -414,7 +414,7 @@ namespace ManagedDoom
                     break;
 
                 case Sprite.MEGA:
-                    if (world.Options.GameMode != GameMode.Commercial)
+                    if (_world.Options.GameMode != GameMode.Commercial)
                     {
                         return;
                     }
@@ -434,7 +434,7 @@ namespace ManagedDoom
                         player.SendMessage(DoomInfo.Strings.GOTBLUECARD);
                     }
                     GiveCard(player, CardType.BlueCard);
-                    if (!world.Options.NetGame)
+                    if (!_world.Options.NetGame)
                     {
                         break;
                     }
@@ -446,7 +446,7 @@ namespace ManagedDoom
                         player.SendMessage(DoomInfo.Strings.GOTYELWCARD);
                     }
                     GiveCard(player, CardType.YellowCard);
-                    if (!world.Options.NetGame)
+                    if (!_world.Options.NetGame)
                     {
                         break;
                     }
@@ -458,7 +458,7 @@ namespace ManagedDoom
                         player.SendMessage(DoomInfo.Strings.GOTREDCARD);
                     }
                     GiveCard(player, CardType.RedCard);
-                    if (!world.Options.NetGame)
+                    if (!_world.Options.NetGame)
                     {
                         break;
                     }
@@ -470,7 +470,7 @@ namespace ManagedDoom
                         player.SendMessage(DoomInfo.Strings.GOTBLUESKUL);
                     }
                     GiveCard(player, CardType.BlueSkull);
-                    if (!world.Options.NetGame)
+                    if (!_world.Options.NetGame)
                     {
                         break;
                     }
@@ -482,7 +482,7 @@ namespace ManagedDoom
                         player.SendMessage(DoomInfo.Strings.GOTYELWSKUL);
                     }
                     GiveCard(player, CardType.YellowSkull);
-                    if (!world.Options.NetGame)
+                    if (!_world.Options.NetGame)
                     {
                         break;
                     }
@@ -494,7 +494,7 @@ namespace ManagedDoom
                         player.SendMessage(DoomInfo.Strings.GOTREDSKULL);
                     }
                     GiveCard(player, CardType.RedSkull);
-                    if (!world.Options.NetGame)
+                    if (!_world.Options.NetGame)
                     {
                         break;
                     }
@@ -662,13 +662,13 @@ namespace ManagedDoom
                 case Sprite.BPAK:
                     if (!player.Backpack)
                     {
-                        for (var i = 0; i < (int)AmmoType.Count; i++)
+                        for (int i = 0; i < (int)AmmoType.Count; i++)
                         {
                             player.MaxAmmo[i] *= 2;
                         }
                         player.Backpack = true;
                     }
-                    for (var i = 0; i < (int)AmmoType.Count; i++)
+                    for (int i = 0; i < (int)AmmoType.Count; i++)
                     {
                         GiveAmmo(player, (AmmoType)i, 1);
                     }
@@ -748,13 +748,13 @@ namespace ManagedDoom
                 player.ItemCount++;
             }
 
-            world.ThingAllocation.RemoveMobj(special);
+            _world.ThingAllocation.RemoveMobj(special);
 
-            player.BonusCount += bonusAdd;
+            player.BonusCount += _bonusAdd;
 
-            if (player == world.ConsolePlayer)
+            if (player == _world.ConsolePlayer)
             {
-                world.StartSound(player.Mobj, sound, SfxType.Misc);
+                _world.StartSound(player.Mobj, sound, SfxType.Misc);
             }
         }
     }

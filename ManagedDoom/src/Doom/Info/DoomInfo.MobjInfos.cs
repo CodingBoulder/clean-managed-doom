@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly MobjInfo[] MobjInfos = new MobjInfo[]
-        {
+        public static readonly MobjInfo[] MobjInfos =
+        [
             new MobjInfo( // MobjType.Player
                 -1, // doomEdNum
                 MobjState.Play, // spawnState
@@ -3585,6 +3585,6 @@ namespace ManagedDoom
                 MobjState.Null // raiseState
             )
 
-        };
+        ];
     }
 }

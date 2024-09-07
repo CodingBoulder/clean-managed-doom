@@ -11,11 +11,11 @@ namespace ManagedDoomTest.UnitTests
             using var wad = new Wad(WadPath.Doom1);
             var flats = new DummyFlatLookup(wad);
             var textures = new DummyTextureLookup(wad);
-            var map = wad.GetLumpNumber("E1M1");
-            var vertices = Vertex.FromWad(wad, map + 4);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
-            var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+            int map = wad.GetLumpNumber("E1M1");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
+            SideDef[] sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+            LineDef[] lines = LineDef.FromWad(wad, map + 2, vertices, sides);
 
             Assert.Equal(486, lines.Length);
 
@@ -56,11 +56,11 @@ namespace ManagedDoomTest.UnitTests
             using var wad = new Wad(WadPath.Doom2);
             var flats = new DummyFlatLookup(wad);
             var textures = new DummyTextureLookup(wad);
-            var map = wad.GetLumpNumber("MAP01");
-            var vertices = Vertex.FromWad(wad, map + 4);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
-            var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+            int map = wad.GetLumpNumber("MAP01");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
+            SideDef[] sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+            LineDef[] lines = LineDef.FromWad(wad, map + 2, vertices, sides);
 
             Assert.Equal(370, lines.Length);
 

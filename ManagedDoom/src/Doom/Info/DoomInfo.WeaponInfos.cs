@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly WeaponInfo[] WeaponInfos = new WeaponInfo[]
-        {
+        public static readonly WeaponInfo[] WeaponInfos =
+        [
             // fist
             new WeaponInfo(
                 AmmoType.NoAmmo,
@@ -112,6 +112,6 @@ namespace ManagedDoom
                 MobjState.Dsgun1,
                 MobjState.Dsgunflash1
             )
-        };
+        ];
     }
 }

@@ -22,35 +22,35 @@ namespace ManagedDoom
 {
     public class TextBoxMenuItem : MenuItem
     {
-        private int itemX;
-        private int itemY;
+        private readonly int _itemX;
+        private readonly int _itemY;
 
-        private IReadOnlyList<char> text;
-        private TextInput edit;
+        private IReadOnlyList<char> _text;
+        private TextInput? _edit;
 
         public TextBoxMenuItem(int skullX, int skullY, int itemX, int itemY)
             : base(skullX, skullY, null)
         {
-            this.itemX = itemX;
-            this.itemY = itemY;
+            _itemX = itemX;
+            _itemY = itemY;
         }
 
         public TextInput Edit(Action finished)
         {
-            edit = new TextInput(
-                text != null ? text : new char[0],
+            _edit = new TextInput(
+                _text ?? [],
                 cs => { },
-                cs => { text = cs; edit = null; finished(); },
-                () => { edit = null; });
+                cs => { _text = cs; _edit = null; finished(); },
+                () => { _edit = null; });
 
-            return edit;
+            return _edit;
         }
 
         public void SetText(string text)
         {
             if (text != null)
             {
-                this.text = text.ToCharArray();
+                _text = text.ToCharArray();
             }
         }
 
@@ -58,19 +58,19 @@ namespace ManagedDoom
         {
             get
             {
-                if (edit == null)
+                if (_edit == null)
                 {
-                    return text;
+                    return _text;
                 }
                 else
                 {
-                    return edit.Text;
+                    return _edit.Text;
                 }
             }
         }
 
-        public int ItemX => itemX;
-        public int ItemY => itemY;
-        public bool Editing => edit != null;
+        public int ItemX => _itemX;
+        public int ItemY => _itemY;
+        public bool Editing => _edit != null;
     }
 }

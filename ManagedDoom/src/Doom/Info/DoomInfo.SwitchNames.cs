@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly Tuple<DoomString, DoomString>[] SwitchNames = new Tuple<DoomString, DoomString>[]
-        {
+        public static readonly Tuple<DoomString, DoomString>[] SwitchNames =
+        [
             Tuple.Create(new DoomString("SW1BRCOM"), new DoomString("SW2BRCOM")),
             Tuple.Create(new DoomString("SW1BRN1"), new DoomString("SW2BRN1")),
             Tuple.Create(new DoomString("SW1BRN2"), new DoomString("SW2BRN2")),
@@ -63,6 +63,6 @@ namespace ManagedDoom
             Tuple.Create(new DoomString("SW1TEK"), new DoomString("SW2TEK")),
             Tuple.Create(new DoomString("SW1MARB"), new DoomString("SW2MARB")),
             Tuple.Create(new DoomString("SW1SKULL"), new DoomString("SW2SKULL"))
-        };
+        ];
     }
 }

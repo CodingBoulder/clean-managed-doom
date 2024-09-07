@@ -23,12 +23,12 @@ namespace ManagedDoom
 {
     public sealed class TextInput
     {
-        private List<char> text;
-        private Action<IReadOnlyList<char>> typed;
-        private Action<IReadOnlyList<char>> finished;
-        private Action canceled;
+        private readonly List<char> _text;
+        private readonly Action<IReadOnlyList<char>> _typed;
+        private readonly Action<IReadOnlyList<char>> _finished;
+        private readonly Action _canceled;
 
-        private TextInputState state;
+        private TextInputState _state;
 
         public TextInput(
             IReadOnlyList<char> initialText,
@@ -36,52 +36,52 @@ namespace ManagedDoom
             Action<IReadOnlyList<char>> finished,
             Action canceled)
         {
-            this.text = initialText.ToList();
-            this.typed = typed;
-            this.finished = finished;
-            this.canceled = canceled;
+            _text = initialText.ToList();
+            _typed = typed;
+            _finished = finished;
+            _canceled = canceled;
 
-            state = TextInputState.Typing;
+            _state = TextInputState.Typing;
         }
 
         public bool DoEvent(DoomEvent e)
         {
-            var ch = e.Key.GetChar();
+            char ch = e.Key.GetChar();
             if (ch != 0)
             {
-                text.Add(ch);
-                typed(text);
+                _text.Add(ch);
+                _typed(_text);
                 return true;
             }
 
             if (e.Key == DoomKey.Backspace && e.Type == EventType.KeyDown)
             {
-                if (text.Count > 0)
+                if (_text.Count > 0)
                 {
-                    text.RemoveAt(text.Count - 1);
+                    _text.RemoveAt(_text.Count - 1);
                 }
-                typed(text);
+                _typed(_text);
                 return true;
             }
 
             if (e.Key == DoomKey.Enter && e.Type == EventType.KeyDown)
             {
-                finished(text);
-                state = TextInputState.Finished;
+                _finished(_text);
+                _state = TextInputState.Finished;
                 return true;
             }
 
             if (e.Key == DoomKey.Escape && e.Type == EventType.KeyDown)
             {
-                canceled();
-                state = TextInputState.Canceled;
+                _canceled();
+                _state = TextInputState.Canceled;
                 return true;
             }
 
             return true;
         }
 
-        public IReadOnlyList<char> Text => text;
-        public TextInputState State => state;
+        public IReadOnlyList<char> Text => _text;
+        public TextInputState State => _state;
     }
 }

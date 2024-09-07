@@ -21,54 +21,54 @@ namespace ManagedDoom.Video
 {
     public sealed class WipeEffect
     {
-        private short[] y;
-        private int height;
-        private DoomRandom random;
+        private readonly short[] _y;
+        private readonly int _height;
+        private readonly DoomRandom _random;
 
         public WipeEffect(int width, int height)
         {
-            y = new short[width];
-            this.height = height;
-            random = new DoomRandom(DateTime.Now.Millisecond);
+            _y = new short[width];
+            _height = height;
+            _random = new DoomRandom(DateTime.Now.Millisecond);
         }
 
         public void Start()
         {
-            y[0] = (short)(-(random.Next() % 16));
-            for (var i = 1; i < y.Length; i++)
+            _y[0] = (short)(-(_random.Next() % 16));
+            for (int i = 1; i < _y.Length; i++)
             {
-                var r = (random.Next() % 3) - 1;
-                y[i] = (short)(y[i - 1] + r);
-                if (y[i] > 0)
+                int r = (_random.Next() % 3) - 1;
+                _y[i] = (short)(_y[i - 1] + r);
+                if (_y[i] > 0)
                 {
-                    y[i] = 0;
+                    _y[i] = 0;
                 }
-                else if (y[i] == -16)
+                else if (_y[i] == -16)
                 {
-                    y[i] = -15;
+                    _y[i] = -15;
                 }
             }
         }
 
         public UpdateResult Update()
         {
-            var done = true;
+            bool done = true;
 
-            for (var i = 0; i < y.Length; i++)
+            for (int i = 0; i < _y.Length; i++)
             {
-                if (y[i] < 0)
+                if (_y[i] < 0)
                 {
-                    y[i]++;
+                    _y[i]++;
                     done = false;
                 }
-                else if (y[i] < height)
+                else if (_y[i] < _height)
                 {
-                    var dy = (y[i] < 16) ? y[i] + 1 : 8;
-                    if (y[i] + dy >= height)
+                    int dy = (_y[i] < 16) ? _y[i] + 1 : 8;
+                    if (_y[i] + dy >= _height)
                     {
-                        dy = height - y[i];
+                        dy = _height - _y[i];
                     }
-                    y[i] += (short)dy;
+                    _y[i] += (short)dy;
                     done = false;
                 }
             }
@@ -83,6 +83,6 @@ namespace ManagedDoom.Video
             }
         }
 
-        public short[] Y => y;
+        public short[] Y => _y;
     }
 }

@@ -21,14 +21,14 @@ namespace ManagedDoomTest.UnitTests
         [Fact]
         public void FromDegrees()
         {
-            for (var deg = -720; deg <= 720; deg++)
+            for (int deg = -720; deg <= 720; deg++)
             {
-                var expectedSin = Math.Sin(2 * Math.PI * deg / 360);
-                var expectedCos = Math.Cos(2 * Math.PI * deg / 360);
+                double expectedSin = Math.Sin(2 * Math.PI * deg / 360);
+                double expectedCos = Math.Cos(2 * Math.PI * deg / 360);
 
                 var angle = Angle.FromDegree(deg);
-                var actualSin = Math.Sin(angle.ToRadian());
-                var actualCos = Math.Cos(angle.ToRadian());
+                double actualSin = Math.Sin(angle.ToRadian());
+                double actualCos = Math.Cos(angle.ToRadian());
 
                 Assert.Equal(expectedSin, actualSin, delta);
                 Assert.Equal(expectedCos, actualCos, delta);
@@ -49,33 +49,33 @@ namespace ManagedDoomTest.UnitTests
         public void Sign()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(1440) - 720;
-                var b = +a;
-                var c = -a;
+                int a = random.Next(1440) - 720;
+                int b = +a;
+                int c = -a;
 
                 var aa = Angle.FromDegree(a);
-                var ab = +aa;
-                var ac = -aa;
+                Angle ab = +aa;
+                Angle ac = -aa;
 
                 {
-                    var expectedSin = Math.Sin(2 * Math.PI * b / 360);
-                    var expectedCos = Math.Cos(2 * Math.PI * b / 360);
+                    double expectedSin = Math.Sin(2 * Math.PI * b / 360);
+                    double expectedCos = Math.Cos(2 * Math.PI * b / 360);
 
-                    var actualSin = Math.Sin(ab.ToRadian());
-                    var actualCos = Math.Cos(ab.ToRadian());
+                    double actualSin = Math.Sin(ab.ToRadian());
+                    double actualCos = Math.Cos(ab.ToRadian());
 
                     Assert.Equal(expectedSin, actualSin, delta);
                     Assert.Equal(expectedCos, actualCos, delta);
                 }
 
                 {
-                    var expectedSin = Math.Sin(2 * Math.PI * c / 360);
-                    var expectedCos = Math.Cos(2 * Math.PI * c / 360);
+                    double expectedSin = Math.Sin(2 * Math.PI * c / 360);
+                    double expectedCos = Math.Cos(2 * Math.PI * c / 360);
 
-                    var actualSin = Math.Sin(ac.ToRadian());
-                    var actualCos = Math.Cos(ac.ToRadian());
+                    double actualSin = Math.Sin(ac.ToRadian());
+                    double actualCos = Math.Cos(ac.ToRadian());
 
                     Assert.Equal(expectedSin, actualSin, delta);
                     Assert.Equal(expectedCos, actualCos, delta);
@@ -87,19 +87,19 @@ namespace ManagedDoomTest.UnitTests
         public void Abs()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(120) - 60;
-                var b = Math.Abs(a);
+                int a = random.Next(120) - 60;
+                int b = Math.Abs(a);
 
                 var aa = Angle.FromDegree(a);
                 var ab = Angle.Abs(aa);
 
-                var expectedSin = Math.Sin(2 * Math.PI * b / 360);
-                var expectedCos = Math.Cos(2 * Math.PI * b / 360);
+                double expectedSin = Math.Sin(2 * Math.PI * b / 360);
+                double expectedCos = Math.Cos(2 * Math.PI * b / 360);
 
-                var actualSin = Math.Sin(ab.ToRadian());
-                var actualCos = Math.Cos(ab.ToRadian());
+                double actualSin = Math.Sin(ab.ToRadian());
+                double actualCos = Math.Cos(ab.ToRadian());
 
                 Assert.Equal(expectedSin, actualSin, delta);
                 Assert.Equal(expectedCos, actualCos, delta);
@@ -110,21 +110,21 @@ namespace ManagedDoomTest.UnitTests
         public void Addition()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(1440) - 720;
-                var b = random.Next(1440) - 720;
-                var c = a + b;
+                int a = random.Next(1440) - 720;
+                int b = random.Next(1440) - 720;
+                int c = a + b;
 
                 var fa = Angle.FromDegree(a);
                 var fb = Angle.FromDegree(b);
-                var fc = fa + fb;
+                Angle fc = fa + fb;
 
-                var expectedSin = Math.Sin(2 * Math.PI * c / 360);
-                var expectedCos = Math.Cos(2 * Math.PI * c / 360);
+                double expectedSin = Math.Sin(2 * Math.PI * c / 360);
+                double expectedCos = Math.Cos(2 * Math.PI * c / 360);
 
-                var actualSin = Math.Sin(fc.ToRadian());
-                var actualCos = Math.Cos(fc.ToRadian());
+                double actualSin = Math.Sin(fc.ToRadian());
+                double actualCos = Math.Cos(fc.ToRadian());
 
                 Assert.Equal(expectedSin, actualSin, delta);
                 Assert.Equal(expectedCos, actualCos, delta);
@@ -135,21 +135,21 @@ namespace ManagedDoomTest.UnitTests
         public void Subtraction()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(1440) - 720;
-                var b = random.Next(1440) - 720;
-                var c = a - b;
+                int a = random.Next(1440) - 720;
+                int b = random.Next(1440) - 720;
+                int c = a - b;
 
                 var fa = Angle.FromDegree(a);
                 var fb = Angle.FromDegree(b);
-                var fc = fa - fb;
+                Angle fc = fa - fb;
 
-                var expectedSin = Math.Sin(2 * Math.PI * c / 360);
-                var expectedCos = Math.Cos(2 * Math.PI * c / 360);
+                double expectedSin = Math.Sin(2 * Math.PI * c / 360);
+                double expectedCos = Math.Cos(2 * Math.PI * c / 360);
 
-                var actualSin = Math.Sin(fc.ToRadian());
-                var actualCos = Math.Cos(fc.ToRadian());
+                double actualSin = Math.Sin(fc.ToRadian());
+                double actualCos = Math.Cos(fc.ToRadian());
 
                 Assert.Equal(expectedSin, actualSin, delta);
                 Assert.Equal(expectedCos, actualCos, delta);
@@ -160,14 +160,14 @@ namespace ManagedDoomTest.UnitTests
         public void Multiplication1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = (uint)random.Next(30);
-                var b = (uint)random.Next(12);
-                var c = a * b;
+                uint a = (uint)random.Next(30);
+                uint b = (uint)random.Next(12);
+                uint c = a * b;
 
                 var fa = Angle.FromDegree(a);
-                var fc = fa * b;
+                Angle fc = fa * b;
 
                 Assert.Equal(c, fc.ToDegree(), delta);
             }
@@ -177,14 +177,14 @@ namespace ManagedDoomTest.UnitTests
         public void Multiplication2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = (uint)random.Next(30);
-                var b = (uint)random.Next(12);
-                var c = a * b;
+                uint a = (uint)random.Next(30);
+                uint b = (uint)random.Next(12);
+                uint c = a * b;
 
                 var fb = Angle.FromDegree(b);
-                var fc = a * fb;
+                Angle fc = a * fb;
 
                 Assert.Equal(c, fc.ToDegree(), delta);
             }
@@ -194,14 +194,14 @@ namespace ManagedDoomTest.UnitTests
         public void Division()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = (double)random.Next(360);
-                var b = (uint)(random.Next(30) + 1);
-                var c = a / b;
+                double a = (double)random.Next(360);
+                uint b = (uint)(random.Next(30) + 1);
+                double c = a / b;
 
                 var fa = Angle.FromDegree(a);
-                var fc = fa / b;
+                Angle fc = fa / b;
 
                 Assert.Equal(c, fc.ToDegree(), delta);
             }
@@ -211,10 +211,10 @@ namespace ManagedDoomTest.UnitTests
         public void Comparison()
         {
             var random = new Random(666);
-            for (var i = 0; i < 10000; i++)
+            for (int i = 0; i < 10000; i++)
             {
-                var a = random.Next(1140) - 720;
-                var b = random.Next(1140) - 720;
+                int a = random.Next(1140) - 720;
+                int b = random.Next(1140) - 720;
 
                 var fa = Angle.FromDegree(a);
                 var fb = Angle.FromDegree(b);

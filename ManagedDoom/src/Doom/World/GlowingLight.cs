@@ -21,41 +21,34 @@ namespace ManagedDoom
 {
     public sealed class GlowingLight : Thinker
     {
-        private static readonly int glowSpeed = 8;
+        private static readonly int _glowSpeed = 8;
 
-        private World world;
-
-        private Sector sector;
-        private int minLight;
-        private int maxLight;
-        private int direction;
-
-        public GlowingLight(World world)
-        {
-            this.world = world;
-        }
+        private Sector _sector;
+        private int _minLight;
+        private int _maxLight;
+        private int _direction;
 
         public override void Run()
         {
-            switch (direction)
+            switch (_direction)
             {
                 case -1:
                     // Down.
-                    sector.LightLevel -= glowSpeed;
-                    if (sector.LightLevel <= minLight)
+                    _sector.LightLevel -= _glowSpeed;
+                    if (_sector.LightLevel <= _minLight)
                     {
-                        sector.LightLevel += glowSpeed;
-                        direction = 1;
+                        _sector.LightLevel += _glowSpeed;
+                        _direction = 1;
                     }
                     break;
 
                 case 1:
                     // Up.
-                    sector.LightLevel += glowSpeed;
-                    if (sector.LightLevel >= maxLight)
+                    _sector.LightLevel += _glowSpeed;
+                    if (_sector.LightLevel >= _maxLight)
                     {
-                        sector.LightLevel -= glowSpeed;
-                        direction = -1;
+                        _sector.LightLevel -= _glowSpeed;
+                        _direction = -1;
                     }
                     break;
             }
@@ -63,26 +56,26 @@ namespace ManagedDoom
 
         public Sector Sector
         {
-            get => sector;
-            set => sector = value;
+            get => _sector;
+            set => _sector = value;
         }
 
         public int MinLight
         {
-            get => minLight;
-            set => minLight = value;
+            get => _minLight;
+            set => _minLight = value;
         }
 
         public int MaxLight
         {
-            get => maxLight;
-            set => maxLight = value;
+            get => _maxLight;
+            set => _maxLight = value;
         }
 
         public int Direction
         {
-            get => direction;
-            set => direction = value;
+            get => _direction;
+            set => _direction = value;
         }
     }
 }

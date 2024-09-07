@@ -21,9 +21,9 @@ namespace ManagedDoom
 {
     public class Thinker
     {
-        private Thinker prev;
-        private Thinker next;
-        private ThinkerState thinkerState;
+        private Thinker _prev;
+        private Thinker _next;
+        private ThinkerState _thinkerState;
 
         public Thinker()
         {
@@ -39,20 +39,20 @@ namespace ManagedDoom
 
         public Thinker Prev
         {
-            get => prev;
-            set => prev = value;
+            get => _prev;
+            set => _prev = value;
         }
 
         public Thinker Next
         {
-            get => next;
-            set => next = value;
+            get => _next;
+            set => _next = value;
         }
 
         public ThinkerState ThinkerState
         {
-            get => thinkerState;
-            set => thinkerState = value;
+            get => _thinkerState;
+            set => _thinkerState = value;
         }
     }
 }

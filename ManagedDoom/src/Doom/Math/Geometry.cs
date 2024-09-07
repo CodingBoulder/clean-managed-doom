@@ -21,23 +21,23 @@ namespace ManagedDoom
 {
     public static class Geometry
     {
-        private const int slopeRange = 2048;
-        private const int slopeBits = 11;
-        private const int fracToSlopeShift = Fixed.FracBits - slopeBits;
-        private static Angle Ang90Minus1 = new Angle(Angle.Ang90.Data - 1);
-        private static Angle ang180Minus1 = new Angle(Angle.Ang180.Data - 1);
-        private static Angle ang270Minus1 = new Angle(Angle.Ang270.Data - 1);
+        private const int _slopeRange = 2048;
+        private const int _slopeBits = 11;
+        private const int _fracToSlopeShift = Fixed.FracBits - _slopeBits;
+        private static readonly Angle _ang90Minus1 = new(Angle.Ang90.Data - 1);
+        private static readonly Angle _ang180Minus1 = new(Angle.Ang180.Data - 1);
+        private static readonly Angle _ang270Minus1 = new(Angle.Ang270.Data - 1);
 
         private static uint SlopeDiv(Fixed num, Fixed den)
         {
             if ((uint)den.Data < 512)
             {
-                return slopeRange;
+                return _slopeRange;
             }
 
-            var ans = ((uint)num.Data << 3) / ((uint)den.Data >> 8);
+            uint ans = ((uint)num.Data << 3) / ((uint)den.Data >> 8);
 
-            return ans <= slopeRange ? ans : slopeRange;
+            return ans <= _slopeRange ? ans : _slopeRange;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace ManagedDoom
 
             if (dy > dx)
             {
-                var temp = dx;
+                Fixed temp = dx;
                 dx = dy;
                 dy = temp;
             }
@@ -66,10 +66,10 @@ namespace ManagedDoom
                 frac = Fixed.Zero;
             }
 
-            var angle = (Trig.TanToAngle((uint)frac.Data >> fracToSlopeShift) + Angle.Ang90);
+            Angle angle = (Trig.TanToAngle((uint)frac.Data >> _fracToSlopeShift) + Angle.Ang90);
 
             // Use as cosine.
-            var dist = dx / Trig.Sin(angle);
+            Fixed dist = dx / Trig.Sin(angle);
 
             return dist;
         }
@@ -106,8 +106,8 @@ namespace ManagedDoom
                 }
             }
 
-            var dx = (x - node.X);
-            var dy = (y - node.Y);
+            Fixed dx = (x - node.X);
+            Fixed dy = (y - node.Y);
 
             // Try to quickly decide by looking at sign bits.
             if (((node.Dy.Data ^ node.Dx.Data ^ dx.Data ^ dy.Data) & 0x80000000) != 0)
@@ -121,8 +121,8 @@ namespace ManagedDoom
                 return 0;
             }
 
-            var left = new Fixed(node.Dy.Data >> Fixed.FracBits) * dx;
-            var right = dy * new Fixed(node.Dx.Data >> Fixed.FracBits);
+            Fixed left = new Fixed(node.Dy.Data >> Fixed.FracBits) * dx;
+            Fixed right = dy * new Fixed(node.Dx.Data >> Fixed.FracBits);
 
             if (right < left)
             {
@@ -141,8 +141,8 @@ namespace ManagedDoom
         /// </summary>
         public static Angle PointToAngle(Fixed fromX, Fixed fromY, Fixed toX, Fixed toY)
         {
-            var x = toX - fromX;
-            var y = toY - fromY;
+            Fixed x = toX - fromX;
+            Fixed y = toY - fromY;
 
             if (x == Fixed.Zero && y == Fixed.Zero)
             {
@@ -163,7 +163,7 @@ namespace ManagedDoom
                     else
                     {
                         // octant 1
-                        return Ang90Minus1 - Trig.TanToAngle(SlopeDiv(x, y));
+                        return _ang90Minus1 - Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
                 else
@@ -194,7 +194,7 @@ namespace ManagedDoom
                     if (x > y)
                     {
                         // octant 3
-                        return ang180Minus1 - Trig.TanToAngle(SlopeDiv(y, x));
+                        return _ang180Minus1 - Trig.TanToAngle(SlopeDiv(y, x));
                     }
                     else
                     {
@@ -215,7 +215,7 @@ namespace ManagedDoom
                     else
                     {
                         // octant 5
-                        return ang270Minus1 - Trig.TanToAngle(SlopeDiv(x, y));
+                        return _ang270Minus1 - Trig.TanToAngle(SlopeDiv(x, y));
                     }
                 }
             }
@@ -232,12 +232,12 @@ namespace ManagedDoom
                 return map.Subsectors[0];
             }
 
-            var nodeNumber = map.Nodes.Length - 1;
+            int nodeNumber = map.Nodes.Length - 1;
 
             while (!Node.IsSubsector(nodeNumber))
             {
-                var node = map.Nodes[nodeNumber];
-                var side = PointOnSide(x, y, node);
+                Node node = map.Nodes[nodeNumber];
+                int side = PointOnSide(x, y, node);
                 nodeNumber = node.Children[side];
             }
 
@@ -252,11 +252,11 @@ namespace ManagedDoom
         /// </returns>
         public static int PointOnSegSide(Fixed x, Fixed y, Seg line)
         {
-            var lx = line.Vertex1.X;
-            var ly = line.Vertex1.Y;
+            Fixed lx = line.Vertex1.X;
+            Fixed ly = line.Vertex1.Y;
 
-            var ldx = line.Vertex2.X - lx;
-            var ldy = line.Vertex2.Y - ly;
+            Fixed ldx = line.Vertex2.X - lx;
+            Fixed ldy = line.Vertex2.Y - ly;
 
             if (ldx == Fixed.Zero)
             {
@@ -282,8 +282,8 @@ namespace ManagedDoom
                 }
             }
 
-            var dx = (x - lx);
-            var dy = (y - ly);
+            Fixed dx = (x - lx);
+            Fixed dy = (y - ly);
 
             // Try to quickly decide by looking at sign bits.
             if (((ldy.Data ^ ldx.Data ^ dx.Data ^ dy.Data) & 0x80000000) != 0)
@@ -299,8 +299,8 @@ namespace ManagedDoom
                 }
             }
 
-            var left = new Fixed(ldy.Data >> Fixed.FracBits) * dx;
-            var right = dy * new Fixed(ldx.Data >> Fixed.FracBits);
+            Fixed left = new Fixed(ldy.Data >> Fixed.FracBits) * dx;
+            Fixed right = dy * new Fixed(ldx.Data >> Fixed.FracBits);
 
             if (right < left)
             {
@@ -346,11 +346,11 @@ namespace ManagedDoom
                 }
             }
 
-            var dx = (x - line.Vertex1.X);
-            var dy = (y - line.Vertex1.Y);
+            Fixed dx = (x - line.Vertex1.X);
+            Fixed dy = (y - line.Vertex1.Y);
 
-            var left = new Fixed(line.Dy.Data >> Fixed.FracBits) * dx;
-            var right = dy * new Fixed(line.Dx.Data >> Fixed.FracBits);
+            Fixed left = new Fixed(line.Dy.Data >> Fixed.FracBits) * dx;
+            Fixed right = dy * new Fixed(line.Dx.Data >> Fixed.FracBits);
 
             if (right < left)
             {
@@ -453,8 +453,8 @@ namespace ManagedDoom
                 }
             }
 
-            var dx = (x - line.X);
-            var dy = (y - line.Y);
+            Fixed dx = (x - line.X);
+            Fixed dy = (y - line.Y);
 
             // Try to quickly decide by looking at sign bits.
             if (((line.Dy.Data ^ line.Dx.Data ^ dx.Data ^ dy.Data) & 0x80000000) != 0)
@@ -470,8 +470,8 @@ namespace ManagedDoom
                 }
             }
 
-            var left = new Fixed(line.Dy.Data >> 8) * new Fixed(dx.Data >> 8);
-            var right = new Fixed(dy.Data >> 8) * new Fixed(line.Dx.Data >> 8);
+            Fixed left = new Fixed(line.Dy.Data >> 8) * new Fixed(dx.Data >> 8);
+            Fixed right = new Fixed(dy.Data >> 8) * new Fixed(line.Dx.Data >> 8);
 
             if (right < left)
             {
@@ -541,8 +541,8 @@ namespace ManagedDoom
                 return line.Dx > Fixed.Zero ? 1 : 0;
             }
 
-            var dx = (x - line.X);
-            var dy = (y - line.Y);
+            Fixed dx = (x - line.X);
+            Fixed dy = (y - line.Y);
 
             var left = new Fixed((line.Dy.Data >> Fixed.FracBits) * (dx.Data >> Fixed.FracBits));
             var right = new Fixed((dy.Data >> Fixed.FracBits) * (line.Dx.Data >> Fixed.FracBits));
@@ -602,8 +602,8 @@ namespace ManagedDoom
                 return node.Dx > Fixed.Zero ? 1 : 0;
             }
 
-            var dx = (x - node.X);
-            var dy = (y - node.Y);
+            Fixed dx = (x - node.X);
+            Fixed dy = (y - node.Y);
 
             var left = new Fixed((node.Dy.Data >> Fixed.FracBits) * (dx.Data >> Fixed.FracBits));
             var right = new Fixed((dy.Data >> Fixed.FracBits) * (node.Dx.Data >> Fixed.FracBits));

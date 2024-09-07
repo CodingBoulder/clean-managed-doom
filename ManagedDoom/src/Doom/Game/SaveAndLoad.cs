@@ -56,7 +56,7 @@ namespace ManagedDoom
 
         public static void Load(DoomGame game, string path)
         {
-            var options = game.Options;
+            GameOptions options = game.Options;
             game.InitNew(options.Skill, options.Episode, options.Map);
 
             var lg = new LoadGame(File.ReadAllBytes(path));
@@ -68,10 +68,10 @@ namespace ManagedDoom
         ////////////////////////////////////////////////////////////
         // Save game
         ////////////////////////////////////////////////////////////
-        
+
         private class SaveGame
         {
-            private byte[] data;
+            private readonly byte[] data;
             private int ptr;
 
             public SaveGame(string description)
@@ -85,7 +85,7 @@ namespace ManagedDoom
 
             private void WriteDescription(string description)
             {
-                for (var i = 0; i < description.Length; i++)
+                for (int i = 0; i < description.Length; i++)
                 {
                     data[i] = (byte)description[i];
                 }
@@ -94,8 +94,8 @@ namespace ManagedDoom
 
             private void WriteVersion()
             {
-                var version = "version 109";
-                for (var i = 0; i < version.Length; i++)
+                string version = "version 109";
+                for (int i = 0; i < version.Length; i++)
                 {
                     data[ptr + i] = (byte)version[i];
                 }
@@ -104,11 +104,11 @@ namespace ManagedDoom
 
             public void Save(DoomGame game, string path)
             {
-                var options = game.World.Options;
+                GameOptions options = game.World.Options;
                 data[ptr++] = (byte)options.Skill;
                 data[ptr++] = (byte)options.Episode;
                 data[ptr++] = (byte)options.Map;
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     data[ptr++] = options.Players[i].InGame ? (byte)1 : (byte)0;
                 }
@@ -135,8 +135,8 @@ namespace ManagedDoom
 
             private void ArchivePlayers(World world)
             {
-                var players = world.Options.Players;
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                Player[] players = world.Options.Players;
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!players[i].InGame)
                     {
@@ -152,15 +152,15 @@ namespace ManagedDoom
             private void ArchiveWorld(World world)
             {
                 // Do sectors.
-                var sectors = world.Map.Sectors;
-                for (var i = 0; i < sectors.Length; i++)
+                Sector[] sectors = world.Map.Sectors;
+                for (int i = 0; i < sectors.Length; i++)
                 {
                     ptr = ArchiveSector(sectors[i], data, ptr);
                 }
 
                 // Do lines.
-                var lines = world.Map.Lines;
-                for (var i = 0; i < lines.Length; i++)
+                LineDef[] lines = world.Map.Lines;
+                for (int i = 0; i < lines.Length; i++)
                 {
                     ptr = ArchiveLine(lines[i], data, ptr);
                 }
@@ -168,10 +168,10 @@ namespace ManagedDoom
 
             private void ArchiveThinkers(World world)
             {
-                var thinkers = world.Thinkers;
+                Thinkers thinkers = world.Thinkers;
 
                 // Read in saved thinkers.
-                foreach (var thinker in thinkers)
+                foreach (Thinker thinker in thinkers)
                 {
                     var mobj = thinker as Mobj;
                     if (mobj != null)
@@ -236,11 +236,11 @@ namespace ManagedDoom
 
             private void ArchiveSpecials(World world)
             {
-                var thinkers = world.Thinkers;
-                var sa = world.SectorAction;
+                Thinkers thinkers = world.Thinkers;
+                SectorAction sa = world.SectorAction;
 
                 // Read in saved thinkers.
-                foreach (var thinker in thinkers)
+                foreach (Thinker thinker in thinkers)
                 {
                     if (thinker.ThinkerState == ThinkerState.InStasis)
                     {
@@ -413,30 +413,30 @@ namespace ManagedDoom
                 Write(data, p + 32, player.Health);
                 Write(data, p + 36, player.ArmorPoints);
                 Write(data, p + 40, player.ArmorType);
-                for (var i = 0; i < (int)PowerType.Count; i++)
+                for (int i = 0; i < (int)PowerType.Count; i++)
                 {
                     Write(data, p + 44 + 4 * i, player.Powers[i]);
                 }
-                for (var i = 0; i < (int)PowerType.Count; i++)
+                for (int i = 0; i < (int)PowerType.Count; i++)
                 {
                     Write(data, p + 68 + 4 * i, player.Cards[i] ? 1 : 0);
                 }
                 Write(data, p + 92, player.Backpack ? 1 : 0);
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     Write(data, p + 96 + 4 * i, player.Frags[i]);
                 }
                 Write(data, p + 112, (int)player.ReadyWeapon);
                 Write(data, p + 116, (int)player.PendingWeapon);
-                for (var i = 0; i < (int)WeaponType.Count; i++)
+                for (int i = 0; i < (int)WeaponType.Count; i++)
                 {
                     Write(data, p + 120 + 4 * i, player.WeaponOwned[i] ? 1 : 0);
                 }
-                for (var i = 0; i < (int)AmmoType.Count; i++)
+                for (int i = 0; i < (int)AmmoType.Count; i++)
                 {
                     Write(data, p + 156 + 4 * i, player.Ammo[i]);
                 }
-                for (var i = 0; i < (int)AmmoType.Count; i++)
+                for (int i = 0; i < (int)AmmoType.Count; i++)
                 {
                     Write(data, p + 172 + 4 * i, player.MaxAmmo[i]);
                 }
@@ -452,7 +452,7 @@ namespace ManagedDoom
                 Write(data, p + 232, player.ExtraLight);
                 Write(data, p + 236, player.FixedColorMap);
                 Write(data, p + 240, player.ColorMap);
-                for (var i = 0; i < (int)PlayerSprite.Count; i++)
+                for (int i = 0; i < (int)PlayerSprite.Count; i++)
                 {
                     if (player.PlayerSprites[i].State == null)
                     {
@@ -492,7 +492,7 @@ namespace ManagedDoom
 
                 if (line.FrontSide != null)
                 {
-                    var side = line.FrontSide;
+                    SideDef side = line.FrontSide;
                     Write(data, p, (short)side.TextureOffset.ToIntFloor());
                     Write(data, p + 2, (short)side.RowOffset.ToIntFloor());
                     Write(data, p + 4, (short)side.TopTexture);
@@ -503,7 +503,7 @@ namespace ManagedDoom
 
                 if (line.BackSide != null)
                 {
-                    var side = line.BackSide;
+                    SideDef side = line.BackSide;
                     Write(data, p, (short)side.TextureOffset.ToIntFloor());
                     Write(data, p + 2, (short)side.RowOffset.ToIntFloor());
                     Write(data, p + 4, (short)side.TopTexture);
@@ -559,7 +559,7 @@ namespace ManagedDoom
 
         private class LoadGame
         {
-            private byte[] data;
+            private readonly byte[] data;
             private int ptr;
 
             public LoadGame(byte[] data)
@@ -569,7 +569,7 @@ namespace ManagedDoom
 
                 ReadDescription();
 
-                var version = ReadVersion();
+                string version = ReadVersion();
                 if (version != "VERSION 109")
                 {
                     throw new Exception("Unsupported version!");
@@ -578,21 +578,21 @@ namespace ManagedDoom
 
             public void Load(DoomGame game)
             {
-                var options = game.World.Options;
+                GameOptions options = game.World.Options;
                 options.Skill = (GameSkill)data[ptr++];
                 options.Episode = data[ptr++];
                 options.Map = data[ptr++];
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     options.Players[i].InGame = data[ptr++] != 0;
                 }
 
                 game.InitNew(options.Skill, options.Episode, options.Map);
 
-                var a = data[ptr++];
-                var b = data[ptr++];
-                var c = data[ptr++];
-                var levelTime = (a << 16) + (b << 8) + c;
+                byte a = data[ptr++];
+                byte b = data[ptr++];
+                byte c = data[ptr++];
+                int levelTime = (a << 16) + (b << 8) + c;
 
                 UnArchivePlayers(game.World);
                 UnArchiveWorld(game.World);
@@ -616,22 +616,22 @@ namespace ManagedDoom
 
             private string ReadDescription()
             {
-                var value = DoomInterop.ToString(data, ptr, DescriptionSize);
+                string value = DoomInterop.ToString(data, ptr, DescriptionSize);
                 ptr += DescriptionSize;
                 return value;
             }
 
             private string ReadVersion()
             {
-                var value = DoomInterop.ToString(data, ptr, versionSize);
+                string value = DoomInterop.ToString(data, ptr, versionSize);
                 ptr += versionSize;
                 return value;
             }
 
             private void UnArchivePlayers(World world)
             {
-                var players = world.Options.Players;
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                Player[] players = world.Options.Players;
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     if (!players[i].InGame)
                     {
@@ -647,15 +647,15 @@ namespace ManagedDoom
             private void UnArchiveWorld(World world)
             {
                 // Do sectors.
-                var sectors = world.Map.Sectors;
-                for (var i = 0; i < sectors.Length; i++)
+                Sector[] sectors = world.Map.Sectors;
+                for (int i = 0; i < sectors.Length; i++)
                 {
                     ptr = UnArchiveSector(sectors[i], data, ptr);
                 }
 
                 // Do lines.
-                var lines = world.Map.Lines;
-                for (var i = 0; i < lines.Length; i++)
+                LineDef[] lines = world.Map.Lines;
+                for (int i = 0; i < lines.Length; i++)
                 {
                     ptr = UnArchiveLine(lines[i], data, ptr);
                 }
@@ -663,11 +663,11 @@ namespace ManagedDoom
 
             private void UnArchiveThinkers(World world)
             {
-                var thinkers = world.Thinkers;
-                var ta = world.ThingAllocation;
+                Thinkers thinkers = world.Thinkers;
+                ThingAllocation ta = world.ThingAllocation;
 
                 // Remove all the current thinkers.
-                foreach (var thinker in thinkers)
+                foreach (Thinker thinker in thinkers)
                 {
                     var mobj = thinker as Mobj;
                     if (mobj != null)
@@ -689,22 +689,24 @@ namespace ManagedDoom
 
                         case ThinkerClass.Mobj:
                             PadPointer();
-                            var mobj = new Mobj(world);
-                            mobj.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            mobj.X = new Fixed(BitConverter.ToInt32(data, ptr + 12));
-                            mobj.Y = new Fixed(BitConverter.ToInt32(data, ptr + 16));
-                            mobj.Z = new Fixed(BitConverter.ToInt32(data, ptr + 20));
-                            mobj.Angle = new Angle(BitConverter.ToInt32(data, ptr + 32));
-                            mobj.Sprite = (Sprite)BitConverter.ToInt32(data, ptr + 36);
-                            mobj.Frame = BitConverter.ToInt32(data, ptr + 40);
-                            mobj.FloorZ = new Fixed(BitConverter.ToInt32(data, ptr + 56));
-                            mobj.CeilingZ = new Fixed(BitConverter.ToInt32(data, ptr + 60));
-                            mobj.Radius = new Fixed(BitConverter.ToInt32(data, ptr + 64));
-                            mobj.Height = new Fixed(BitConverter.ToInt32(data, ptr + 68));
-                            mobj.MomX = new Fixed(BitConverter.ToInt32(data, ptr + 72));
-                            mobj.MomY = new Fixed(BitConverter.ToInt32(data, ptr + 76));
-                            mobj.MomZ = new Fixed(BitConverter.ToInt32(data, ptr + 80));
-                            mobj.Type = (MobjType)BitConverter.ToInt32(data, ptr + 88);
+                            var mobj = new Mobj(world)
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                X = new Fixed(BitConverter.ToInt32(data, ptr + 12)),
+                                Y = new Fixed(BitConverter.ToInt32(data, ptr + 16)),
+                                Z = new Fixed(BitConverter.ToInt32(data, ptr + 20)),
+                                Angle = new Angle(BitConverter.ToInt32(data, ptr + 32)),
+                                Sprite = (Sprite)BitConverter.ToInt32(data, ptr + 36),
+                                Frame = BitConverter.ToInt32(data, ptr + 40),
+                                FloorZ = new Fixed(BitConverter.ToInt32(data, ptr + 56)),
+                                CeilingZ = new Fixed(BitConverter.ToInt32(data, ptr + 60)),
+                                Radius = new Fixed(BitConverter.ToInt32(data, ptr + 64)),
+                                Height = new Fixed(BitConverter.ToInt32(data, ptr + 68)),
+                                MomX = new Fixed(BitConverter.ToInt32(data, ptr + 72)),
+                                MomY = new Fixed(BitConverter.ToInt32(data, ptr + 76)),
+                                MomZ = new Fixed(BitConverter.ToInt32(data, ptr + 80)),
+                                Type = (MobjType)BitConverter.ToInt32(data, ptr + 88)
+                            };
                             mobj.Info = DoomInfo.MobjInfos[(int)mobj.Type];
                             mobj.Tics = BitConverter.ToInt32(data, ptr + 96);
                             mobj.State = DoomInfo.States[BitConverter.ToInt32(data, ptr + 100)];
@@ -714,7 +716,7 @@ namespace ManagedDoom
                             mobj.MoveCount = BitConverter.ToInt32(data, ptr + 116);
                             mobj.ReactionTime = BitConverter.ToInt32(data, ptr + 124);
                             mobj.Threshold = BitConverter.ToInt32(data, ptr + 128);
-                            var playerNumber = BitConverter.ToInt32(data, ptr + 132);
+                            int playerNumber = BitConverter.ToInt32(data, ptr + 132);
                             if (playerNumber != 0)
                             {
                                 mobj.Player = world.Options.Players[playerNumber - 1];
@@ -743,8 +745,8 @@ namespace ManagedDoom
 
             private void UnArchiveSpecials(World world)
             {
-                var thinkers = world.Thinkers;
-                var sa = world.SectorAction;
+                Thinkers thinkers = world.Thinkers;
+                SectorAction sa = world.SectorAction;
 
                 // Read in saved thinkers.
                 while (true)
@@ -758,10 +760,12 @@ namespace ManagedDoom
 
                         case SpecialClass.Ceiling:
                             PadPointer();
-                            var ceiling = new CeilingMove(world);
-                            ceiling.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            ceiling.Type = (CeilingMoveType)BitConverter.ToInt32(data, ptr + 12);
-                            ceiling.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)];
+                            var ceiling = new CeilingMove(world)
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Type = (CeilingMoveType)BitConverter.ToInt32(data, ptr + 12),
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)]
+                            };
                             ceiling.Sector.SpecialData = ceiling;
                             ceiling.BottomHeight = new Fixed(BitConverter.ToInt32(data, ptr + 20));
                             ceiling.TopHeight = new Fixed(BitConverter.ToInt32(data, ptr + 24));
@@ -778,10 +782,12 @@ namespace ManagedDoom
 
                         case SpecialClass.Door:
                             PadPointer();
-                            var door = new VerticalDoor(world);
-                            door.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            door.Type = (VerticalDoorType)BitConverter.ToInt32(data, ptr + 12);
-                            door.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)];
+                            var door = new VerticalDoor(world)
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Type = (VerticalDoorType)BitConverter.ToInt32(data, ptr + 12),
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 16)]
+                            };
                             door.Sector.SpecialData = door;
                             door.TopHeight = new Fixed(BitConverter.ToInt32(data, ptr + 20));
                             door.Speed = new Fixed(BitConverter.ToInt32(data, ptr + 24));
@@ -795,11 +801,13 @@ namespace ManagedDoom
 
                         case SpecialClass.Floor:
                             PadPointer();
-                            var floor = new FloorMove(world);
-                            floor.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            floor.Type = (FloorMoveType)BitConverter.ToInt32(data, ptr + 12);
-                            floor.Crush = BitConverter.ToInt32(data, ptr + 16) != 0;
-                            floor.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 20)];
+                            var floor = new FloorMove(world)
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Type = (FloorMoveType)BitConverter.ToInt32(data, ptr + 12),
+                                Crush = BitConverter.ToInt32(data, ptr + 16) != 0,
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 20)]
+                            };
                             floor.Sector.SpecialData = floor;
                             floor.Direction = BitConverter.ToInt32(data, ptr + 24);
                             floor.NewSpecial = (SectorSpecial)BitConverter.ToInt32(data, ptr + 28);
@@ -813,9 +821,11 @@ namespace ManagedDoom
 
                         case SpecialClass.Plat:
                             PadPointer();
-                            var plat = new Platform(world);
-                            plat.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            plat.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
+                            var plat = new Platform(world)
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)]
+                            };
                             plat.Sector.SpecialData = plat;
                             plat.Speed = new Fixed(BitConverter.ToInt32(data, ptr + 16));
                             plat.Low = new Fixed(BitConverter.ToInt32(data, ptr + 20));
@@ -835,14 +845,16 @@ namespace ManagedDoom
 
                         case SpecialClass.Flash:
                             PadPointer();
-                            var flash = new LightFlash(world);
-                            flash.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            flash.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
-                            flash.Count = BitConverter.ToInt32(data, ptr + 16);
-                            flash.MaxLight = BitConverter.ToInt32(data, ptr + 20);
-                            flash.MinLight = BitConverter.ToInt32(data, ptr + 24);
-                            flash.MaxTime = BitConverter.ToInt32(data, ptr + 28);
-                            flash.MinTime = BitConverter.ToInt32(data, ptr + 32);
+                            var flash = new LightFlash(world)
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)],
+                                Count = BitConverter.ToInt32(data, ptr + 16),
+                                MaxLight = BitConverter.ToInt32(data, ptr + 20),
+                                MinLight = BitConverter.ToInt32(data, ptr + 24),
+                                MaxTime = BitConverter.ToInt32(data, ptr + 28),
+                                MinTime = BitConverter.ToInt32(data, ptr + 32)
+                            };
                             ptr += 36;
 
                             thinkers.Add(flash);
@@ -850,14 +862,16 @@ namespace ManagedDoom
 
                         case SpecialClass.Strobe:
                             PadPointer();
-                            var strobe = new StrobeFlash(world);
-                            strobe.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            strobe.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
-                            strobe.Count = BitConverter.ToInt32(data, ptr + 16);
-                            strobe.MinLight = BitConverter.ToInt32(data, ptr + 20);
-                            strobe.MaxLight = BitConverter.ToInt32(data, ptr + 24);
-                            strobe.DarkTime = BitConverter.ToInt32(data, ptr + 28);
-                            strobe.BrightTime = BitConverter.ToInt32(data, ptr + 32);
+                            var strobe = new StrobeFlash
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)],
+                                Count = BitConverter.ToInt32(data, ptr + 16),
+                                MinLight = BitConverter.ToInt32(data, ptr + 20),
+                                MaxLight = BitConverter.ToInt32(data, ptr + 24),
+                                DarkTime = BitConverter.ToInt32(data, ptr + 28),
+                                BrightTime = BitConverter.ToInt32(data, ptr + 32)
+                            };
                             ptr += 36;
 
                             thinkers.Add(strobe);
@@ -865,12 +879,14 @@ namespace ManagedDoom
 
                         case SpecialClass.Glow:
                             PadPointer();
-                            var glow = new GlowingLight(world);
-                            glow.ThinkerState = ReadThinkerState(data, ptr + 8);
-                            glow.Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)];
-                            glow.MinLight = BitConverter.ToInt32(data, ptr + 16);
-                            glow.MaxLight = BitConverter.ToInt32(data, ptr + 20);
-                            glow.Direction = BitConverter.ToInt32(data, ptr + 24);
+                            var glow = new GlowingLight
+                            {
+                                ThinkerState = ReadThinkerState(data, ptr + 8),
+                                Sector = world.Map.Sectors[BitConverter.ToInt32(data, ptr + 12)],
+                                MinLight = BitConverter.ToInt32(data, ptr + 16),
+                                MaxLight = BitConverter.ToInt32(data, ptr + 20),
+                                Direction = BitConverter.ToInt32(data, ptr + 24)
+                            };
                             ptr += 28;
 
                             thinkers.Add(glow);
@@ -905,30 +921,30 @@ namespace ManagedDoom
                 player.Health = BitConverter.ToInt32(data, p + 32);
                 player.ArmorPoints = BitConverter.ToInt32(data, p + 36);
                 player.ArmorType = BitConverter.ToInt32(data, p + 40);
-                for (var i = 0; i < (int)PowerType.Count; i++)
+                for (int i = 0; i < (int)PowerType.Count; i++)
                 {
                     player.Powers[i] = BitConverter.ToInt32(data, p + 44 + 4 * i);
                 }
-                for (var i = 0; i < (int)PowerType.Count; i++)
+                for (int i = 0; i < (int)PowerType.Count; i++)
                 {
                     player.Cards[i] = BitConverter.ToInt32(data, p + 68 + 4 * i) != 0;
                 }
                 player.Backpack = BitConverter.ToInt32(data, p + 92) != 0;
-                for (var i = 0; i < Player.MaxPlayerCount; i++)
+                for (int i = 0; i < Player.MaxPlayerCount; i++)
                 {
                     player.Frags[i] = BitConverter.ToInt32(data, p + 96 + 4 * i);
                 }
                 player.ReadyWeapon = (WeaponType)BitConverter.ToInt32(data, p + 112);
                 player.PendingWeapon = (WeaponType)BitConverter.ToInt32(data, p + 116);
-                for (var i = 0; i < (int)WeaponType.Count; i++)
+                for (int i = 0; i < (int)WeaponType.Count; i++)
                 {
                     player.WeaponOwned[i] = BitConverter.ToInt32(data, p + 120 + 4 * i) != 0;
                 }
-                for (var i = 0; i < (int)AmmoType.Count; i++)
+                for (int i = 0; i < (int)AmmoType.Count; i++)
                 {
                     player.Ammo[i] = BitConverter.ToInt32(data, p + 156 + 4 * i);
                 }
-                for (var i = 0; i < (int)AmmoType.Count; i++)
+                for (int i = 0; i < (int)AmmoType.Count; i++)
                 {
                     player.MaxAmmo[i] = BitConverter.ToInt32(data, p + 172 + 4 * i);
                 }
@@ -944,7 +960,7 @@ namespace ManagedDoom
                 player.ExtraLight = BitConverter.ToInt32(data, p + 232);
                 player.FixedColorMap = BitConverter.ToInt32(data, p + 236);
                 player.ColorMap = BitConverter.ToInt32(data, p + 240);
-                for (var i = 0; i < (int)PlayerSprite.Count; i++)
+                for (int i = 0; i < (int)PlayerSprite.Count; i++)
                 {
                     player.PlayerSprites[i].State = DoomInfo.States[BitConverter.ToInt32(data, p + 244 + 16 * i)];
                     if (player.PlayerSprites[i].State.Number == (int)MobjState.Null)
@@ -983,7 +999,7 @@ namespace ManagedDoom
 
                 if (line.FrontSide != null)
                 {
-                    var side = line.FrontSide;
+                    SideDef side = line.FrontSide;
                     side.TextureOffset = Fixed.FromInt(BitConverter.ToInt16(data, p));
                     side.RowOffset = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
                     side.TopTexture = BitConverter.ToInt16(data, p + 4);
@@ -994,7 +1010,7 @@ namespace ManagedDoom
 
                 if (line.BackSide != null)
                 {
-                    var side = line.BackSide;
+                    SideDef side = line.BackSide;
                     side.TextureOffset = Fixed.FromInt(BitConverter.ToInt16(data, p));
                     side.RowOffset = Fixed.FromInt(BitConverter.ToInt16(data, p + 2));
                     side.TopTexture = BitConverter.ToInt16(data, p + 4);

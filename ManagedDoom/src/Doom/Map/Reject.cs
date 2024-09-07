@@ -21,21 +21,21 @@ namespace ManagedDoom
 {
     public sealed class Reject
     {
-        private byte[] data;
-        private int sectorCount;
+        private readonly byte[] _data;
+        private readonly int _sectorCount;
 
         private Reject(byte[] data, int sectorCount)
         {
             // If the reject table is too small, expand it to avoid crash.
             // https://doomwiki.org/wiki/Reject#Reject_Overflow
-            var expectedLength = (sectorCount * sectorCount + 7) / 8;
+            int expectedLength = (sectorCount * sectorCount + 7) / 8;
             if (data.Length < expectedLength)
             {
                 Array.Resize(ref data, expectedLength);
             }
 
-            this.data = data;
-            this.sectorCount = sectorCount;
+            _data = data;
+            _sectorCount = sectorCount;
         }
 
         public static Reject FromWad(Wad wad, int lump, Sector[] sectors)
@@ -45,14 +45,14 @@ namespace ManagedDoom
 
         public bool Check(Sector sector1, Sector sector2)
         {
-            var s1 = sector1.Number;
-            var s2 = sector2.Number;
+            int s1 = sector1.Number;
+            int s2 = sector2.Number;
 
-            var p = s1 * sectorCount + s2;
-            var byteIndex = p >> 3;
-            var bitIndex = 1 << (p & 7);
+            int p = s1 * _sectorCount + s2;
+            int byteIndex = p >> 3;
+            int bitIndex = 1 << (p & 7);
 
-            return (data[byteIndex] & bitIndex) != 0;
+            return (_data[byteIndex] & bitIndex) != 0;
         }
     }
 }

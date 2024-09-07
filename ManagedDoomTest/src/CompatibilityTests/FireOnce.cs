@@ -10,20 +10,22 @@ namespace ManagedDoomTest.CompatibilityTests
         public void Map01()
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2);
-            var options = new GameOptions();
-            options.Skill = GameSkill.Hard;
-            options.Map = 1;
+            var options = new GameOptions
+            {
+                Skill = GameSkill.Hard,
+                Map = 1
+            };
             options.Players[0].InGame = true;
 
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, options);
             game.DeferedInitNew();
 
-            var tics = 700;
-            var pressFireUntil = 20;
+            int tics = 700;
+            int pressFireUntil = 20;
 
-            var aggHash = 0;
-            for (var i = 0; i < tics; i++)
+            int aggHash = 0;
+            for (int i = 0; i < tics; i++)
             {
                 if (i < pressFireUntil)
                 {

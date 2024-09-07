@@ -14,18 +14,18 @@ namespace ManagedDoomTest.UnitTests
             using var wad = new Wad(WadPath.Doom1);
             var flats = new DummyFlatLookup(wad);
             var textures = new DummyTextureLookup(wad);
-            var map = wad.GetLumpNumber("E1M1");
-            var vertices = Vertex.FromWad(wad, map + 4);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
-            var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+            int map = wad.GetLumpNumber("E1M1");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
+            SideDef[] sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+            LineDef[] lines = LineDef.FromWad(wad, map + 2, vertices, sides);
             var blockMap = BlockMap.FromWad(wad, map + 10, lines);
 
             {
-                var minX = vertices.Select(v => v.X.ToDouble()).Min();
-                var maxX = vertices.Select(v => v.X.ToDouble()).Max();
-                var minY = vertices.Select(v => v.Y.ToDouble()).Min();
-                var maxY = vertices.Select(v => v.Y.ToDouble()).Max();
+                double minX = vertices.Select(v => v.X.ToDouble()).Min();
+                double maxX = vertices.Select(v => v.X.ToDouble()).Max();
+                double minY = vertices.Select(v => v.Y.ToDouble()).Min();
+                double maxY = vertices.Select(v => v.Y.ToDouble()).Max();
 
                 Assert.Equal(blockMap.OriginX.ToDouble(), minX, 64d);
                 Assert.Equal(blockMap.OriginY.ToDouble(), minY, 64d);
@@ -34,9 +34,9 @@ namespace ManagedDoomTest.UnitTests
             }
 
             var spots = new List<Tuple<int, int>>();
-            for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
+            for (int blockY = -2; blockY < blockMap.Height + 2; blockY++)
             {
-                for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
+                for (int blockX = -2; blockX < blockMap.Width + 2; blockX++)
                 {
                     spots.Add(Tuple.Create(blockX, blockY));
                 }
@@ -44,22 +44,22 @@ namespace ManagedDoomTest.UnitTests
 
             var random = new Random(666);
 
-            for (var i = 0; i < 50; i++)
+            for (int i = 0; i < 50; i++)
             {
-                var ordered = spots.OrderBy(spot => random.NextDouble()).ToArray();
+                Tuple<int, int>[] ordered = spots.OrderBy(spot => random.NextDouble()).ToArray();
 
-                var total = 0;
+                int total = 0;
 
-                foreach (var spot in ordered)
+                foreach (Tuple<int, int>? spot in ordered)
                 {
-                    var blockX = spot.Item1;
-                    var blockY = spot.Item2;
+                    int blockX = spot.Item1;
+                    int blockY = spot.Item2;
 
-                    var minX = double.MaxValue;
-                    var maxX = double.MinValue;
-                    var minY = double.MaxValue;
-                    var maxY = double.MinValue;
-                    var count = 0;
+                    double minX = double.MaxValue;
+                    double maxX = double.MinValue;
+                    double minY = double.MaxValue;
+                    double maxY = double.MinValue;
+                    int count = 0;
 
                     blockMap.IterateLines(
                         blockX,
@@ -99,18 +99,18 @@ namespace ManagedDoomTest.UnitTests
             using var wad = new Wad(WadPath.Doom2);
             var flats = new DummyFlatLookup(wad);
             var textures = new DummyTextureLookup(wad);
-            var map = wad.GetLumpNumber("MAP01");
-            var vertices = Vertex.FromWad(wad, map + 4);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
-            var sides = SideDef.FromWad(wad, map + 3, textures, sectors);
-            var lines = LineDef.FromWad(wad, map + 2, vertices, sides);
+            int map = wad.GetLumpNumber("MAP01");
+            Vertex[] vertices = Vertex.FromWad(wad, map + 4);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
+            SideDef[] sides = SideDef.FromWad(wad, map + 3, textures, sectors);
+            LineDef[] lines = LineDef.FromWad(wad, map + 2, vertices, sides);
             var blockMap = BlockMap.FromWad(wad, map + 10, lines);
 
             {
-                var minX = vertices.Select(v => v.X.ToDouble()).Min();
-                var maxX = vertices.Select(v => v.X.ToDouble()).Max();
-                var minY = vertices.Select(v => v.Y.ToDouble()).Min();
-                var maxY = vertices.Select(v => v.Y.ToDouble()).Max();
+                double minX = vertices.Select(v => v.X.ToDouble()).Min();
+                double maxX = vertices.Select(v => v.X.ToDouble()).Max();
+                double minY = vertices.Select(v => v.Y.ToDouble()).Min();
+                double maxY = vertices.Select(v => v.Y.ToDouble()).Max();
 
                 Assert.Equal(blockMap.OriginX.ToDouble(), minX, 64d);
                 Assert.Equal(blockMap.OriginY.ToDouble(), minY, 64d);
@@ -119,9 +119,9 @@ namespace ManagedDoomTest.UnitTests
             }
 
             var spots = new List<Tuple<int, int>>();
-            for (var blockY = -2; blockY < blockMap.Height + 2; blockY++)
+            for (int blockY = -2; blockY < blockMap.Height + 2; blockY++)
             {
-                for (var blockX = -2; blockX < blockMap.Width + 2; blockX++)
+                for (int blockX = -2; blockX < blockMap.Width + 2; blockX++)
                 {
                     spots.Add(Tuple.Create(blockX, blockY));
                 }
@@ -129,22 +129,22 @@ namespace ManagedDoomTest.UnitTests
 
             var random = new Random(666);
 
-            for (var i = 0; i < 50; i++)
+            for (int i = 0; i < 50; i++)
             {
-                var ordered = spots.OrderBy(spot => random.NextDouble()).ToArray();
+                Tuple<int, int>[] ordered = spots.OrderBy(spot => random.NextDouble()).ToArray();
 
-                var total = 0;
+                int total = 0;
 
-                foreach (var spot in ordered)
+                foreach (Tuple<int, int>? spot in ordered)
                 {
-                    var blockX = spot.Item1;
-                    var blockY = spot.Item2;
+                    int blockX = spot.Item1;
+                    int blockY = spot.Item2;
 
-                    var minX = double.MaxValue;
-                    var maxX = double.MinValue;
-                    var minY = double.MaxValue;
-                    var maxY = double.MinValue;
-                    var count = 0;
+                    double minX = double.MaxValue;
+                    double maxX = double.MinValue;
+                    double minY = double.MaxValue;
+                    double maxY = double.MinValue;
+                    int count = 0;
 
                     blockMap.IterateLines(
                         blockX,

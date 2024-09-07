@@ -12,16 +12,16 @@ namespace ManagedDoomTest.CompatibilityTests
             using var content = GameContent.CreateDummy(WadPath.Doom1, @"data\multilevel_test_doom1.wad");
             var demo = new Demo(@"data\multilevel_test_doom1.lmp");
             demo.Options.GameMode = GameMode.Retail;
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
 
             // E1M1
             {
-                for (var i = 0; i < 456; i++)
+                for (int i = 0; i < 456; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -35,7 +35,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 523; i++)
+                for (int i = 0; i < 523; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -44,7 +44,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // E1M2
             {
-                for (var i = 0; i < 492; i++)
+                for (int i = 0; i < 492; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -58,7 +58,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 368; i++)
+                for (int i = 0; i < 368; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -67,7 +67,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // E1M3
             {
-                for (var i = 0; i < 424; i++)
+                for (int i = 0; i < 424; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -81,7 +81,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 28; i++)
+                for (int i = 0; i < 28; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -90,7 +90,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // E1M4
             {
-                for (var i = 0; i < 507; i++)
+                for (int i = 0; i < 507; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -104,7 +104,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 253; i++)
+                for (int i = 0; i < 253; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -113,7 +113,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // E1M5
             {
-                for (var i = 0; i < 532; i++)
+                for (int i = 0; i < 532; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -131,16 +131,16 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\multilevel_test_doom2.wad");
             var demo = new Demo(@"data\multilevel_test_doom2.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
 
             // MAP01
             {
-                for (var i = 0; i < 801; i++)
+                for (int i = 0; i < 801; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -154,7 +154,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 378; i++)
+                for (int i = 0; i < 378; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -163,7 +163,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // MAP02
             {
-                for (var i = 0; i < 334; i++)
+                for (int i = 0; i < 334; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -177,7 +177,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 116; i++)
+                for (int i = 0; i < 116; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -186,7 +186,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // MAP03
             {
-                for (var i = 0; i < 653; i++)
+                for (int i = 0; i < 653; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -200,7 +200,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 131; i++)
+                for (int i = 0; i < 131; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -209,7 +209,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // MAP04
             {
-                for (var i = 0; i < 469; i++)
+                for (int i = 0; i < 469; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -223,7 +223,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 236; i++)
+                for (int i = 0; i < 236; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -232,7 +232,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // MAP05
             {
-                for (var i = 0; i < 312; i++)
+                for (int i = 0; i < 312; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -250,16 +250,16 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\finale_test.wad");
             var demo = new Demo(@"data\finale_test1.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
 
             // MAP06
             {
-                for (var i = 0; i < 430; i++)
+                for (int i = 0; i < 430; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -273,7 +273,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 156; i++)
+                for (int i = 0; i < 156; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -282,7 +282,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Finale
             {
-                for (var i = 0; i < 237; i++)
+                for (int i = 0; i < 237; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -291,7 +291,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // MAP07
             {
-                for (var i = 0; i < 872; i++)
+                for (int i = 0; i < 872; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -309,16 +309,16 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, @"data\finale_test.wad");
             var demo = new Demo(@"data\finale_test2.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
 
             // MAP06
             {
-                for (var i = 0; i < 475; i++)
+                for (int i = 0; i < 475; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -332,7 +332,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Intermission
             {
-                for (var i = 0; i < 21; i++)
+                for (int i = 0; i < 21; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -341,7 +341,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // Finale
             {
-                for (var i = 0; i < 52; i++)
+                for (int i = 0; i < 52; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);
@@ -350,7 +350,7 @@ namespace ManagedDoomTest.CompatibilityTests
 
             // MAP07
             {
-                for (var i = 0; i < 494; i++)
+                for (int i = 0; i < 494; i++)
                 {
                     demo.ReadCmd(cmds);
                     game.Update(cmds);

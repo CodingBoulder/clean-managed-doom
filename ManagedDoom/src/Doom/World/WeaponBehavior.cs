@@ -27,17 +27,17 @@ namespace ManagedDoom
         public static readonly Fixed WeaponTop = Fixed.FromInt(32);
         public static readonly Fixed WeaponBottom = Fixed.FromInt(128);
 
-        private static readonly Fixed RaiseSpeed = Fixed.FromInt(6);
-        private static readonly Fixed LowerSpeed = Fixed.FromInt(6);
+        private static readonly Fixed _raiseSpeed = Fixed.FromInt(6);
+        private static readonly Fixed _lowerSpeed = Fixed.FromInt(6);
 
-        private World world;
+        private readonly World _world;
 
-        private Fixed currentBulletSlope;
+        private Fixed _currentBulletSlope;
 
 
         public WeaponBehavior(World world)
         {
-            this.world = world;
+            _world = world;
         }
 
 
@@ -49,7 +49,7 @@ namespace ManagedDoom
 
         public void WeaponReady(Player player, PlayerSpriteDef psp)
         {
-            var pb = world.PlayerBehavior;
+            PlayerBehavior pb = _world.PlayerBehavior;
 
             // Get out of attack state.
             if (player.Mobj.State == DoomInfo.States[(int)MobjState.PlayAtk1] ||
@@ -61,7 +61,7 @@ namespace ManagedDoom
             if (player.ReadyWeapon == WeaponType.Chainsaw &&
                 psp.State == DoomInfo.States[(int)MobjState.Saw])
             {
-                world.StartSound(player.Mobj, Sfx.SAWIDL, SfxType.Weapon);
+                _world.StartSound(player.Mobj, Sfx.SAWIDL, SfxType.Weapon);
             }
 
             // Check for weapon change.
@@ -70,7 +70,7 @@ namespace ManagedDoom
             {
                 // Change weapon.
                 // Pending weapon should allready be validated.
-                var newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState;
+                MobjState newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState;
                 pb.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
                 return;
             }
@@ -93,7 +93,7 @@ namespace ManagedDoom
             }
 
             // Bob the weapon based on movement speed.
-            var angle = (128 * player.Mobj.World.LevelTime) & Trig.FineMask;
+            int angle = (128 * player.Mobj.World.LevelTime) & Trig.FineMask;
             psp.Sx = Fixed.One + player.Bob * Trig.Cos(angle);
 
             angle &= Trig.FineAngleCount / 2 - 1;
@@ -103,7 +103,7 @@ namespace ManagedDoom
 
         private bool CheckAmmo(Player player)
         {
-            var ammo = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo;
+            AmmoType ammo = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo;
 
             // Minimal amount for one shot varies.
             int count;
@@ -135,13 +135,13 @@ namespace ManagedDoom
             {
                 if (player.WeaponOwned[(int)WeaponType.Plasma] &&
                     player.Ammo[(int)AmmoType.Cell] > 0 &&
-                    world.Options.GameMode != GameMode.Shareware)
+                    _world.Options.GameMode != GameMode.Shareware)
                 {
                     player.PendingWeapon = WeaponType.Plasma;
                 }
                 else if (player.WeaponOwned[(int)WeaponType.SuperShotgun] &&
                     player.Ammo[(int)AmmoType.Shell] > 2 &&
-                    world.Options.GameMode == GameMode.Commercial)
+                    _world.Options.GameMode == GameMode.Commercial)
                 {
                     player.PendingWeapon = WeaponType.SuperShotgun;
                 }
@@ -170,7 +170,7 @@ namespace ManagedDoom
                 }
                 else if (player.WeaponOwned[(int)WeaponType.Bfg] &&
                     player.Ammo[(int)AmmoType.Cell] > DoomInfo.DeHackEdConst.BfgCellsPerShot &&
-                    world.Options.GameMode != GameMode.Shareware)
+                    _world.Options.GameMode != GameMode.Shareware)
                 {
                     player.PendingWeapon = WeaponType.Bfg;
                 }
@@ -183,7 +183,7 @@ namespace ManagedDoom
             } while (player.PendingWeapon == WeaponType.NoChange);
 
             // Now set appropriate weapon overlay.
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Weapon,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].DownState);
@@ -205,11 +205,11 @@ namespace ManagedDoom
             sec.SoundTraversed = soundblocks + 1;
             sec.SoundTarget = soundtarget;
 
-            var mc = world.MapCollision;
+            MapCollision mc = _world.MapCollision;
 
-            for (var i = 0; i < sec.Lines.Length; i++)
+            for (int i = 0; i < sec.Lines.Length; i++)
             {
-                var check = sec.Lines[i];
+                LineDef check = sec.Lines[i];
                 if ((check.Flags & LineFlags.TwoSided) == 0)
                 {
                     continue;
@@ -254,7 +254,7 @@ namespace ManagedDoom
                 emmiter.Subsector.Sector,
                 0,
                 target,
-                world.GetNewValidCount());
+                _world.GetNewValidCount());
         }
 
 
@@ -267,8 +267,8 @@ namespace ManagedDoom
 
             player.Mobj.SetState(MobjState.PlayAtk1);
 
-            var newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].AttackState;
-            world.PlayerBehavior.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
+            MobjState newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].AttackState;
+            _world.PlayerBehavior.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
 
             NoiseAlert(player.Mobj, player.Mobj);
         }
@@ -276,7 +276,7 @@ namespace ManagedDoom
 
         public void Lower(Player player, PlayerSpriteDef psp)
         {
-            psp.Sy += LowerSpeed;
+            psp.Sy += _lowerSpeed;
 
             // Is already down.
             if (psp.Sy < WeaponBottom)
@@ -293,7 +293,7 @@ namespace ManagedDoom
                 return;
             }
 
-            var pb = world.PlayerBehavior;
+            PlayerBehavior pb = _world.PlayerBehavior;
 
             // The old weapon has been lowered off the screen,
             // so change the weapon and start raising it.
@@ -312,7 +312,7 @@ namespace ManagedDoom
 
         public void Raise(Player player, PlayerSpriteDef psp)
         {
-            psp.Sy -= RaiseSpeed;
+            psp.Sy -= _raiseSpeed;
 
             if (psp.Sy > WeaponTop)
             {
@@ -322,35 +322,35 @@ namespace ManagedDoom
             psp.Sy = WeaponTop;
 
             // The weapon has been raised all the way, so change to the ready state.
-            var newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
+            MobjState newState = DoomInfo.WeaponInfos[(int)player.ReadyWeapon].ReadyState;
 
-            world.PlayerBehavior.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
+            _world.PlayerBehavior.SetPlayerSprite(player, PlayerSprite.Weapon, newState);
         }
 
 
         public void Punch(Player player)
         {
-            var random = world.Random;
+            DoomRandom random = _world.Random;
 
-            var damage = (random.Next() % 10 + 1) << 1;
+            int damage = (random.Next() % 10 + 1) << 1;
 
             if (player.Powers[(int)PowerType.Strength] != 0)
             {
                 damage *= 10;
             }
 
-            var hs = world.Hitscan;
+            Hitscan hs = _world.Hitscan;
 
-            var angle = player.Mobj.Angle;
+            Angle angle = player.Mobj.Angle;
             angle += new Angle((random.Next() - random.Next()) << 18);
 
-            var slope = hs.AimLineAttack(player.Mobj, angle, MeleeRange);
+            Fixed slope = hs.AimLineAttack(player.Mobj, angle, MeleeRange);
             hs.LineAttack(player.Mobj, angle, MeleeRange, slope, damage);
 
             // Turn to face target.
             if (hs.LineTarget != null)
             {
-                world.StartSound(player.Mobj, Sfx.PUNCH, SfxType.Weapon);
+                _world.StartSound(player.Mobj, Sfx.PUNCH, SfxType.Weapon);
 
                 player.Mobj.Angle = Geometry.PointToAngle(
                     player.Mobj.X, player.Mobj.Y,
@@ -361,29 +361,29 @@ namespace ManagedDoom
 
         public void Saw(Player player)
         {
-            var damage = 2 * (world.Random.Next() % 10 + 1);
+            int damage = 2 * (_world.Random.Next() % 10 + 1);
 
-            var random = world.Random;
+            DoomRandom random = _world.Random;
 
-            var attackAngle = player.Mobj.Angle;
+            Angle attackAngle = player.Mobj.Angle;
             attackAngle += new Angle((random.Next() - random.Next()) << 18);
 
-            var hs = world.Hitscan;
+            Hitscan hs = _world.Hitscan;
 
             // Use MeleeRange + Fixed.Epsilon so that the puff doesn't skip the flash.
-            var slope = hs.AimLineAttack(player.Mobj, attackAngle, MeleeRange + Fixed.Epsilon);
+            Fixed slope = hs.AimLineAttack(player.Mobj, attackAngle, MeleeRange + Fixed.Epsilon);
             hs.LineAttack(player.Mobj, attackAngle, MeleeRange + Fixed.Epsilon, slope, damage);
 
             if (hs.LineTarget == null)
             {
-                world.StartSound(player.Mobj, Sfx.SAWFUL, SfxType.Weapon);
+                _world.StartSound(player.Mobj, Sfx.SAWFUL, SfxType.Weapon);
                 return;
             }
 
-            world.StartSound(player.Mobj, Sfx.SAWHIT, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.SAWHIT, SfxType.Weapon);
 
             // Turn to face target.
-            var targetAngle = Geometry.PointToAngle(
+            Angle targetAngle = Geometry.PointToAngle(
                 player.Mobj.X, player.Mobj.Y,
                 hs.LineTarget.X, hs.LineTarget.Y);
 
@@ -437,21 +437,21 @@ namespace ManagedDoom
 
         private void BulletSlope(Mobj mo)
         {
-            var hs = world.Hitscan;
+            Hitscan hs = _world.Hitscan;
 
             // See which target is to be aimed at.
-            var angle = mo.Angle;
+            Angle angle = mo.Angle;
 
-            currentBulletSlope = hs.AimLineAttack(mo, angle, Fixed.FromInt(1024));
+            _currentBulletSlope = hs.AimLineAttack(mo, angle, Fixed.FromInt(1024));
 
             if (hs.LineTarget == null)
             {
                 angle += new Angle(1 << 26);
-                currentBulletSlope = hs.AimLineAttack(mo, angle, Fixed.FromInt(1024));
+                _currentBulletSlope = hs.AimLineAttack(mo, angle, Fixed.FromInt(1024));
                 if (hs.LineTarget == null)
                 {
                     angle -= new Angle(2 << 26);
-                    currentBulletSlope = hs.AimLineAttack(mo, angle, Fixed.FromInt(1024));
+                    _currentBulletSlope = hs.AimLineAttack(mo, angle, Fixed.FromInt(1024));
                 }
             }
         }
@@ -459,30 +459,30 @@ namespace ManagedDoom
 
         private void GunShot(Mobj mo, bool accurate)
         {
-            var random = world.Random;
+            DoomRandom random = _world.Random;
 
-            var damage = 5 * (random.Next() % 3 + 1);
+            int damage = 5 * (random.Next() % 3 + 1);
 
-            var angle = mo.Angle;
+            Angle angle = mo.Angle;
 
             if (!accurate)
             {
                 angle += new Angle((random.Next() - random.Next()) << 18);
             }
 
-            world.Hitscan.LineAttack(mo, angle, MissileRange, currentBulletSlope, damage);
+            _world.Hitscan.LineAttack(mo, angle, MissileRange, _currentBulletSlope, damage);
         }
 
 
         public void FirePistol(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.PISTOL, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.PISTOL, SfxType.Weapon);
 
             player.Mobj.SetState(MobjState.PlayAtk2);
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
@@ -501,20 +501,20 @@ namespace ManagedDoom
 
         public void FireShotgun(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.SHOTGN, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.SHOTGN, SfxType.Weapon);
 
             player.Mobj.SetState(MobjState.PlayAtk2);
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
 
             BulletSlope(player.Mobj);
 
-            for (var i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 GunShot(player.Mobj, false);
             }
@@ -529,7 +529,7 @@ namespace ManagedDoom
 
         public void FireCGun(Player player, PlayerSpriteDef psp)
         {
-            world.StartSound(player.Mobj, Sfx.PISTOL, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.PISTOL, SfxType.Weapon);
 
             if (player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] == 0)
             {
@@ -540,7 +540,7 @@ namespace ManagedDoom
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState +
@@ -554,32 +554,32 @@ namespace ManagedDoom
 
         public void FireShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DSHTGN, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.DSHTGN, SfxType.Weapon);
 
             player.Mobj.SetState(MobjState.PlayAtk2);
 
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= 2;
 
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
 
             BulletSlope(player.Mobj);
 
-            var random = world.Random;
-            var hs = world.Hitscan;
+            DoomRandom random = _world.Random;
+            Hitscan hs = _world.Hitscan;
 
-            for (var i = 0; i < 20; i++)
+            for (int i = 0; i < 20; i++)
             {
-                var damage = 5 * (random.Next() % 3 + 1);
-                var angle = player.Mobj.Angle;
+                int damage = 5 * (random.Next() % 3 + 1);
+                Angle angle = player.Mobj.Angle;
                 angle += new Angle((random.Next() - random.Next()) << 19);
                 hs.LineAttack(
                     player.Mobj,
                     angle,
                     MissileRange,
-                    currentBulletSlope + new Fixed((random.Next() - random.Next()) << 5),
+                    _currentBulletSlope + new Fixed((random.Next() - random.Next()) << 5),
                     damage);
             }
         }
@@ -593,19 +593,19 @@ namespace ManagedDoom
 
         public void OpenShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DBOPN, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.DBOPN, SfxType.Weapon);
         }
 
 
         public void LoadShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DBLOAD, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.DBLOAD, SfxType.Weapon);
         }
 
 
         public void CloseShotgun2(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.DBCLS, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.DBCLS, SfxType.Weapon);
             ReFire(player);
         }
 
@@ -614,7 +614,7 @@ namespace ManagedDoom
         {
             player.Mobj.SetState(MobjState.PlayAtk2);
 
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
                 DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState);
@@ -625,7 +625,7 @@ namespace ManagedDoom
         {
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Rocket);
+            _world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Rocket);
         }
 
 
@@ -633,18 +633,18 @@ namespace ManagedDoom
         {
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo]--;
 
-            world.PlayerBehavior.SetPlayerSprite(
+            _world.PlayerBehavior.SetPlayerSprite(
                 player,
                 PlayerSprite.Flash,
-                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState + (world.Random.Next() & 1));
+                DoomInfo.WeaponInfos[(int)player.ReadyWeapon].FlashState + (_world.Random.Next() & 1));
 
-            world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Plasma);
+            _world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Plasma);
         }
 
 
         public void A_BFGsound(Player player)
         {
-            world.StartSound(player.Mobj, Sfx.BFG, SfxType.Weapon);
+            _world.StartSound(player.Mobj, Sfx.BFG, SfxType.Weapon);
         }
 
 
@@ -652,19 +652,19 @@ namespace ManagedDoom
         {
             player.Ammo[(int)DoomInfo.WeaponInfos[(int)player.ReadyWeapon].Ammo] -= DoomInfo.DeHackEdConst.BfgCellsPerShot;
 
-            world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Bfg);
+            _world.ThingAllocation.SpawnPlayerMissile(player.Mobj, MobjType.Bfg);
         }
 
 
         public void BFGSpray(Mobj bfgBall)
         {
-            var hs = world.Hitscan;
-            var random = world.Random;
+            Hitscan hs = _world.Hitscan;
+            DoomRandom random = _world.Random;
 
             // Offset angles from its attack angle.
-            for (var i = 0; i < 40; i++)
+            for (int i = 0; i < 40; i++)
             {
-                var an = bfgBall.Angle - Angle.Ang90 / 2 + Angle.Ang90 / 40 * (uint)i;
+                Angle an = bfgBall.Angle - Angle.Ang90 / 2 + Angle.Ang90 / 40 * (uint)i;
 
                 // bfgBall.Target is the originator (player) of the missile.
                 hs.AimLineAttack(bfgBall.Target, an, Fixed.FromInt(16 * 64));
@@ -674,19 +674,19 @@ namespace ManagedDoom
                     continue;
                 }
 
-                world.ThingAllocation.SpawnMobj(
+                _world.ThingAllocation.SpawnMobj(
                     hs.LineTarget.X,
                     hs.LineTarget.Y,
                     hs.LineTarget.Z + (hs.LineTarget.Height >> 2),
                     MobjType.Extrabfg);
 
-                var damage = 0;
-                for (var j = 0; j < 15; j++)
+                int damage = 0;
+                for (int j = 0; j < 15; j++)
                 {
                     damage += (random.Next() & 7) + 1;
                 }
 
-                world.ThingInteraction.DamageMobj(
+                _world.ThingInteraction.DamageMobj(
                     hs.LineTarget,
                     bfgBall.Target,
                     bfgBall.Target,

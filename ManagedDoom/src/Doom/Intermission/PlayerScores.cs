@@ -23,53 +23,53 @@ namespace ManagedDoom
     public class PlayerScores
     {
         // Whether the player is in game.
-        private bool inGame;
-    
+        private bool _inGame;
+
         // Player stats, kills, collected items etc.
-        private int killCount;
-        private int itemCount;
-        private int secretCount;
-        private int time;
-        private int[] frags;
+        private int _killCount;
+        private int _itemCount;
+        private int _secretCount;
+        private int _time;
+        private readonly int[] _frags;
 
         public PlayerScores()
         {
-            frags = new int[Player.MaxPlayerCount];
+            _frags = new int[Player.MaxPlayerCount];
         }
 
         public bool InGame
         {
-            get => inGame;
-            set => inGame = value;
+            get => _inGame;
+            set => _inGame = value;
         }
 
         public int KillCount
         {
-            get => killCount;
-            set => killCount = value;
+            get => _killCount;
+            set => _killCount = value;
         }
 
         public int ItemCount
         {
-            get => itemCount;
-            set => itemCount = value;
+            get => _itemCount;
+            set => _itemCount = value;
         }
 
         public int SecretCount
         {
-            get => secretCount;
-            set => secretCount = value;
+            get => _secretCount;
+            set => _secretCount = value;
         }
 
         public int Time
         {
-            get => time;
-            set => time = value;
+            get => _time;
+            set => _time = value;
         }
 
         public int[] Frags
         {
-            get => frags;
+            get => _frags;
         }
     }
 }

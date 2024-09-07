@@ -24,7 +24,7 @@ namespace ManagedDoom
     {
         public static readonly int Inverse = 32;
 
-        private byte[][] data;
+        private readonly byte[][] _data;
 
         public ColorMap(Wad wad)
         {
@@ -32,16 +32,16 @@ namespace ManagedDoom
             {
                 Console.Write("Load color map: ");
 
-                var raw = wad.ReadLump("COLORMAP");
-                var num = raw.Length / 256;
-                data = new byte[num][];
-                for (var i = 0; i < num; i++)
+                byte[] raw = wad.ReadLump("COLORMAP");
+                int num = raw.Length / 256;
+                _data = new byte[num][];
+                for (int i = 0; i < num; i++)
                 {
-                    data[i] = new byte[256];
-                    var offset = 256 * i;
-                    for (var c = 0; c < 256; c++)
+                    _data[i] = new byte[256];
+                    int offset = 256 * i;
+                    for (int c = 0; c < 256; c++)
                     {
-                        data[i][c] = raw[offset + c];
+                        _data[i][c] = raw[offset + c];
                     }
                 }
 
@@ -58,7 +58,7 @@ namespace ManagedDoom
         {
             get
             {
-                return data[index];
+                return _data[index];
             }
         }
 
@@ -66,7 +66,7 @@ namespace ManagedDoom
         {
             get
             {
-                return data[0];
+                return _data[0];
             }
         }
     }

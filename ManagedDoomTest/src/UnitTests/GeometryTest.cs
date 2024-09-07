@@ -10,14 +10,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnSide1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
                 var node = new Node(
                     Fixed.FromDouble(startX),
@@ -44,14 +44,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnSide2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startY = +1 + 666 * random.NextDouble();
-                var endY = -1 - 666 * random.NextDouble();
+                double startY = +1 + 666 * random.NextDouble();
+                double endY = -1 - 666 * random.NextDouble();
 
-                var pointY = 666 * random.NextDouble() - 333;
-                var frontSideX = -1 - 666 * random.NextDouble();
-                var backSideX = -frontSideX;
+                double pointY = 666 * random.NextDouble() - 333;
+                double frontSideX = -1 - 666 * random.NextDouble();
+                double backSideX = -frontSideX;
 
                 var node = new Node(
                     Fixed.Zero,
@@ -78,20 +78,20 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnSide3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
-                for (var j = 0; j < 100; j++)
+                for (int j = 0; j < 100; j++)
                 {
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
 
                     var node = new Node(
                         Fixed.FromDouble(ox + startX * Math.Cos(theta)),
@@ -120,22 +120,22 @@ namespace ManagedDoomTest.UnitTests
         public void PointToDist()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i += 3)
+            for (int i = 0; i < 1000; i += 3)
             {
-                var expected = i;
-                for (var j = 0; j < 100; j++)
+                int expected = i;
+                for (int j = 0; j < 100; j++)
                 {
-                    var r = i;
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
-                    var x = ox + r * Math.Cos(theta);
-                    var y = oy + r * Math.Sin(theta);
+                    int r = i;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
+                    double x = ox + r * Math.Cos(theta);
+                    double y = oy + r * Math.Sin(theta);
                     var fromX = Fixed.FromDouble(ox);
                     var fromY = Fixed.FromDouble(oy);
                     var toX = Fixed.FromDouble(x);
                     var toY = Fixed.FromDouble(y);
-                    var dist = Geometry.PointToDist(fromX, fromY, toX, toY);
+                    Fixed dist = Geometry.PointToDist(fromX, fromY, toX, toY);
                     Assert.Equal(expected, dist.ToDouble(), (double)i / 100);
                 }
             }
@@ -145,22 +145,22 @@ namespace ManagedDoomTest.UnitTests
         public void PointToAngle()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var expected = 2 * Math.PI * random.NextDouble();
-                for (var j = 0; j < 100; j++)
+                double expected = 2 * Math.PI * random.NextDouble();
+                for (int j = 0; j < 100; j++)
                 {
-                    var r = 666 * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
-                    var x = ox + r * Math.Cos(expected);
-                    var y = oy + r * Math.Sin(expected);
+                    double r = 666 * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
+                    double x = ox + r * Math.Cos(expected);
+                    double y = oy + r * Math.Sin(expected);
                     var fromX = Fixed.FromDouble(ox);
                     var fromY = Fixed.FromDouble(oy);
                     var toX = Fixed.FromDouble(x);
                     var toY = Fixed.FromDouble(y);
-                    var angle = Geometry.PointToAngle(fromX, fromY, toX, toY);
-                    var actual = angle.ToRadian();
+                    Angle angle = Geometry.PointToAngle(fromX, fromY, toX, toY);
+                    double actual = angle.ToRadian();
                     Assert.Equal(expected, actual, 0.01);
                 }
             }
@@ -174,36 +174,36 @@ namespace ManagedDoomTest.UnitTests
             var world = new World(content, options, null);
             var map = new Map(content, world);
 
-            var ok = 0;
-            var count = 0;
+            int ok = 0;
+            int count = 0;
 
-            foreach (var subsector in map.Subsectors)
+            foreach (Subsector subsector in map.Subsectors)
             {
-                for (var i = 0; i < subsector.SegCount; i++)
+                for (int i = 0; i < subsector.SegCount; i++)
                 {
-                    var seg = map.Segs[subsector.FirstSeg + i];
+                    Seg seg = map.Segs[subsector.FirstSeg + i];
 
-                    var p1x = seg.Vertex1.X.ToDouble();
-                    var p1y = seg.Vertex1.Y.ToDouble();
-                    var p2x = seg.Vertex2.X.ToDouble();
-                    var p2y = seg.Vertex2.Y.ToDouble();
+                    double p1x = seg.Vertex1.X.ToDouble();
+                    double p1y = seg.Vertex1.Y.ToDouble();
+                    double p2x = seg.Vertex2.X.ToDouble();
+                    double p2y = seg.Vertex2.Y.ToDouble();
 
-                    var dx = p2x - p1x;
-                    var dy = p2y - p1y;
-                    var length = Math.Sqrt(dx * dx + dy * dy);
+                    double dx = p2x - p1x;
+                    double dy = p2y - p1y;
+                    double length = Math.Sqrt(dx * dx + dy * dy);
 
-                    var centerX = (p1x + p2x) / 2;
-                    var centerY = (p1y + p2y) / 2;
-                    var stepX = dy / length;
-                    var stepY = -dx / length;
+                    double centerX = (p1x + p2x) / 2;
+                    double centerY = (p1y + p2y) / 2;
+                    double stepX = dy / length;
+                    double stepY = -dx / length;
 
-                    var targetX = centerX + 3 * stepX;
-                    var targetY = centerY + 3 * stepY;
+                    double targetX = centerX + 3 * stepX;
+                    double targetY = centerY + 3 * stepY;
 
                     var fx = Fixed.FromDouble(targetX);
                     var fy = Fixed.FromDouble(targetY);
 
-                    var result = Geometry.PointInSubsector(fx, fy, map);
+                    Subsector result = Geometry.PointInSubsector(fx, fy, map);
 
                     if (result == subsector)
                     {
@@ -224,36 +224,36 @@ namespace ManagedDoomTest.UnitTests
             var world = new World(content, options, null);
             var map = new Map(content, world);
 
-            var ok = 0;
-            var count = 0;
+            int ok = 0;
+            int count = 0;
 
-            foreach (var subsector in map.Subsectors)
+            foreach (Subsector subsector in map.Subsectors)
             {
-                for (var i = 0; i < subsector.SegCount; i++)
+                for (int i = 0; i < subsector.SegCount; i++)
                 {
-                    var seg = map.Segs[subsector.FirstSeg + i];
+                    Seg seg = map.Segs[subsector.FirstSeg + i];
 
-                    var p1x = seg.Vertex1.X.ToDouble();
-                    var p1y = seg.Vertex1.Y.ToDouble();
-                    var p2x = seg.Vertex2.X.ToDouble();
-                    var p2y = seg.Vertex2.Y.ToDouble();
+                    double p1x = seg.Vertex1.X.ToDouble();
+                    double p1y = seg.Vertex1.Y.ToDouble();
+                    double p2x = seg.Vertex2.X.ToDouble();
+                    double p2y = seg.Vertex2.Y.ToDouble();
 
-                    var dx = p2x - p1x;
-                    var dy = p2y - p1y;
-                    var length = Math.Sqrt(dx * dx + dy * dy);
+                    double dx = p2x - p1x;
+                    double dy = p2y - p1y;
+                    double length = Math.Sqrt(dx * dx + dy * dy);
 
-                    var centerX = (p1x + p2x) / 2;
-                    var centerY = (p1y + p2y) / 2;
-                    var stepX = dy / length;
-                    var stepY = -dx / length;
+                    double centerX = (p1x + p2x) / 2;
+                    double centerY = (p1y + p2y) / 2;
+                    double stepX = dy / length;
+                    double stepY = -dx / length;
 
-                    var targetX = centerX + 3 * stepX;
-                    var targetY = centerY + 3 * stepY;
+                    double targetX = centerX + 3 * stepX;
+                    double targetY = centerY + 3 * stepY;
 
                     var fx = Fixed.FromDouble(targetX);
                     var fy = Fixed.FromDouble(targetY);
 
-                    var result = Geometry.PointInSubsector(fx, fy, map);
+                    Subsector result = Geometry.PointInSubsector(fx, fy, map);
 
                     if (result == subsector)
                     {
@@ -270,14 +270,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnSegSide1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
                 var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
                 var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
@@ -303,14 +303,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnSegSide2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startY = +1 + 666 * random.NextDouble();
-                var endY = -1 - 666 * random.NextDouble();
+                double startY = +1 + 666 * random.NextDouble();
+                double endY = -1 - 666 * random.NextDouble();
 
-                var pointY = 666 * random.NextDouble() - 333;
-                var frontSideX = -1 - 666 * random.NextDouble();
-                var backSideX = -frontSideX;
+                double pointY = 666 * random.NextDouble() - 333;
+                double frontSideX = -1 - 666 * random.NextDouble();
+                double backSideX = -frontSideX;
 
                 var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
                 var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
@@ -336,20 +336,20 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnSegSide3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
-                for (var j = 0; j < 100; j++)
+                for (int j = 0; j < 100; j++)
                 {
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
 
                     var vertex1 = new Vertex(
                         Fixed.FromDouble(ox + startX * Math.Cos(theta)),
@@ -382,14 +382,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnLineSide1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
                 var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
                 var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
@@ -415,14 +415,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnLineSide2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startY = +1 + 666 * random.NextDouble();
-                var endY = -1 - 666 * random.NextDouble();
+                double startY = +1 + 666 * random.NextDouble();
+                double endY = -1 - 666 * random.NextDouble();
 
-                var pointY = 666 * random.NextDouble() - 333;
-                var frontSideX = -1 - 666 * random.NextDouble();
-                var backSideX = -frontSideX;
+                double pointY = 666 * random.NextDouble() - 333;
+                double frontSideX = -1 - 666 * random.NextDouble();
+                double backSideX = -frontSideX;
 
                 var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
                 var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
@@ -448,20 +448,20 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnLineSide3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
-                for (var j = 0; j < 100; j++)
+                for (int j = 0; j < 100; j++)
                 {
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
 
                     var vertex1 = new Vertex(
                         Fixed.FromDouble(ox + startX * Math.Cos(theta)),
@@ -494,17 +494,17 @@ namespace ManagedDoomTest.UnitTests
         public void BoxOnLineSide1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var radius = 33 + 33 * random.NextDouble();
+                double radius = 33 + 33 * random.NextDouble();
 
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - radius - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
-                var crossingY = radius * 1.9 * (random.NextDouble() - 0.5);
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - radius - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
+                double crossingY = radius * 1.9 * (random.NextDouble() - 0.5);
 
                 var frontBox = new Fixed[]
                 {
@@ -548,17 +548,17 @@ namespace ManagedDoomTest.UnitTests
         public void BoxOnLineSide2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var radius = 33 + 33 * random.NextDouble();
+                double radius = 33 + 33 * random.NextDouble();
 
-                var startY = +1 + 666 * random.NextDouble();
-                var endY = -1 - 666 * random.NextDouble();
+                double startY = +1 + 666 * random.NextDouble();
+                double endY = -1 - 666 * random.NextDouble();
 
-                var pointY = 666 * random.NextDouble() - 333;
-                var frontSideX = -1 - radius - 666 * random.NextDouble();
-                var backSideX = -frontSideX;
-                var crossingX = radius * 1.9 * (random.NextDouble() - 0.5);
+                double pointY = 666 * random.NextDouble() - 333;
+                double frontSideX = -1 - radius - 666 * random.NextDouble();
+                double backSideX = -frontSideX;
+                double crossingX = radius * 1.9 * (random.NextDouble() - 0.5);
 
                 var frontBox = new Fixed[]
                 {
@@ -602,23 +602,23 @@ namespace ManagedDoomTest.UnitTests
         public void BoxOnLineSide3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var radius = 33 + 33 * random.NextDouble();
+                double radius = 33 + 33 * random.NextDouble();
 
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 1.5 * radius - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
-                var crossingY = radius * 1.9 * (random.NextDouble() - 0.5);
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 1.5 * radius - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
+                double crossingY = radius * 1.9 * (random.NextDouble() - 0.5);
 
-                for (var j = 0; j < 100; j++)
+                for (int j = 0; j < 100; j++)
                 {
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
 
                     var frontBox = new Fixed[]
                     {
@@ -668,14 +668,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnDivLineSide1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
                 var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
                 var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
@@ -704,14 +704,14 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnDivLineSide2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startY = +1 + 666 * random.NextDouble();
-                var endY = -1 - 666 * random.NextDouble();
+                double startY = +1 + 666 * random.NextDouble();
+                double endY = -1 - 666 * random.NextDouble();
 
-                var pointY = 666 * random.NextDouble() - 333;
-                var frontSideX = -1 - 666 * random.NextDouble();
-                var backSideX = -frontSideX;
+                double pointY = 666 * random.NextDouble() - 333;
+                double frontSideX = -1 - 666 * random.NextDouble();
+                double backSideX = -frontSideX;
 
                 var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
                 var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
@@ -740,20 +740,20 @@ namespace ManagedDoomTest.UnitTests
         public void PointOnDivLineSide3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
-                for (var j = 0; j < 100; j++)
+                for (int j = 0; j < 100; j++)
                 {
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
 
                     var vertex1 = new Vertex(
                         Fixed.FromDouble(ox + startX * Math.Cos(theta)),
@@ -789,16 +789,16 @@ namespace ManagedDoomTest.UnitTests
         public void AproxDistance()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var dx = 666 * random.NextDouble() - 333;
-                var dy = 666 * random.NextDouble() - 333;
+                double dx = 666 * random.NextDouble() - 333;
+                double dy = 666 * random.NextDouble() - 333;
 
-                var adx = Math.Abs(dx);
-                var ady = Math.Abs(dy);
-                var expected = adx + ady - Math.Min(adx, ady) / 2;
+                double adx = Math.Abs(dx);
+                double ady = Math.Abs(dy);
+                double expected = adx + ady - Math.Min(adx, ady) / 2;
 
-                var actual = Geometry.AproxDistance(Fixed.FromDouble(dx), Fixed.FromDouble(dy));
+                Fixed actual = Geometry.AproxDistance(Fixed.FromDouble(dx), Fixed.FromDouble(dy));
 
                 Assert.Equal(expected, actual.ToDouble(), 1.0E-3);
             }
@@ -808,14 +808,14 @@ namespace ManagedDoomTest.UnitTests
         public void DivLineSide1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
                 var vertex1 = new Vertex(Fixed.FromDouble(startX), Fixed.Zero);
                 var vertex2 = new Vertex(Fixed.FromDouble(endX - startX), Fixed.Zero);
@@ -855,14 +855,14 @@ namespace ManagedDoomTest.UnitTests
         public void DivLineSide2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startY = +1 + 666 * random.NextDouble();
-                var endY = -1 - 666 * random.NextDouble();
+                double startY = +1 + 666 * random.NextDouble();
+                double endY = -1 - 666 * random.NextDouble();
 
-                var pointY = 666 * random.NextDouble() - 333;
-                var frontSideX = -1 - 666 * random.NextDouble();
-                var backSideX = -frontSideX;
+                double pointY = 666 * random.NextDouble() - 333;
+                double frontSideX = -1 - 666 * random.NextDouble();
+                double backSideX = -frontSideX;
 
                 var vertex1 = new Vertex(Fixed.Zero, Fixed.FromDouble(startY));
                 var vertex2 = new Vertex(Fixed.Zero, Fixed.FromDouble(endY - startY));
@@ -902,20 +902,20 @@ namespace ManagedDoomTest.UnitTests
         public void DivLineSide3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var startX = -1 - 666 * random.NextDouble();
-                var endX = +1 + 666 * random.NextDouble();
+                double startX = -1 - 666 * random.NextDouble();
+                double endX = +1 + 666 * random.NextDouble();
 
-                var pointX = 666 * random.NextDouble() - 333;
-                var frontSideY = -1 - 666 * random.NextDouble();
-                var backSideY = -frontSideY;
+                double pointX = 666 * random.NextDouble() - 333;
+                double frontSideY = -1 - 666 * random.NextDouble();
+                double backSideY = -frontSideY;
 
-                for (var j = 0; j < 100; j++)
+                for (int j = 0; j < 100; j++)
                 {
-                    var theta = 2 * Math.PI * random.NextDouble();
-                    var ox = 666 * random.NextDouble() - 333;
-                    var oy = 666 * random.NextDouble() - 333;
+                    double theta = 2 * Math.PI * random.NextDouble();
+                    double ox = 666 * random.NextDouble() - 333;
+                    double oy = 666 * random.NextDouble() - 333;
 
                     var vertex1 = new Vertex(
                         Fixed.FromDouble(ox + startX * Math.Cos(theta)),

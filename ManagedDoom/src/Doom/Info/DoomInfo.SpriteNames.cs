@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly DoomString[] SpriteNames = new DoomString[]
-        {
+        public static readonly DoomString[] SpriteNames =
+        [
             new DoomString("TROO"),
             new DoomString("SHTG"),
             new DoomString("PUNG"),
@@ -161,6 +161,6 @@ namespace ManagedDoom
             new DoomString("BRS1"),
             new DoomString("TLMP"),
             new DoomString("TLP2")
-        };
+        ];
     }
 }

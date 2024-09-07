@@ -26,10 +26,10 @@ namespace ManagedDoom.Silk
 {
     public sealed class SilkMusic : IMusic, IDisposable
     {
-        private Config config;
-        private Wad wad;
+        private readonly Config config;
+        private readonly Wad? wad;
 
-        private MusStream stream;
+        private MusStream? stream;
         private Bgm current;
 
         public SilkMusic(Config config, GameContent content, AudioDevice device, string sfPath)
@@ -39,7 +39,7 @@ namespace ManagedDoom.Silk
                 Console.Write("Initialize music: ");
 
                 this.config = config;
-                this.wad = content.Wad;
+                wad = content.Wad;
 
                 stream = new MusStream(this, config, device, sfPath);
                 current = Bgm.NONE;
@@ -61,9 +61,9 @@ namespace ManagedDoom.Silk
                 return;
             }
 
-            var lump = "D_" + DoomInfo.BgmNames[(int)bgm].ToString().ToUpper();
-            var data = wad.ReadLump(lump);
-            var decoder = ReadData(data, loop);
+            string lump = "D_" + DoomInfo.BgmNames[(int)bgm].ToString().ToUpper();
+            byte[] data = wad.ReadLump(lump);
+            IDecoder decoder = ReadData(data, loop);
             stream.SetDecoder(decoder);
 
             current = bgm;
@@ -71,8 +71,8 @@ namespace ManagedDoom.Silk
 
         private IDecoder ReadData(byte[] data, bool loop)
         {
-            var isMus = true;
-            for (var i = 0; i < MusDecoder.MusHeader.Length; i++)
+            bool isMus = true;
+            for (int i = 0; i < MusDecoder.MusHeader.Length; i++)
             {
                 if (data[i] != MusDecoder.MusHeader[i])
                 {
@@ -85,8 +85,8 @@ namespace ManagedDoom.Silk
                 return new MusDecoder(data, loop);
             }
 
-            var isMidi = true;
-            for (var i = 0; i < MidiDecoder.MidiHeader.Length; i++)
+            bool isMidi = true;
+            for (int i = 0; i < MidiDecoder.MidiHeader.Length; i++)
             {
                 if (data[i] != MidiDecoder.MidiHeader[i])
                 {
@@ -141,15 +141,15 @@ namespace ManagedDoom.Silk
             private static readonly int latency = 200;
             private static readonly int blockLength = 2048;
 
-            private SilkMusic parent;
-            private Config config;
+            private readonly SilkMusic parent;
+            private readonly Config config;
 
-            private Synthesizer synthesizer;
+            private readonly Synthesizer synthesizer;
 
-            private AudioStream audioStream;
+            private AudioStream? audioStream;
 
-            private float[] left;
-            private float[] right;
+            private readonly float[] left;
+            private readonly float[] right;
 
             private volatile IDecoder current;
             private volatile IDecoder reserved;
@@ -161,9 +161,11 @@ namespace ManagedDoom.Silk
 
                 config.audio_musicvolume = Math.Clamp(config.audio_musicvolume, 0, parent.MaxVolume);
 
-                var settings = new SynthesizerSettings(MusDecoder.SampleRate);
-                settings.BlockSize = MusDecoder.BlockLength;
-                settings.EnableReverbAndChorus = config.audio_musiceffect;
+                var settings = new SynthesizerSettings(MusDecoder.SampleRate)
+                {
+                    BlockSize = MusDecoder.BlockLength,
+                    EnableReverbAndChorus = config.audio_musiceffect
+                };
                 synthesizer = new Synthesizer(sfPath, settings);
 
                 left = new float[blockLength];
@@ -190,15 +192,15 @@ namespace ManagedDoom.Silk
                     current = reserved;
                 }
 
-                var a = 32768 * (2.0F * config.audio_musicvolume / parent.MaxVolume);
+                float a = 32768 * (2.0F * config.audio_musicvolume / parent.MaxVolume);
 
                 current.RenderWaveform(synthesizer, left, right);
 
-                var pos = 0;
+                int pos = 0;
 
-                for (var t = 0; t < blockLength; t++)
+                for (int t = 0; t < blockLength; t++)
                 {
-                    var sampleLeft = (int)(a * left[t]);
+                    int sampleLeft = (int)(a * left[t]);
                     if (sampleLeft < short.MinValue)
                     {
                         sampleLeft = short.MinValue;
@@ -208,7 +210,7 @@ namespace ManagedDoom.Silk
                         sampleLeft = short.MaxValue;
                     }
 
-                    var sampleRight = (int)(a * right[t]);
+                    int sampleRight = (int)(a * right[t]);
                     if (sampleRight < short.MinValue)
                     {
                         sampleRight = short.MinValue;
@@ -248,28 +250,31 @@ namespace ManagedDoom.Silk
             public static readonly int SampleRate = 44100;
             public static readonly int BlockLength = SampleRate / 140;
 
-            public static readonly byte[] MusHeader = new byte[]
-            {
+            public static readonly byte[] MusHeader =
+            [
                 (byte)'M',
                 (byte)'U',
                 (byte)'S',
                 0x1A
-            };
+            ];
 
-            private byte[] data;
-            private bool loop;
+            private readonly byte[] data;
+            private readonly bool loop;
 
-            private int scoreLength;
-            private int scoreStart;
-            private int channelCount;
-            private int channelCount2;
-            private int instrumentCount;
-            private int[] instruments;
+#pragma warning disable IDE0052 // Remove unread private members
+            private readonly int scoreLength;
+            private readonly int channelCount;
+            private readonly int channelCount2;
+#pragma warning restore IDE0052 // Remove unread private members
 
-            private MusEvent[] events;
+            private readonly int scoreStart;
+            private readonly int instrumentCount;
+            private readonly int[] instruments;
+
+            private readonly MusEvent[] events;
             private int eventCount;
 
-            private int[] lastVolume;
+            private readonly int[] lastVolume;
             private int p;
             private int delay;
 
@@ -288,13 +293,13 @@ namespace ManagedDoom.Silk
                 channelCount2 = BitConverter.ToUInt16(data, 10);
                 instrumentCount = BitConverter.ToUInt16(data, 12);
                 instruments = new int[instrumentCount];
-                for (var i = 0; i < instruments.Length; i++)
+                for (int i = 0; i < instruments.Length; i++)
                 {
                     instruments[i] = BitConverter.ToUInt16(data, 16 + 2 * i);
                 }
 
                 events = new MusEvent[128];
-                for (var i = 0; i < events.Length; i++)
+                for (int i = 0; i < events.Length; i++)
                 {
                     events[i] = new MusEvent();
                 }
@@ -309,7 +314,7 @@ namespace ManagedDoom.Silk
 
             private static void CheckHeader(byte[] data)
             {
-                for (var p = 0; p < MusHeader.Length; p++)
+                for (int p = 0; p < MusHeader.Length; p++)
                 {
                     if (data[p] != MusHeader[p])
                     {
@@ -320,7 +325,7 @@ namespace ManagedDoom.Silk
 
             public void RenderWaveform(Synthesizer synthesizer, Span<float> left, Span<float> right)
             {
-                var wrote = 0;
+                int wrote = 0;
                 while (wrote < left.Length)
                 {
                     if (blockWrote == synthesizer.BlockSize)
@@ -329,9 +334,9 @@ namespace ManagedDoom.Silk
                         blockWrote = 0;
                     }
 
-                    var srcRem = synthesizer.BlockSize - blockWrote;
-                    var dstRem = left.Length - wrote;
-                    var rem = Math.Min(srcRem, dstRem);
+                    int srcRem = synthesizer.BlockSize - blockWrote;
+                    int dstRem = left.Length - wrote;
+                    int rem = Math.Min(srcRem, dstRem);
 
                     synthesizer.Render(left.Slice(wrote, rem), right.Slice(wrote, rem));
 
@@ -366,7 +371,7 @@ namespace ManagedDoom.Silk
 
             private void Reset()
             {
-                for (var i = 0; i < lastVolume.Length; i++)
+                for (int i = 0; i < lastVolume.Length; i++)
                 {
                     lastVolume[i] = 0;
                 }
@@ -381,7 +386,7 @@ namespace ManagedDoom.Silk
                 eventCount = 0;
                 while (true)
                 {
-                    var result = ReadSingleEvent();
+                    ReadResult result = ReadSingleEvent();
                     if (result == ReadResult.EndOfGroup)
                     {
                         break;
@@ -392,10 +397,10 @@ namespace ManagedDoom.Silk
                     }
                 }
 
-                var time = 0;
+                int time = 0;
                 while (true)
                 {
-                    var value = data[p++];
+                    byte value = data[p++];
                     time = time * 128 + (value & 127);
                     if ((value & 128) == 0)
                     {
@@ -408,7 +413,7 @@ namespace ManagedDoom.Silk
 
             private ReadResult ReadSingleEvent()
             {
-                var channelNumber = data[p] & 0xF;
+                int channelNumber = data[p] & 0xF;
 
                 if (channelNumber == 15)
                 {
@@ -419,12 +424,12 @@ namespace ManagedDoom.Silk
                     channelNumber++;
                 }
 
-                var eventType = (data[p] & 0x70) >> 4;
-                var last = (data[p] >> 7) != 0;
+                int eventType = (data[p] & 0x70) >> 4;
+                bool last = (data[p] >> 7) != 0;
 
                 p++;
 
-                var me = events[eventCount];
+                MusEvent me = events[eventCount];
                 eventCount++;
 
                 switch (eventType)
@@ -433,7 +438,7 @@ namespace ManagedDoom.Silk
                         me.Type = 0;
                         me.Channel = channelNumber;
 
-                        var releaseNote = data[p++];
+                        byte releaseNote = data[p++];
 
                         me.Data1 = releaseNote;
                         me.Data2 = 0;
@@ -444,9 +449,9 @@ namespace ManagedDoom.Silk
                         me.Type = 1;
                         me.Channel = channelNumber;
 
-                        var playNote = data[p++];
-                        var noteNumber = playNote & 127;
-                        var noteVolume = (playNote & 128) != 0 ? data[p++] : -1;
+                        byte playNote = data[p++];
+                        int noteNumber = playNote & 127;
+                        int noteVolume = (playNote & 128) != 0 ? data[p++] : -1;
 
                         me.Data1 = noteNumber;
                         if (noteVolume == -1)
@@ -465,10 +470,10 @@ namespace ManagedDoom.Silk
                         me.Type = 2;
                         me.Channel = channelNumber;
 
-                        var pitchWheel = data[p++];
+                        byte pitchWheel = data[p++];
 
-                        var pw2 = (pitchWheel << 7) / 2;
-                        var pw1 = pw2 & 127;
+                        int pw2 = (pitchWheel << 7) / 2;
+                        int pw1 = pw2 & 127;
                         pw2 >>= 7;
                         me.Data1 = pw1;
                         me.Data2 = pw2;
@@ -479,7 +484,7 @@ namespace ManagedDoom.Silk
                         me.Type = 3;
                         me.Channel = channelNumber;
 
-                        var systemEvent = data[p++];
+                        byte systemEvent = data[p++];
                         me.Data1 = systemEvent;
                         me.Data2 = 0;
 
@@ -489,8 +494,8 @@ namespace ManagedDoom.Silk
                         me.Type = 4;
                         me.Channel = channelNumber;
 
-                        var controllerNumber = data[p++];
-                        var controllerValue = data[p++];
+                        byte controllerNumber = data[p++];
+                        byte controllerValue = data[p++];
 
                         me.Data1 = controllerNumber;
                         me.Data2 = controllerValue;
@@ -516,9 +521,9 @@ namespace ManagedDoom.Silk
 
             private void SendEvents(Synthesizer synthesizer)
             {
-                for (var i = 0; i < eventCount; i++)
+                for (int i = 0; i < eventCount; i++)
                 {
-                    var me = events[i];
+                    MusEvent me = events[i];
                     switch (me.Type)
                     {
                         case 0: // RELEASE NOTE
@@ -610,18 +615,18 @@ namespace ManagedDoom.Silk
 
         private class MidiDecoder : IDecoder
         {
-            public static readonly byte[] MidiHeader = new byte[]
-            {
+            public static readonly byte[] MidiHeader =
+            [
                 (byte)'M',
                 (byte)'T',
                 (byte)'h',
                 (byte)'d'
-            };
+            ];
 
-            private MidiFile midi;
+            private readonly MidiFile midi;
             private MidiFileSequencer sequencer;
 
-            private bool loop;
+            private readonly bool loop;
 
             public MidiDecoder(byte[] data, bool loop)
             {

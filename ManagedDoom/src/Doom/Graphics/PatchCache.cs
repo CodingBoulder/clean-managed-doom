@@ -15,32 +15,30 @@
 
 
 
-using System;
 using System.Collections.Generic;
 
 namespace ManagedDoom
 {
     public sealed class PatchCache
     {
-        private Wad wad;
-        private Dictionary<string, Patch> cache;
+        private readonly Wad _wad;
+        private readonly Dictionary<string, Patch> _cache;
 
         public PatchCache(Wad wad)
         {
-            this.wad = wad;
+            _wad = wad;
 
-            cache = [];
+            _cache = [];
         }
 
         public Patch this[string name]
         {
             get
             {
-                Patch patch;
-                if (!cache.TryGetValue(name, out patch))
+                if (!_cache.TryGetValue(name, out Patch? patch))
                 {
-                    patch = Patch.FromWad(wad, name);
-                    cache.Add(name, patch);
+                    patch = Patch.FromWad(_wad, name);
+                    _cache.Add(name, patch);
                 }
                 return patch;
             }

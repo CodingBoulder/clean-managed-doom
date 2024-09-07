@@ -27,17 +27,17 @@ namespace ManagedDoom
         public static readonly int FracToBlockShift = Fixed.FracBits + 7;
         public static readonly int BlockToFracShift = FracToBlockShift - Fixed.FracBits;
 
-        private Fixed originX;
-        private Fixed originY;
+        private readonly Fixed _originX;
+        private readonly Fixed _originY;
 
-        private int width;
-        private int height;
+        private readonly int _width;
+        private readonly int _height;
 
-        private short[] table;
+        private readonly short[] _table;
 
-        private LineDef[] lines;
+        private readonly LineDef[] _lines;
 
-        private Mobj[] thingLists;
+        private readonly Mobj[] _thingLists;
 
         private BlockMap(
             Fixed originX,
@@ -47,31 +47,31 @@ namespace ManagedDoom
             short[] table,
             LineDef[] lines)
         {
-            this.originX = originX;
-            this.originY = originY;
-            this.width = width;
-            this.height = height;
-            this.table = table;
-            this.lines = lines;
+            _originX = originX;
+            _originY = originY;
+            _width = width;
+            _height = height;
+            _table = table;
+            _lines = lines;
 
-            thingLists = new Mobj[width * height];
+            _thingLists = new Mobj[width * height];
         }
 
         public static BlockMap FromWad(Wad wad, int lump, LineDef[] lines)
         {
-            var data = wad.ReadLump(lump);
+            byte[] data = wad.ReadLump(lump);
 
-            var table = new short[data.Length / 2];
-            for (var i = 0; i < table.Length; i++)
+            short[] table = new short[data.Length / 2];
+            for (int i = 0; i < table.Length; i++)
             {
-                var offset = 2 * i;
+                int offset = 2 * i;
                 table[i] = BitConverter.ToInt16(data, offset);
             }
 
             var originX = Fixed.FromInt(table[0]);
             var originY = Fixed.FromInt(table[1]);
-            var width = table[2];
-            var height = table[3];
+            short width = table[2];
+            short height = table[3];
 
             return new BlockMap(
                 originX,
@@ -84,19 +84,19 @@ namespace ManagedDoom
 
         public int GetBlockX(Fixed x)
         {
-            return (x - originX).Data >> FracToBlockShift;
+            return (x - _originX).Data >> FracToBlockShift;
         }
 
         public int GetBlockY(Fixed y)
         {
-            return (y - originY).Data >> FracToBlockShift;
+            return (y - _originY).Data >> FracToBlockShift;
         }
 
         public int GetIndex(int blockX, int blockY)
         {
-            if (0 <= blockX && blockX < width && 0 <= blockY && blockY < height)
+            if (0 <= blockX && blockX < _width && 0 <= blockY && blockY < _height)
             {
-                return width * blockY + blockX;
+                return _width * blockY + blockX;
             }
             else
             {
@@ -106,23 +106,23 @@ namespace ManagedDoom
 
         public int GetIndex(Fixed x, Fixed y)
         {
-            var blockX = GetBlockX(x);
-            var blockY = GetBlockY(y);
+            int blockX = GetBlockX(x);
+            int blockY = GetBlockY(y);
             return GetIndex(blockX, blockY);
         }
 
         public bool IterateLines(int blockX, int blockY, Func<LineDef, bool> func, int validCount)
         {
-            var index = GetIndex(blockX, blockY);
+            int index = GetIndex(blockX, blockY);
 
             if (index == -1)
             {
                 return true;
             }
 
-            for (var offset = table[4 + index]; table[offset] != -1; offset++)
+            for (short offset = _table[4 + index]; _table[offset] != -1; offset++)
             {
-                var line = lines[table[offset]];
+                LineDef line = _lines[_table[offset]];
 
                 if (line.ValidCount == validCount)
                 {
@@ -142,14 +142,14 @@ namespace ManagedDoom
 
         public bool IterateThings(int blockX, int blockY, Func<Mobj, bool> func)
         {
-            var index = GetIndex(blockX, blockY);
+            int index = GetIndex(blockX, blockY);
 
             if (index == -1)
             {
                 return true;
             }
 
-            for (var mobj = thingLists[index]; mobj != null; mobj = mobj.BlockNext)
+            for (Mobj? mobj = _thingLists[index]; mobj != null; mobj = mobj.BlockNext)
             {
                 if (!func(mobj))
                 {
@@ -160,10 +160,10 @@ namespace ManagedDoom
             return true;
         }
 
-        public Fixed OriginX => originX;
-        public Fixed OriginY => originY;
-        public int Width => width;
-        public int Height => height;
-        public Mobj[] ThingLists => thingLists;
+        public Fixed OriginX => _originX;
+        public Fixed OriginY => _originY;
+        public int Width => _width;
+        public int Height => _height;
+        public Mobj?[] ThingLists => _thingLists;
     }
 }

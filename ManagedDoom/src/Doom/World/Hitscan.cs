@@ -21,7 +21,7 @@ namespace ManagedDoom
 {
     public sealed class Hitscan
     {
-        private World world;
+        private readonly World world;
 
         public Hitscan(World world)
         {
@@ -31,11 +31,11 @@ namespace ManagedDoom
             shootTraverseFunc = ShootTraverse;
         }
 
-        private Func<Intercept, bool> aimTraverseFunc;
-        private Func<Intercept, bool> shootTraverseFunc;
+        private readonly Func<Intercept, bool> aimTraverseFunc;
+        private readonly Func<Intercept, bool> shootTraverseFunc;
 
         // Who got hit (or null).
-        private Mobj lineTarget;
+        private Mobj? lineTarget;
 
         private Mobj currentShooter;
         private Fixed currentShooterZ;
@@ -56,7 +56,7 @@ namespace ManagedDoom
         {
             if (intercept.Line != null)
             {
-                var line = intercept.Line;
+                LineDef line = intercept.Line;
 
                 if ((line.Flags & LineFlags.TwoSided) == 0)
                 {
@@ -64,7 +64,7 @@ namespace ManagedDoom
                     return false;
                 }
 
-                var mc = world.MapCollision;
+                MapCollision mc = world.MapCollision;
 
                 // Crosses a two sided line.
                 // A two sided line will restrict the possible target ranges.
@@ -76,7 +76,7 @@ namespace ManagedDoom
                     return false;
                 }
 
-                var dist = currentRange * intercept.Frac;
+                Fixed dist = currentRange * intercept.Frac;
 
                 // The null check of the backsector below is necessary to avoid crash
                 // in certain PWADs, which contain two-sided lines with no backsector.
@@ -85,7 +85,7 @@ namespace ManagedDoom
                 if (line.BackSector == null ||
                     line.FrontSector.FloorHeight != line.BackSector.FloorHeight)
                 {
-                    var slope = (mc.OpenBottom - currentShooterZ) / dist;
+                    Fixed slope = (mc.OpenBottom - currentShooterZ) / dist;
                     if (slope > bottomSlope)
                     {
                         bottomSlope = slope;
@@ -95,7 +95,7 @@ namespace ManagedDoom
                 if (line.BackSector == null ||
                     line.FrontSector.CeilingHeight != line.BackSector.CeilingHeight)
                 {
-                    var slope = (mc.OpenTop - currentShooterZ) / dist;
+                    Fixed slope = (mc.OpenTop - currentShooterZ) / dist;
                     if (slope < topSlope)
                     {
                         topSlope = slope;
@@ -113,7 +113,7 @@ namespace ManagedDoom
             }
 
             // Shoot a thing.
-            var thing = intercept.Thing;
+            Mobj? thing = intercept.Thing;
             if (thing == currentShooter)
             {
                 // Can't shoot self.
@@ -128,8 +128,8 @@ namespace ManagedDoom
                 }
 
                 // Check angles to see if the thing can be aimed at.
-                var dist = currentRange * intercept.Frac;
-                var thingTopSlope = (thing.Z + thing.Height - currentShooterZ) / dist;
+                Fixed dist = currentRange * intercept.Frac;
+                Fixed thingTopSlope = (thing.Z + thing.Height - currentShooterZ) / dist;
 
                 if (thingTopSlope < bottomSlope)
                 {
@@ -137,7 +137,7 @@ namespace ManagedDoom
                     return true;
                 }
 
-                var thingBottomSlope = (thing.Z - currentShooterZ) / dist;
+                Fixed thingBottomSlope = (thing.Z - currentShooterZ) / dist;
 
                 if (thingBottomSlope > topSlope)
                 {
@@ -169,12 +169,12 @@ namespace ManagedDoom
         /// </summary>
         private bool ShootTraverse(Intercept intercept)
         {
-            var mi = world.MapInteraction;
-            var pt = world.PathTraversal;
+            MapInteraction mi = world.MapInteraction;
+            PathTraversal pt = world.PathTraversal;
 
             if (intercept.Line != null)
             {
-                var line = intercept.Line;
+                LineDef line = intercept.Line;
 
                 if (line.Special != 0)
                 {
@@ -186,18 +186,18 @@ namespace ManagedDoom
                     goto hitLine;
                 }
 
-                var mc = world.MapCollision;
+                MapCollision mc = world.MapCollision;
 
                 // Crosses a two sided line.
                 mc.LineOpening(line);
 
-                var dist = currentRange * intercept.Frac;
+                Fixed dist = currentRange * intercept.Frac;
 
                 // Similar to AimTraverse, the code below is imported from Chocolate Doom.
                 if (line.BackSector == null)
                 {
                     {
-                        var slope = (mc.OpenBottom - currentShooterZ) / dist;
+                        Fixed slope = (mc.OpenBottom - currentShooterZ) / dist;
                         if (slope > currentAimSlope)
                         {
                             goto hitLine;
@@ -205,7 +205,7 @@ namespace ManagedDoom
                     }
 
                     {
-                        var slope = (mc.OpenTop - currentShooterZ) / dist;
+                        Fixed slope = (mc.OpenTop - currentShooterZ) / dist;
                         if (slope < currentAimSlope)
                         {
                             goto hitLine;
@@ -216,7 +216,7 @@ namespace ManagedDoom
                 {
                     if (line.FrontSector.FloorHeight != line.BackSector.FloorHeight)
                     {
-                        var slope = (mc.OpenBottom - currentShooterZ) / dist;
+                        Fixed slope = (mc.OpenBottom - currentShooterZ) / dist;
                         if (slope > currentAimSlope)
                         {
                             goto hitLine;
@@ -225,7 +225,7 @@ namespace ManagedDoom
 
                     if (line.FrontSector.CeilingHeight != line.BackSector.CeilingHeight)
                     {
-                        var slope = (mc.OpenTop - currentShooterZ) / dist;
+                        Fixed slope = (mc.OpenTop - currentShooterZ) / dist;
                         if (slope < currentAimSlope)
                         {
                             goto hitLine;
@@ -236,14 +236,14 @@ namespace ManagedDoom
                 // Shot continues.
                 return true;
 
-                // Hit line.
-                hitLine:
+            // Hit line.
+            hitLine:
 
                 // Position a bit closer.
-                var frac = intercept.Frac - Fixed.FromInt(4) / currentRange;
-                var x = pt.Trace.X + pt.Trace.Dx * frac;
-                var y = pt.Trace.Y + pt.Trace.Dy * frac;
-                var z = currentShooterZ + currentAimSlope * (frac * currentRange);
+                Fixed frac = intercept.Frac - Fixed.FromInt(4) / currentRange;
+                Fixed x = pt.Trace.X + pt.Trace.Dx * frac;
+                Fixed y = pt.Trace.Y + pt.Trace.Dy * frac;
+                Fixed z = currentShooterZ + currentAimSlope * (frac * currentRange);
 
                 if (line.FrontSector.CeilingFlat == world.Map.SkyFlatNumber)
                 {
@@ -269,7 +269,7 @@ namespace ManagedDoom
 
             {
                 // Shoot a thing.
-                var thing = intercept.Thing;
+                Mobj? thing = intercept.Thing;
                 if (thing == currentShooter)
                 {
                     // Can't shoot self.
@@ -283,8 +283,8 @@ namespace ManagedDoom
                 }
 
                 // Check angles to see if the thing can be aimed at.
-                var dist = currentRange * intercept.Frac;
-                var thingTopSlope = (thing.Z + thing.Height - currentShooterZ) / dist;
+                Fixed dist = currentRange * intercept.Frac;
+                Fixed thingTopSlope = (thing.Z + thing.Height - currentShooterZ) / dist;
 
                 if (thingTopSlope < currentAimSlope)
                 {
@@ -292,7 +292,7 @@ namespace ManagedDoom
                     return true;
                 }
 
-                var thingBottomSlope = (thing.Z - currentShooterZ) / dist;
+                Fixed thingBottomSlope = (thing.Z - currentShooterZ) / dist;
 
                 if (thingBottomSlope > currentAimSlope)
                 {
@@ -302,11 +302,11 @@ namespace ManagedDoom
 
                 // Hit thing.
                 // Position a bit closer.
-                var frac = intercept.Frac - Fixed.FromInt(10) / currentRange;
+                Fixed frac = intercept.Frac - Fixed.FromInt(10) / currentRange;
 
-                var x = pt.Trace.X + pt.Trace.Dx * frac;
-                var y = pt.Trace.Y + pt.Trace.Dy * frac;
-                var z = currentShooterZ + currentAimSlope * (frac * currentRange);
+                Fixed x = pt.Trace.X + pt.Trace.Dx * frac;
+                Fixed y = pt.Trace.Y + pt.Trace.Dy * frac;
+                Fixed z = currentShooterZ + currentAimSlope * (frac * currentRange);
 
                 // Spawn bullet puffs or blod spots, depending on target type.
                 if ((intercept.Thing.Flags & MobjFlags.NoBlood) != 0)
@@ -340,8 +340,8 @@ namespace ManagedDoom
             currentShooterZ = shooter.Z + (shooter.Height >> 1) + Fixed.FromInt(8);
             currentRange = range;
 
-            var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
-            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);
+            Fixed targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
+            Fixed targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);
 
             // Can't shoot outside view angles.
             topSlope = Fixed.FromInt(100) / 160;
@@ -375,8 +375,8 @@ namespace ManagedDoom
             currentAimSlope = slope;
             currentDamage = damage;
 
-            var targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
-            var targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);
+            Fixed targetX = shooter.X + range.ToIntFloor() * Trig.Cos(angle);
+            Fixed targetY = shooter.Y + range.ToIntFloor() * Trig.Sin(angle);
 
             world.PathTraversal.PathTraverse(
                 shooter.X, shooter.Y,
@@ -390,11 +390,11 @@ namespace ManagedDoom
         /// </summary>
         public void SpawnPuff(Fixed x, Fixed y, Fixed z)
         {
-            var random = world.Random;
+            DoomRandom random = world.Random;
 
             z += new Fixed((random.Next() - random.Next()) << 10);
 
-            var thing = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Puff);
+            Mobj thing = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Puff);
             thing.MomZ = Fixed.One;
             thing.Tics -= random.Next() & 3;
 
@@ -415,11 +415,11 @@ namespace ManagedDoom
         /// </summary>
         public void SpawnBlood(Fixed x, Fixed y, Fixed z, int damage)
         {
-            var random = world.Random;
+            DoomRandom random = world.Random;
 
             z += new Fixed((random.Next() - random.Next()) << 10);
 
-            var thing = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Blood);
+            Mobj thing = world.ThingAllocation.SpawnMobj(x, y, z, MobjType.Blood);
             thing.MomZ = Fixed.FromInt(2);
             thing.Tics -= random.Next() & 3;
 
@@ -438,7 +438,7 @@ namespace ManagedDoom
             }
         }
 
-        public Mobj LineTarget => lineTarget;
+        public Mobj? LineTarget => lineTarget;
         public Fixed BottomSlope => bottomSlope;
         public Fixed TopSlope => topSlope;
     }

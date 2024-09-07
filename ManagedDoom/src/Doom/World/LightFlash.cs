@@ -21,73 +21,73 @@ namespace ManagedDoom
 {
     public sealed class LightFlash : Thinker
     {
-        private World world;
+        private readonly World _world;
 
-        private Sector sector;
-        private int count;
-        private int maxLight;
-        private int minLight;
-        private int maxTime;
-        private int minTime;
+        private Sector _sector;
+        private int _count;
+        private int _maxLight;
+        private int _minLight;
+        private int _maxTime;
+        private int _minTime;
 
         public LightFlash(World world)
         {
-            this.world = world;
+            _world = world;
         }
 
         public override void Run()
         {
-            if (--count > 0)
+            if (--_count > 0)
             {
                 return;
             }
 
-            if (sector.LightLevel == maxLight)
+            if (_sector.LightLevel == _maxLight)
             {
-                sector.LightLevel = minLight;
-                count = (world.Random.Next() & minTime) + 1;
+                _sector.LightLevel = _minLight;
+                _count = (_world.Random.Next() & _minTime) + 1;
             }
             else
             {
-                sector.LightLevel = maxLight;
-                count = (world.Random.Next() & maxTime) + 1;
+                _sector.LightLevel = _maxLight;
+                _count = (_world.Random.Next() & _maxTime) + 1;
             }
         }
 
         public Sector Sector
         {
-            get => sector;
-            set => sector = value;
+            get => _sector;
+            set => _sector = value;
         }
 
         public int Count
         {
-            get => count;
-            set => count = value;
+            get => _count;
+            set => _count = value;
         }
 
         public int MaxLight
         {
-            get => maxLight;
-            set => maxLight = value;
+            get => _maxLight;
+            set => _maxLight = value;
         }
 
         public int MinLight
         {
-            get => minLight;
-            set => minLight = value;
+            get => _minLight;
+            set => _minLight = value;
         }
 
         public int MaxTime
         {
-            get => maxTime;
-            set => maxTime = value;
+            get => _maxTime;
+            set => _maxTime = value;
         }
 
         public int MinTime
         {
-            get => minTime;
-            set => minTime = value;
+            get => _minTime;
+            set => _minTime = value;
         }
     }
 }

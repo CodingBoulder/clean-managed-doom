@@ -30,9 +30,9 @@ namespace ManagedDoom
 
         public static readonly int IronFeet = 13;
 
-        private byte[] data;
+        private readonly byte[] _data;
 
-        private uint[][] palettes;
+        private readonly uint[][] _palettes;
 
         public Palette(Wad wad)
         {
@@ -40,13 +40,13 @@ namespace ManagedDoom
             {
                 Console.Write("Load palette: ");
 
-                data = wad.ReadLump("PLAYPAL");
+                _data = wad.ReadLump("PLAYPAL");
 
-                var count = data.Length / (3 * 256);
-                palettes = new uint[count][];
-                for (var i = 0; i < palettes.Length; i++)
+                int count = _data.Length / (3 * 256);
+                _palettes = new uint[count][];
+                for (int i = 0; i < _palettes.Length; i++)
                 {
-                    palettes[i] = new uint[256];
+                    _palettes[i] = new uint[256];
                 }
 
                 Console.WriteLine("OK");
@@ -60,22 +60,22 @@ namespace ManagedDoom
 
         public void ResetColors(double p)
         {
-            for (var i = 0; i < palettes.Length; i++)
+            for (int i = 0; i < _palettes.Length; i++)
             {
-                var paletteOffset = (3 * 256) * i;
-                for (var j = 0; j < 256; j++)
+                int paletteOffset = (3 * 256) * i;
+                for (int j = 0; j < 256; j++)
                 {
-                    var colorOffset = paletteOffset + 3 * j;
+                    int colorOffset = paletteOffset + 3 * j;
 
-                    var r = data[colorOffset];
-                    var g = data[colorOffset + 1];
-                    var b = data[colorOffset + 2];
+                    byte r = _data[colorOffset];
+                    byte g = _data[colorOffset + 1];
+                    byte b = _data[colorOffset + 2];
 
                     r = (byte)Math.Round(255 * CorrectionCurve(r / 255.0, p));
                     g = (byte)Math.Round(255 * CorrectionCurve(g / 255.0, p));
                     b = (byte)Math.Round(255 * CorrectionCurve(b / 255.0, p));
 
-                    palettes[i][j] = (uint)((r << 0) | (g << 8) | (b << 16) | (255 << 24));
+                    _palettes[i][j] = (uint)((r << 0) | (g << 8) | (b << 16) | (255 << 24));
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace ManagedDoom
         {
             get
             {
-                return palettes[paletteNumber];
+                return _palettes[paletteNumber];
             }
         }
     }

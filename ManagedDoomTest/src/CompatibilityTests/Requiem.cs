@@ -12,14 +12,14 @@ namespace ManagedDoomTest.CompatibilityTests
             using var content = GameContent.CreateDummy(WadPath.Doom2, WadPath.Requiem);
             var demo = new Demo(content.Wad.ReadLump("DEMO1"));
             demo.Options.GameVersion = GameVersion.Final2;
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
-            var lastSectorHash = 0;
-            var aggSectorHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
+            int lastSectorHash = 0;
+            int aggSectorHash = 0;
 
             while (true)
             {
@@ -48,14 +48,14 @@ namespace ManagedDoomTest.CompatibilityTests
             using var content = GameContent.CreateDummy(WadPath.Doom2, WadPath.Requiem);
             var demo = new Demo(content.Wad.ReadLump("DEMO2"));
             demo.Options.Players[0].PlayerState = PlayerState.Reborn;
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
-            var lastSectorHash = 0;
-            var aggSectorHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
+            int lastSectorHash = 0;
+            int aggSectorHash = 0;
 
             while (true)
             {
@@ -83,14 +83,14 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2, WadPath.Requiem);
             var demo = new Demo(content.Wad.ReadLump("DEMO3"));
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
-            var lastSectorHash = 0;
-            var aggSectorHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
+            int lastSectorHash = 0;
+            int aggSectorHash = 0;
 
             while (true)
             {

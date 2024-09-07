@@ -12,10 +12,10 @@ namespace ManagedDoomTest.UnitTests
         public void Conversion()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var da = 666 * random.NextDouble() - 333;
-                var sa = (float)da;
+                double da = 666 * random.NextDouble() - 333;
+                float sa = (float)da;
 
                 var fda = Fixed.FromDouble(da);
                 var fsa = Fixed.FromFloat(sa);
@@ -29,10 +29,10 @@ namespace ManagedDoomTest.UnitTests
         public void Abs1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(666) - 333;
-                var b = Math.Abs(a);
+                int a = random.Next(666) - 333;
+                int b = Math.Abs(a);
 
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.Abs(fa);
@@ -45,10 +45,10 @@ namespace ManagedDoomTest.UnitTests
         public void Abs2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 666 * random.NextDouble() - 333;
-                var b = Math.Abs(a);
+                double a = 666 * random.NextDouble() - 333;
+                double b = Math.Abs(a);
 
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.Abs(fa);
@@ -61,9 +61,9 @@ namespace ManagedDoomTest.UnitTests
         public void Sign1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(666) - 333;
+                int a = random.Next(666) - 333;
 
                 var fa = Fixed.FromDouble(a);
 
@@ -76,9 +76,9 @@ namespace ManagedDoomTest.UnitTests
         public void Sign2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 666 * random.NextDouble() - 333;
+                double a = 666 * random.NextDouble() - 333;
 
                 var fa = Fixed.FromDouble(a);
 
@@ -91,15 +91,15 @@ namespace ManagedDoomTest.UnitTests
         public void Addition1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(666) - 333;
-                var b = random.Next(666) - 333;
-                var c = a + b;
+                int a = random.Next(666) - 333;
+                int b = random.Next(666) - 333;
+                int c = a + b;
 
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
-                var fc = fa + fb;
+                Fixed fc = fa + fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -109,15 +109,15 @@ namespace ManagedDoomTest.UnitTests
         public void Addition2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 666 * random.NextDouble() - 333;
-                var b = 666 * random.NextDouble() - 333;
-                var c = a + b;
+                double a = 666 * random.NextDouble() - 333;
+                double b = 666 * random.NextDouble() - 333;
+                double c = a + b;
 
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.FromDouble(b);
-                var fc = fa + fb;
+                Fixed fc = fa + fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -127,15 +127,15 @@ namespace ManagedDoomTest.UnitTests
         public void Subtraction1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(666) - 333;
-                var b = random.Next(666) - 333;
-                var c = a - b;
+                int a = random.Next(666) - 333;
+                int b = random.Next(666) - 333;
+                int c = a - b;
 
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
-                var fc = fa - fb;
+                Fixed fc = fa - fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -145,15 +145,15 @@ namespace ManagedDoomTest.UnitTests
         public void Subtraction2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 666 * random.NextDouble() - 333;
-                var b = 666 * random.NextDouble() - 333;
-                var c = a - b;
+                double a = 666 * random.NextDouble() - 333;
+                double b = 666 * random.NextDouble() - 333;
+                double c = a - b;
 
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.FromDouble(b);
-                var fc = fa - fb;
+                Fixed fc = fa - fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -163,15 +163,15 @@ namespace ManagedDoomTest.UnitTests
         public void Multiplication1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(66) - 33;
-                var b = random.Next(66) - 33;
-                var c = a * b;
+                int a = random.Next(66) - 33;
+                int b = random.Next(66) - 33;
+                int c = a * b;
 
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
-                var fc = fa * fb;
+                Fixed fc = fa * fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -181,15 +181,15 @@ namespace ManagedDoomTest.UnitTests
         public void Multiplication2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 66 * random.NextDouble() - 33;
-                var b = 66 * random.NextDouble() - 33;
-                var c = a * b;
+                double a = 66 * random.NextDouble() - 33;
+                double b = 66 * random.NextDouble() - 33;
+                double c = a * b;
 
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.FromDouble(b);
-                var fc = fa * fb;
+                Fixed fc = fa * fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -199,14 +199,14 @@ namespace ManagedDoomTest.UnitTests
         public void Multiplication3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(66) - 33;
-                var b = 66 * random.NextDouble() - 33;
-                var c = a * b;
+                int a = random.Next(66) - 33;
+                double b = 66 * random.NextDouble() - 33;
+                double c = a * b;
 
                 var fb = Fixed.FromDouble(b);
-                var fc = a * fb;
+                Fixed fc = a * fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -216,14 +216,14 @@ namespace ManagedDoomTest.UnitTests
         public void Multiplication4()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 66 * random.NextDouble() - 33;
-                var b = random.Next(66) - 33;
-                var c = a * b;
+                double a = 66 * random.NextDouble() - 33;
+                int b = random.Next(66) - 33;
+                double c = a * b;
 
                 var fa = Fixed.FromDouble(a);
-                var fc = fa * b;
+                Fixed fc = fa * b;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -233,15 +233,15 @@ namespace ManagedDoomTest.UnitTests
         public void Division1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(66) - 33;
-                var b = (2 * random.Next(2) - 1) * (random.Next(33) + 33);
-                var c = (double)a / b;
+                int a = random.Next(66) - 33;
+                int b = (2 * random.Next(2) - 1) * (random.Next(33) + 33);
+                double c = (double)a / b;
 
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
-                var fc = fa / fb;
+                Fixed fc = fa / fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -251,15 +251,15 @@ namespace ManagedDoomTest.UnitTests
         public void Division2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 66 * random.NextDouble() - 33;
-                var b = (2 * random.Next(2) - 1) * (33 * random.NextDouble() + 33);
-                var c = a / b;
+                double a = 66 * random.NextDouble() - 33;
+                double b = (2 * random.Next(2) - 1) * (33 * random.NextDouble() + 33);
+                double c = a / b;
 
                 var fa = Fixed.FromDouble(a);
                 var fb = Fixed.FromDouble(b);
-                var fc = fa / fb;
+                Fixed fc = fa / fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -269,14 +269,14 @@ namespace ManagedDoomTest.UnitTests
         public void Division3()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(66) - 33;
-                var b = (2 * random.Next(2) - 1) * (33 * random.NextDouble() + 33);
-                var c = a / b;
+                int a = random.Next(66) - 33;
+                double b = (2 * random.Next(2) - 1) * (33 * random.NextDouble() + 33);
+                double c = a / b;
 
                 var fb = Fixed.FromDouble(b);
-                var fc = a / fb;
+                Fixed fc = a / fb;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -286,14 +286,14 @@ namespace ManagedDoomTest.UnitTests
         public void Division4()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = 66 * random.NextDouble() - 33;
-                var b = (2 * random.Next(2) - 1) * (random.Next(33) + 33);
-                var c = a / b;
+                double a = 66 * random.NextDouble() - 33;
+                int b = (2 * random.Next(2) - 1) * (random.Next(33) + 33);
+                double c = a / b;
 
                 var fa = Fixed.FromDouble(a);
-                var fc = fa / b;
+                Fixed fc = fa / b;
 
                 Assert.Equal(c, fc.ToDouble(), delta);
             }
@@ -303,16 +303,16 @@ namespace ManagedDoomTest.UnitTests
         public void Bitshift()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(666666) - 333333;
-                var b = random.Next(16);
-                var c = a << b;
-                var d = a >> b;
+                int a = random.Next(666666) - 333333;
+                int b = random.Next(16);
+                int c = a << b;
+                int d = a >> b;
 
                 var fa = new Fixed(a);
-                var fc = fa << b;
-                var fd = fa >> b;
+                Fixed fc = fa << b;
+                Fixed fd = fa >> b;
 
                 Assert.Equal(c, fc.Data);
                 Assert.Equal(d, fd.Data);
@@ -323,10 +323,10 @@ namespace ManagedDoomTest.UnitTests
         public void Comparison()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(5);
-                var b = random.Next(5);
+                int a = random.Next(5);
+                int b = random.Next(5);
 
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
@@ -344,12 +344,12 @@ namespace ManagedDoomTest.UnitTests
         public void MinMax()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(5);
-                var b = random.Next(5);
-                var min = Math.Min(a, b);
-                var max = Math.Max(a, b);
+                int a = random.Next(5);
+                int b = random.Next(5);
+                int min = Math.Min(a, b);
+                int max = Math.Max(a, b);
 
                 var fa = Fixed.FromInt(a);
                 var fb = Fixed.FromInt(b);
@@ -365,13 +365,13 @@ namespace ManagedDoomTest.UnitTests
         public void ToInt1()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = random.Next(666);
+                int a = random.Next(666);
 
                 var fa = Fixed.FromDouble(a);
-                var ffloor = fa.ToIntFloor();
-                var fceiling = fa.ToIntCeiling();
+                int ffloor = fa.ToIntFloor();
+                int fceiling = fa.ToIntCeiling();
 
                 Assert.Equal(a, ffloor, 1.0E-9);
                 Assert.Equal(a, fceiling, 1.0E-9);
@@ -382,15 +382,15 @@ namespace ManagedDoomTest.UnitTests
         public void ToInt2()
         {
             var random = new Random(666);
-            for (var i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
             {
-                var a = (double)random.Next(666666) / 1000;
-                var floor = Math.Floor(a);
-                var ceiling = Math.Ceiling(a);
+                double a = (double)random.Next(666666) / 1000;
+                double floor = Math.Floor(a);
+                double ceiling = Math.Ceiling(a);
 
                 var fa = Fixed.FromDouble(a);
-                var ffloor = fa.ToIntFloor();
-                var fceiling = fa.ToIntCeiling();
+                int ffloor = fa.ToIntFloor();
+                int fceiling = fa.ToIntCeiling();
 
                 Assert.Equal(floor, ffloor, 1.0E-9);
                 Assert.Equal(ceiling, fceiling, 1.0E-9);

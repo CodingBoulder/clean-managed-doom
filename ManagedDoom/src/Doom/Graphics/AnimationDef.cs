@@ -21,22 +21,22 @@ namespace ManagedDoom
 {
     public sealed class AnimationDef
     {
-        private bool isTexture;
-        private string endName;
-        private string startName;
-        private int speed;
+        private readonly bool _isTexture;
+        private readonly string _endName;
+        private readonly string _startName;
+        private readonly int _speed;
 
         public AnimationDef(bool isTexture, string endName, string startName, int speed)
         {
-            this.isTexture = isTexture;
-            this.endName = endName;
-            this.startName = startName;
-            this.speed = speed;
+            _isTexture = isTexture;
+            _endName = endName;
+            _startName = startName;
+            _speed = speed;
         }
 
-        public bool IsTexture => isTexture;
-        public string EndName => endName;
-        public string StartName => startName;
-        public int Speed => speed;
+        public bool IsTexture => _isTexture;
+        public string EndName => _endName;
+        public string StartName => _startName;
+        public int Speed => _speed;
     }
 }

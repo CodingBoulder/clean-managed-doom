@@ -21,33 +21,33 @@ namespace ManagedDoom
 {
     public sealed class LineDef
     {
-        private static readonly int dataSize = 14;
+        private static readonly int _dataSize = 14;
 
-        private Vertex vertex1;
-        private Vertex vertex2;
+        private readonly Vertex _vertex1;
+        private readonly Vertex _vertex2;
 
-        private Fixed dx;
-        private Fixed dy;
+        private readonly Fixed _dx;
+        private readonly Fixed _dy;
 
-        private LineFlags flags;
-        private LineSpecial special;
-        private short tag;
+        private LineFlags _flags;
+        private LineSpecial _special;
+        private short _tag;
 
-        private SideDef frontSide;
-        private SideDef backSide;
+        private readonly SideDef? _frontSide;
+        private readonly SideDef? _backSide;
 
-        private Fixed[] boundingBox;
+        private readonly Fixed[] _boundingBox;
 
-        private SlopeType slopeType;
+        private readonly SlopeType _slopeType;
 
-        private Sector frontSector;
-        private Sector backSector;
+        private readonly Sector? _frontSector;
+        private readonly Sector? _backSector;
 
-        private int validCount;
+        private int _validCount;
 
-        private Thinker specialData;
+        private Thinker _specialData;
 
-        private Mobj soundOrigin;
+        private Mobj _soundOrigin;
 
         public LineDef(
             Vertex vertex1,
@@ -55,59 +55,59 @@ namespace ManagedDoom
             LineFlags flags,
             LineSpecial special,
             short tag,
-            SideDef frontSide,
-            SideDef backSide)
+            SideDef? frontSide,
+            SideDef? backSide)
         {
-            this.vertex1 = vertex1;
-            this.vertex2 = vertex2;
-            this.flags = flags;
-            this.special = special;
-            this.tag = tag;
-            this.frontSide = frontSide;
-            this.backSide = backSide;
+            _vertex1 = vertex1;
+            _vertex2 = vertex2;
+            _flags = flags;
+            _special = special;
+            _tag = tag;
+            _frontSide = frontSide;
+            _backSide = backSide;
 
-            dx = vertex2.X - vertex1.X;
-            dy = vertex2.Y - vertex1.Y;
+            _dx = vertex2.X - vertex1.X;
+            _dy = vertex2.Y - vertex1.Y;
 
-            if (dx == Fixed.Zero)
+            if (_dx == Fixed.Zero)
             {
-                slopeType = SlopeType.Vertical;
+                _slopeType = SlopeType.Vertical;
             }
-            else if (dy == Fixed.Zero)
+            else if (_dy == Fixed.Zero)
             {
-                slopeType = SlopeType.Horizontal;
+                _slopeType = SlopeType.Horizontal;
             }
             else
             {
-                if (dy / dx > Fixed.Zero)
+                if (_dy / _dx > Fixed.Zero)
                 {
-                    slopeType = SlopeType.Positive;
+                    _slopeType = SlopeType.Positive;
                 }
                 else
                 {
-                    slopeType = SlopeType.Negative;
+                    _slopeType = SlopeType.Negative;
                 }
             }
 
-            boundingBox = new Fixed[4];
-            boundingBox[Box.Top] = Fixed.Max(vertex1.Y, vertex2.Y);
-            boundingBox[Box.Bottom] = Fixed.Min(vertex1.Y, vertex2.Y);
-            boundingBox[Box.Left] = Fixed.Min(vertex1.X, vertex2.X);
-            boundingBox[Box.Right] = Fixed.Max(vertex1.X, vertex2.X);
+            _boundingBox = new Fixed[4];
+            _boundingBox[Box.Top] = Fixed.Max(vertex1.Y, vertex2.Y);
+            _boundingBox[Box.Bottom] = Fixed.Min(vertex1.Y, vertex2.Y);
+            _boundingBox[Box.Left] = Fixed.Min(vertex1.X, vertex2.X);
+            _boundingBox[Box.Right] = Fixed.Max(vertex1.X, vertex2.X);
 
-            frontSector = frontSide?.Sector;
-            backSector = backSide?.Sector;
+            _frontSector = frontSide?.Sector;
+            _backSector = backSide?.Sector;
         }
 
         public static LineDef FromData(byte[] data, int offset, Vertex[] vertices, SideDef[] sides)
         {
-            var vertex1Number = BitConverter.ToInt16(data, offset);
-            var vertex2Number = BitConverter.ToInt16(data, offset + 2);
-            var flags = BitConverter.ToInt16(data, offset + 4);
-            var special = BitConverter.ToInt16(data, offset + 6);
-            var tag = BitConverter.ToInt16(data, offset + 8);
-            var side0Number = BitConverter.ToInt16(data, offset + 10);
-            var side1Number = BitConverter.ToInt16(data, offset + 12);
+            short vertex1Number = BitConverter.ToInt16(data, offset);
+            short vertex2Number = BitConverter.ToInt16(data, offset + 2);
+            short flags = BitConverter.ToInt16(data, offset + 4);
+            short special = BitConverter.ToInt16(data, offset + 6);
+            short tag = BitConverter.ToInt16(data, offset + 8);
+            short side0Number = BitConverter.ToInt16(data, offset + 10);
+            short side1Number = BitConverter.ToInt16(data, offset + 12);
 
             return new LineDef(
                 vertices[vertex1Number],
@@ -121,75 +121,75 @@ namespace ManagedDoom
 
         public static LineDef[] FromWad(Wad wad, int lump, Vertex[] vertices, SideDef[] sides)
         {
-            var length = wad.GetLumpSize(lump);
-            if (length % dataSize != 0)
+            int length = wad.GetLumpSize(lump);
+            if (length % _dataSize != 0)
             {
                 throw new Exception();
             }
 
-            var data = wad.ReadLump(lump);
-            var count = length / dataSize;
+            byte[] data = wad.ReadLump(lump);
+            int count = length / _dataSize;
             var lines = new LineDef[count]; ;
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var offset = 14 * i;
+                int offset = 14 * i;
                 lines[i] = FromData(data, offset, vertices, sides);
             }
 
             return lines;
         }
 
-        public Vertex Vertex1 => vertex1;
-        public Vertex Vertex2 => vertex2;
+        public Vertex Vertex1 => _vertex1;
+        public Vertex Vertex2 => _vertex2;
 
-        public Fixed Dx => dx;
-        public Fixed Dy => dy;
+        public Fixed Dx => _dx;
+        public Fixed Dy => _dy;
 
         public LineFlags Flags
         {
-            get => flags;
-            set => flags = value;
+            get => _flags;
+            set => _flags = value;
         }
 
         public LineSpecial Special
         {
-            get => special;
-            set => special = value;
+            get => _special;
+            set => _special = value;
         }
 
         public short Tag
         {
-            get => tag;
-            set => tag = value;
+            get => _tag;
+            set => _tag = value;
         }
 
-        public SideDef FrontSide => frontSide;
-        public SideDef BackSide => backSide;
+        public SideDef? FrontSide => _frontSide;
+        public SideDef? BackSide => _backSide;
 
-        public Fixed[] BoundingBox => boundingBox;
+        public Fixed[] BoundingBox => _boundingBox;
 
-        public SlopeType SlopeType => slopeType;
+        public SlopeType SlopeType => _slopeType;
 
-        public Sector FrontSector => frontSector;
-        public Sector BackSector => backSector;
+        public Sector? FrontSector => _frontSector;
+        public Sector? BackSector => _backSector;
 
         public int ValidCount
         {
-            get => validCount;
-            set => validCount = value;
+            get => _validCount;
+            set => _validCount = value;
         }
 
         public Thinker SpecialData
         {
-            get => specialData;
-            set => specialData = value;
+            get => _specialData;
+            set => _specialData = value;
         }
 
         public Mobj SoundOrigin
         {
-            get => soundOrigin;
-            set => soundOrigin = value;
+            get => _soundOrigin;
+            set => _soundOrigin = value;
         }
     }
 }

@@ -21,41 +21,41 @@ namespace ManagedDoom
 {
     public sealed class DivLine
     {
-        private Fixed x;
-        private Fixed y;
-        private Fixed dx;
-        private Fixed dy;
+        private Fixed _x;
+        private Fixed _y;
+        private Fixed _dx;
+        private Fixed _dy;
 
         public void MakeFrom(LineDef line)
         {
-            x = line.Vertex1.X;
-            y = line.Vertex1.Y;
-            dx = line.Dx;
-            dy = line.Dy;
+            _x = line.Vertex1.X;
+            _y = line.Vertex1.Y;
+            _dx = line.Dx;
+            _dy = line.Dy;
         }
 
         public Fixed X
         {
-            get => x;
-            set => x = value;
+            get => _x;
+            set => _x = value;
         }
 
         public Fixed Y
         {
-            get => y;
-            set => y = value;
+            get => _y;
+            set => _y = value;
         }
 
         public Fixed Dx
         {
-            get => dx;
-            set => dx = value;
+            get => _dx;
+            set => _dx = value;
         }
 
         public Fixed Dy
         {
-            get => dy;
-            set => dy = value;
+            get => _dy;
+            set => _dy = value;
         }
     }
 }

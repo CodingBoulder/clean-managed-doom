@@ -23,31 +23,31 @@ namespace ManagedDoom
 {
     public sealed class GameContent : IDisposable
     {
-        private Wad wad;
-        private Palette palette;
-        private ColorMap colorMap;
-        private ITextureLookup textures;
-        private IFlatLookup flats;
-        private ISpriteLookup sprites;
-        private TextureAnimation animation;
+        private Wad? _wad;
+        private Palette _palette;
+        private ColorMap _colorMap;
+        private TextureLookup _textures;
+        private FlatLookup _flats;
+        private SpriteLookup _sprites;
+        private TextureAnimation _animation;
 
         public GameContent(Wad wad)
         {
-            this.wad = wad;
+            _wad = wad;
         }
 
         public async Task InitializeAsync(CancellationToken cancellationToken)
         {
-            textures = new TextureLookup();
-            textures.Initialize(wad);
+            _textures = new TextureLookup();
+            _textures.Initialize(_wad);
 
-            flats = new FlatLookup(wad);
+            _flats = new FlatLookup(_wad);
 
             await Task.WhenAll(
-                Task.Run(() => palette = new Palette(wad), cancellationToken),
-                Task.Run(() => colorMap = new ColorMap(wad), cancellationToken),
-                Task.Run(() => sprites = new SpriteLookup(wad), cancellationToken),
-                Task.Run(() => animation = new TextureAnimation(textures, flats), cancellationToken));
+                Task.Run(() => _palette = new Palette(_wad), cancellationToken),
+                Task.Run(() => _colorMap = new ColorMap(_wad), cancellationToken),
+                Task.Run(() => _sprites = new SpriteLookup(_wad), cancellationToken),
+                Task.Run(() => _animation = new TextureAnimation(_textures, _flats), cancellationToken));
         }
 
         public static GameContent CreateDummy(params string[] wadPaths)
@@ -62,19 +62,19 @@ namespace ManagedDoom
 
         public void Dispose()
         {
-            if (wad != null)
+            if (_wad != null)
             {
-                wad.Dispose();
-                wad = null;
+                _wad.Dispose();
+                _wad = null;
             }
         }
 
-        public Wad Wad => wad;
-        public Palette Palette => palette;
-        public ColorMap ColorMap => colorMap;
-        public ITextureLookup Textures => textures;
-        public IFlatLookup Flats => flats;
-        public ISpriteLookup Sprites => sprites;
-        public TextureAnimation Animation => animation;
+        public Wad? Wad => _wad;
+        public Palette Palette => _palette;
+        public ColorMap ColorMap => _colorMap;
+        public ITextureLookup Textures => _textures;
+        public IFlatLookup Flats => _flats;
+        public ISpriteLookup Sprites => _sprites;
+        public TextureAnimation Animation => _animation;
     }
 }

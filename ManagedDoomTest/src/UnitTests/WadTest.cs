@@ -31,11 +31,11 @@ namespace ManagedDoomTest.UnitTests
         public void FlatSizeDoom1()
         {
             using var wad = new Wad(WadPath.Doom1);
-            var start = wad.GetLumpNumber("F_START") + 1;
-            var end = wad.GetLumpNumber("F_END");
-            for (var lump = start; lump < end; lump++)
+            int start = wad.GetLumpNumber("F_START") + 1;
+            int end = wad.GetLumpNumber("F_END");
+            for (int lump = start; lump < end; lump++)
             {
-                var size = wad.GetLumpSize(lump);
+                int size = wad.GetLumpSize(lump);
                 Assert.True(size == 0 || size == 4096);
             }
         }
@@ -44,11 +44,11 @@ namespace ManagedDoomTest.UnitTests
         public void FlatSizeDoom2()
         {
             using var wad = new Wad(WadPath.Doom2);
-            var start = wad.GetLumpNumber("F_START") + 1;
-            var end = wad.GetLumpNumber("F_END");
-            for (var lump = start; lump < end; lump++)
+            int start = wad.GetLumpNumber("F_START") + 1;
+            int end = wad.GetLumpNumber("F_END");
+            for (int lump = start; lump < end; lump++)
             {
-                var size = wad.GetLumpSize(lump);
+                int size = wad.GetLumpSize(lump);
                 Assert.True(size == 0 || size == 4096);
             }
         }

@@ -22,8 +22,8 @@ namespace ManagedDoom
 {
     public sealed class Cheat
     {
-        private static CheatInfo[] list = new CheatInfo[]
-        {
+        private static readonly CheatInfo[] _list =
+        [
             new CheatInfo("idfa", (cheat, typed) => cheat.FullAmmo(), false),
             new CheatInfo("idkfa", (cheat, typed) => cheat.FullAmmoAndKeys(), false),
             new CheatInfo("iddqd", (cheat, typed) => cheat.GodMode(), false),
@@ -38,30 +38,30 @@ namespace ManagedDoom
             new CheatInfo("fhhall", (cheat, typed) => cheat.KillMonsters(), false),
             new CheatInfo("idclev??", (cheat, typed) => cheat.ChangeLevel(typed), true),
             new CheatInfo("idmus??", (cheat, typed) => cheat.ChangeMusic(typed), false)
-        };
+        ];
 
-        private static readonly int maxCodeLength = list.Max(info => info.Code.Length);
+        private static readonly int _maxCodeLength = _list.Max(info => info.Code.Length);
 
-        private World world;
+        private readonly World _world;
 
-        private char[] buffer;
-        private int p;
+        private readonly char[] _buffer;
+        private int _p;
 
         public Cheat(World world)
         {
-            this.world = world;
+            _world = world;
 
-            buffer = new char[maxCodeLength];
-            p = 0;
+            _buffer = new char[_maxCodeLength];
+            _p = 0;
         }
 
         public bool DoEvent(DoomEvent e)
         {
             if (e.Type == EventType.KeyDown)
             {
-                buffer[p] = e.Key.GetChar();
+                _buffer[_p] = e.Key.GetChar();
 
-                p = (p + 1) % buffer.Length;
+                _p = (_p + 1) % _buffer.Length;
 
                 CheckBuffer();
             }
@@ -71,20 +71,20 @@ namespace ManagedDoom
 
         private void CheckBuffer()
         {
-            for (var i = 0; i < list.Length; i++)
+            for (int i = 0; i < _list.Length; i++)
             {
-                var code = list[i].Code;
-                var q = p;
+                string code = _list[i].Code;
+                int q = _p;
                 int j;
                 for (j = 0; j < code.Length; j++)
                 {
                     q--;
                     if (q == -1)
                     {
-                        q = buffer.Length - 1;
+                        q = _buffer.Length - 1;
                     }
-                    var ch = code[code.Length - j - 1];
-                    if (buffer[q] != ch && ch != '?')
+                    char ch = code[code.Length - j - 1];
+                    if (_buffer[q] != ch && ch != '?')
                     {
                         break;
                     }
@@ -92,23 +92,23 @@ namespace ManagedDoom
 
                 if (j == code.Length)
                 {
-                    var typed = new char[code.Length];
-                    var k = code.Length;
-                    q = p;
+                    char[] typed = new char[code.Length];
+                    int k = code.Length;
+                    q = _p;
                     for (j = 0; j < code.Length; j++)
                     {
                         k--;
                         q--;
                         if (q == -1)
                         {
-                            q = buffer.Length - 1;
+                            q = _buffer.Length - 1;
                         }
-                        typed[k] = buffer[q];
+                        typed[k] = _buffer[q];
                     }
 
-                    if (world.Options.Skill != GameSkill.Nightmare || list[i].AvailableOnNightmare)
+                    if (_world.Options.Skill != GameSkill.Nightmare || _list[i].AvailableOnNightmare)
                     {
-                        list[i].Action(this, new string(typed));
+                        _list[i].Action(this, new string(typed));
                     }
                 }
             }
@@ -116,22 +116,22 @@ namespace ManagedDoom
 
         private void GiveWeapons()
         {
-            var player = world.ConsolePlayer;
-            if (world.Options.GameMode == GameMode.Commercial)
+            Player player = _world.ConsolePlayer;
+            if (_world.Options.GameMode == GameMode.Commercial)
             {
-                for (var i = 0; i < (int)WeaponType.Count; i++)
+                for (int i = 0; i < (int)WeaponType.Count; i++)
                 {
                     player.WeaponOwned[i] = true;
                 }
             }
             else
             {
-                for (var i = 0; i <= (int)WeaponType.Missile; i++)
+                for (int i = 0; i <= (int)WeaponType.Missile; i++)
                 {
                     player.WeaponOwned[i] = true;
                 }
                 player.WeaponOwned[(int)WeaponType.Chainsaw] = true;
-                if (world.Options.GameMode != GameMode.Shareware)
+                if (_world.Options.GameMode != GameMode.Shareware)
                 {
                     player.WeaponOwned[(int)WeaponType.Plasma] = true;
                     player.WeaponOwned[(int)WeaponType.Bfg] = true;
@@ -139,7 +139,7 @@ namespace ManagedDoom
             }
 
             player.Backpack = true;
-            for (var i = 0; i < (int)AmmoType.Count; i++)
+            for (int i = 0; i < (int)AmmoType.Count; i++)
             {
                 player.MaxAmmo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
                 player.Ammo[i] = 2 * DoomInfo.AmmoInfos.Max[i];
@@ -149,7 +149,7 @@ namespace ManagedDoom
         private void FullAmmo()
         {
             GiveWeapons();
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             player.ArmorType = DoomInfo.DeHackEdConst.IdfaArmorClass;
             player.ArmorPoints = DoomInfo.DeHackEdConst.IdfaArmor;
             player.SendMessage(DoomInfo.Strings.STSTR_FAADDED);
@@ -158,10 +158,10 @@ namespace ManagedDoom
         private void FullAmmoAndKeys()
         {
             GiveWeapons();
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             player.ArmorType = DoomInfo.DeHackEdConst.IdkfaArmorClass;
             player.ArmorPoints = DoomInfo.DeHackEdConst.IdkfaArmor;
-            for (var i = 0; i < (int)CardType.Count; i++)
+            for (int i = 0; i < (int)CardType.Count; i++)
             {
                 player.Cards[i] = true;
             }
@@ -170,7 +170,7 @@ namespace ManagedDoom
 
         private void GodMode()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if ((player.Cheats & CheatFlags.GodMode) != 0)
             {
                 player.Cheats &= ~CheatFlags.GodMode;
@@ -187,7 +187,7 @@ namespace ManagedDoom
 
         private void NoClip()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if ((player.Cheats & CheatFlags.NoClip) != 0)
             {
                 player.Cheats &= ~CheatFlags.NoClip;
@@ -202,12 +202,12 @@ namespace ManagedDoom
 
         private void FullMap()
         {
-            world.AutoMap.ToggleCheat();
+            _world.AutoMap.ToggleCheat();
         }
 
         private void ShowPowerUpList()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             player.SendMessage(DoomInfo.Strings.STSTR_BEHOLD);
         }
 
@@ -238,7 +238,7 @@ namespace ManagedDoom
 
         private void ToggleInvulnerability()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if (player.Powers[(int)PowerType.Invulnerability] > 0)
             {
                 player.Powers[(int)PowerType.Invulnerability] = 0;
@@ -252,7 +252,7 @@ namespace ManagedDoom
 
         private void ToggleStrength()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if (player.Powers[(int)PowerType.Strength] != 0)
             {
                 player.Powers[(int)PowerType.Strength] = 0;
@@ -266,7 +266,7 @@ namespace ManagedDoom
 
         private void ToggleInvisibility()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if (player.Powers[(int)PowerType.Invisibility] > 0)
             {
                 player.Powers[(int)PowerType.Invisibility] = 0;
@@ -282,7 +282,7 @@ namespace ManagedDoom
 
         private void ToggleIronFeet()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if (player.Powers[(int)PowerType.IronFeet] > 0)
             {
                 player.Powers[(int)PowerType.IronFeet] = 0;
@@ -296,7 +296,7 @@ namespace ManagedDoom
 
         private void ToggleAllMap()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if (player.Powers[(int)PowerType.AllMap] != 0)
             {
                 player.Powers[(int)PowerType.AllMap] = 0;
@@ -310,7 +310,7 @@ namespace ManagedDoom
 
         private void ToggleInfrared()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             if (player.Powers[(int)PowerType.Infrared] > 0)
             {
                 player.Powers[(int)PowerType.Infrared] = 0;
@@ -324,16 +324,16 @@ namespace ManagedDoom
 
         private void GiveChainsaw()
         {
-            var player = world.ConsolePlayer;
+            Player player = _world.ConsolePlayer;
             player.WeaponOwned[(int)WeaponType.Chainsaw] = true;
             player.SendMessage(DoomInfo.Strings.STSTR_CHOPPERS);
         }
 
         private void KillMonsters()
         {
-            var player = world.ConsolePlayer;
-            var count = 0;
-            foreach (var thinker in world.Thinkers)
+            Player player = _world.ConsolePlayer;
+            int count = 0;
+            foreach (Thinker thinker in _world.Thinkers)
             {
                 var mobj = thinker as Mobj;
                 if (mobj != null &&
@@ -341,7 +341,7 @@ namespace ManagedDoom
                     ((mobj.Flags & MobjFlags.CountKill) != 0 || mobj.Type == MobjType.Skull) &&
                     mobj.Health > 0)
                 {
-                    world.ThingInteraction.DamageMobj(mobj, null, player.Mobj, 10000);
+                    _world.ThingInteraction.DamageMobj(mobj, null, player.Mobj, 10000);
                     count++;
                 }
             }
@@ -350,41 +350,39 @@ namespace ManagedDoom
 
         private void ChangeLevel(string typed)
         {
-            if (world.Options.GameMode == GameMode.Commercial)
+            if (_world.Options.GameMode == GameMode.Commercial)
             {
-                int map;
-                if (!int.TryParse(typed.Substring(typed.Length - 2, 2), out map))
+                if (!int.TryParse(typed.AsSpan(typed.Length - 2, 2), out int map))
                 {
                     return;
                 }
-                var skill = world.Options.Skill;
-                world.Game.DeferedInitNew(skill, 1, map);
+                GameSkill skill = _world.Options.Skill;
+                _world.Game.DeferedInitNew(skill, 1, map);
             }
             else
             {
-                int episode;
-                if (!int.TryParse(typed.Substring(typed.Length - 2, 1), out episode))
+                if (!int.TryParse(typed.AsSpan(typed.Length - 2, 1), out int episode))
                 {
                     return;
                 }
-                int map;
-                if (!int.TryParse(typed.Substring(typed.Length - 1, 1), out map))
+                if (!int.TryParse(typed.AsSpan(typed.Length - 1, 1), out int map))
                 {
                     return;
                 }
-                var skill = world.Options.Skill;
-                world.Game.DeferedInitNew(skill, episode, map);
+                GameSkill skill = _world.Options.Skill;
+                _world.Game.DeferedInitNew(skill, episode, map);
             }
         }
 
         private void ChangeMusic(string typed)
         {
-            var options = new GameOptions();
-            options.GameMode = world.Options.GameMode;
-            if (world.Options.GameMode == GameMode.Commercial)
+            var options = new GameOptions
             {
-                int map;
-                if (!int.TryParse(typed.Substring(typed.Length - 2, 2), out map))
+                GameMode = _world.Options.GameMode
+            };
+            if (_world.Options.GameMode == GameMode.Commercial)
+            {
+                if (!int.TryParse(typed.AsSpan(typed.Length - 2, 2), out int map))
                 {
                     return;
                 }
@@ -392,21 +390,19 @@ namespace ManagedDoom
             }
             else
             {
-                int episode;
-                if (!int.TryParse(typed.Substring(typed.Length - 2, 1), out episode))
+                if (!int.TryParse(typed.AsSpan(typed.Length - 2, 1), out int episode))
                 {
                     return;
                 }
-                int map;
-                if (!int.TryParse(typed.Substring(typed.Length - 1, 1), out map))
+                if (!int.TryParse(typed.AsSpan(typed.Length - 1, 1), out int map))
                 {
                     return;
                 }
                 options.Episode = episode;
                 options.Map = map;
             }
-            world.Options.Music.StartMusic(Map.GetMapBgm(options), true);
-            world.ConsolePlayer.SendMessage(DoomInfo.Strings.STSTR_MUS);
+            _world.Options.Music.StartMusic(Map.GetMapBgm(options), true);
+            _world.ConsolePlayer.SendMessage(DoomInfo.Strings.STSTR_MUS);
         }
 
 

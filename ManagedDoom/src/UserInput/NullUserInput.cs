@@ -21,16 +21,16 @@ namespace ManagedDoom.UserInput
 {
     public sealed class NullUserInput : IUserInput
     {
-        private static NullUserInput instance;
+        private static NullUserInput _instance;
 
         public static NullUserInput GetInstance()
         {
-            if (instance == null)
+            if (_instance == null)
             {
-                instance = new NullUserInput();
+                _instance = new NullUserInput();
             }
 
-            return instance;
+            return _instance;
         }
 
         public void BuildTicCmd(TicCmd cmd)

@@ -22,20 +22,20 @@ namespace ManagedDoom
     public sealed class Intercept
     {
         private Fixed frac;
-        private Mobj thing;
-        private LineDef line;
+        private Mobj? thing;
+        private LineDef? line;
 
         public void Make(Fixed frac, Mobj thing)
         {
             this.frac = frac;
             this.thing = thing;
-            this.line = null;
+            line = null;
         }
 
         public void Make(Fixed frac, LineDef line)
         {
             this.frac = frac;
-            this.thing = null;
+            thing = null;
             this.line = line;
         }
 
@@ -45,7 +45,7 @@ namespace ManagedDoom
             set => frac = value;
         }
 
-        public Mobj Thing => thing;
-        public LineDef Line => line;
+        public Mobj? Thing => thing;
+        public LineDef? Line => line;
     }
 }

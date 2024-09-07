@@ -24,21 +24,21 @@ namespace ManagedDoom
 {
     public sealed class KeyBinding
     {
-        public static readonly KeyBinding Empty = new KeyBinding();
+        public static readonly KeyBinding Empty = new();
 
-        private DoomKey[] keys;
-        private DoomMouseButton[] mouseButtons;
+        private readonly DoomKey[] keys;
+        private readonly DoomMouseButton[] mouseButtons;
 
         private KeyBinding()
         {
-            keys = Array.Empty<DoomKey>();
-            mouseButtons = Array.Empty<DoomMouseButton>();
+            keys = [];
+            mouseButtons = [];
         }
 
         public KeyBinding(IReadOnlyList<DoomKey> keys)
         {
             this.keys = keys.ToArray();
-            this.mouseButtons = Array.Empty<DoomMouseButton>();
+            mouseButtons = [];
         }
 
         public KeyBinding(IReadOnlyList<DoomKey> keys, IReadOnlyList<DoomMouseButton> mouseButtons)
@@ -49,9 +49,9 @@ namespace ManagedDoom
 
         public override string ToString()
         {
-            var keyValues = keys.Select(key => DoomKeyEx.ToString(key));
-            var mouseValues = mouseButtons.Select(button => DoomMouseButtonEx.ToString(button));
-            var values = keyValues.Concat(mouseValues).ToArray();
+            IEnumerable<string> keyValues = keys.Select(key => DoomKeyEx.ToString(key));
+            IEnumerable<string> mouseValues = mouseButtons.Select(button => DoomMouseButtonEx.ToString(button));
+            string[] values = keyValues.Concat(mouseValues).ToArray();
             if (values.Length > 0)
             {
                 return string.Join(", ", values);
@@ -72,17 +72,17 @@ namespace ManagedDoom
             var keys = new List<DoomKey>();
             var mouseButtons = new List<DoomMouseButton>();
 
-            var split = value.Split(',').Select(x => x.Trim());
-            foreach (var s in split)
+            IEnumerable<string> split = value.Split(',').Select(x => x.Trim());
+            foreach (string? s in split)
             {
-                var key = DoomKeyEx.Parse(s);
+                DoomKey key = DoomKeyEx.Parse(s);
                 if (key != DoomKey.Unknown)
                 {
                     keys.Add(key);
                     continue;
                 }
 
-                var mouseButton = DoomMouseButtonEx.Parse(s);
+                DoomMouseButton mouseButton = DoomMouseButtonEx.Parse(s);
                 if (mouseButton != DoomMouseButton.Unknown)
                 {
                     mouseButtons.Add(mouseButton);

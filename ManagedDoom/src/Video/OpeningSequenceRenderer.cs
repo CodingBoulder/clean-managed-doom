@@ -21,10 +21,10 @@ namespace ManagedDoom.Video
 {
     public class OpeningSequenceRenderer
     {
-        private DrawScreen screen;
-        private Renderer parent;
+        private readonly DrawScreen screen;
+        private readonly Renderer parent;
 
-        private PatchCache cache;
+        private readonly PatchCache cache;
 
         public OpeningSequenceRenderer(Wad wad, DrawScreen screen, Renderer parent)
         {
@@ -36,7 +36,7 @@ namespace ManagedDoom.Video
 
         public void Render(OpeningSequence sequence, Fixed frameFrac)
         {
-            var scale = screen.Width / 320;
+            int scale = screen.Width / 320;
 
             switch (sequence.State)
             {

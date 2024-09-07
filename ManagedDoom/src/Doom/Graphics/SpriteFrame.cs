@@ -21,19 +21,19 @@ namespace ManagedDoom
 {
     public sealed class SpriteFrame
     {
-        private bool rotate;
-        private Patch[] patches;
-        private bool[] flip;
+        private readonly bool _rotate;
+        private readonly Patch[] _patches;
+        private readonly bool[] _flip;
 
         public SpriteFrame(bool rotate, Patch[] patches, bool[] flip)
         {
-            this.rotate = rotate;
-            this.patches = patches;
-            this.flip = flip;
+            _rotate = rotate;
+            _patches = patches;
+            _flip = flip;
         }
 
-        public bool Rotate => rotate;
-        public Patch[] Patches => patches;
-        public bool[] Flip => flip;
+        public bool Rotate => _rotate;
+        public Patch[] Patches => _patches;
+        public bool[] Flip => _flip;
     }
 }

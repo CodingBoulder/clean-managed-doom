@@ -22,11 +22,10 @@ namespace ManagedDoom
 {
     public static class WorldMap
     {
-        public static readonly IReadOnlyList<IReadOnlyList<Point>> Locations = new Point[][]
-        {
+        public static readonly IReadOnlyList<IReadOnlyList<Point>> Locations =
+        [
             // Episode 0 world map.
-            new Point[]
-            {
+            [
                 new Point(185, 164), // location of level 0 (CJ)
 	            new Point(148, 143), // location of level 1 (CJ)
 	            new Point(69, 122),  // location of level 2 (CJ)
@@ -36,11 +35,10 @@ namespace ManagedDoom
 	            new Point(71, 56),   // location of level 6 (CJ)
 	            new Point(135, 29),  // location of level 7 (CJ)
 	            new Point(71, 24)    // location of level 8 (CJ)
-            },
+            ],
 
             // Episode 1 world map should go here.
-            new Point[]
-            {
+            [
                 new Point(254, 25),  // location of level 0 (CJ)
 	            new Point(97, 50),   // location of level 1 (CJ)
 	            new Point(188, 64),  // location of level 2 (CJ)
@@ -50,11 +48,10 @@ namespace ManagedDoom
 	            new Point(208, 136), // location of level 6 (CJ)
 	            new Point(148, 140), // location of level 7 (CJ)
 	            new Point(235, 158)  // location of level 8 (CJ)
-            },
+            ],
 
             // Episode 2 world map should go here.
-            new Point[]
-            {
+            [
                 new Point(156, 168), // location of level 0 (CJ)
                 new Point(48, 154),  // location of level 1 (CJ)
                 new Point(174, 95),  // location of level 2 (CJ)
@@ -64,24 +61,24 @@ namespace ManagedDoom
                 new Point(198, 48),  // location of level 6 (CJ)
                 new Point(140, 25),  // location of level 7 (CJ)
                 new Point(281, 136)  // location of level 8 (CJ)
-            }
-        };
+            ]
+        ];
 
 
 
         public class Point
         {
-            private int x;
-            private int y;
+            private readonly int _x;
+            private readonly int _y;
 
             public Point(int x, int y)
             {
-                this.x = x;
-                this.y = y;
+                _x = x;
+                _y = y;
             }
 
-            public int X => x;
-            public int Y => y;
+            public int X => _x;
+            public int Y => _y;
         }
     }
 }

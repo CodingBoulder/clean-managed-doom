@@ -23,82 +23,82 @@ namespace ManagedDoom
 {
     public sealed class DemoPlayback
     {
-        private Demo demo;
-        private TicCmd[] cmds;
-        private DoomGame game;
+        private readonly Demo _demo;
+        private readonly TicCmd[] _cmds;
+        private readonly DoomGame _game;
 
-        private Stopwatch stopwatch;
-        private int frameCount;
+        private readonly Stopwatch _stopwatch;
+        private int _frameCount;
 
         public DemoPlayback(CommandLineArgs args, GameContent content, GameOptions options, string demoName)
         {
             if (File.Exists(demoName))
             {
-                demo = new Demo(demoName);
+                _demo = new Demo(demoName);
             }
             else if (File.Exists(demoName + ".lmp"))
             {
-                demo = new Demo(demoName + ".lmp");
+                _demo = new Demo(demoName + ".lmp");
             }
             else
             {
-                var lumpName = demoName.ToUpper();
+                string lumpName = demoName.ToUpper();
                 if (content.Wad.GetLumpNumber(lumpName) == -1)
                 {
                     throw new Exception("Demo '" + demoName + "' was not found!");
                 }
-                demo = new Demo(content.Wad.ReadLump(lumpName));
+                _demo = new Demo(content.Wad.ReadLump(lumpName));
             }
 
-            demo.Options.GameVersion = options.GameVersion;
-            demo.Options.GameMode = options.GameMode;
-            demo.Options.MissionPack = options.MissionPack;
-            demo.Options.Video = options.Video;
-            demo.Options.Sound = options.Sound;
-            demo.Options.Music = options.Music;
+            _demo.Options.GameVersion = options.GameVersion;
+            _demo.Options.GameMode = options.GameMode;
+            _demo.Options.MissionPack = options.MissionPack;
+            _demo.Options.Video = options.Video;
+            _demo.Options.Sound = options.Sound;
+            _demo.Options.Music = options.Music;
 
             if (args.solonet.Present)
             {
-                demo.Options.NetGame = true;
+                _demo.Options.NetGame = true;
             }
 
-            cmds = new TicCmd[Player.MaxPlayerCount];
-            for (var i = 0; i < Player.MaxPlayerCount; i++)
+            _cmds = new TicCmd[Player.MaxPlayerCount];
+            for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
-                cmds[i] = new TicCmd();
+                _cmds[i] = new TicCmd();
             }
 
-            game = new DoomGame(content, demo.Options);
-            game.DeferedInitNew();
+            _game = new DoomGame(content, _demo.Options);
+            _game.DeferedInitNew();
 
-            stopwatch = new Stopwatch();
+            _stopwatch = new Stopwatch();
         }
 
         public UpdateResult Update()
         {
-            if (!stopwatch.IsRunning)
+            if (!_stopwatch.IsRunning)
             {
-                stopwatch.Start();
+                _stopwatch.Start();
             }
 
-            if (!demo.ReadCmd(cmds))
+            if (!_demo.ReadCmd(_cmds))
             {
-                stopwatch.Stop();
+                _stopwatch.Stop();
                 return UpdateResult.Completed;
             }
             else
             {
-                frameCount++;
-                return game.Update(cmds);
+                _frameCount++;
+                return _game.Update(_cmds);
             }
         }
 
         public void DoEvent(DoomEvent e)
         {
-            game.DoEvent(e);
+            _game.DoEvent(e);
         }
 
-        public DoomGame Game => game;
-        public double Fps => frameCount / stopwatch.Elapsed.TotalSeconds;
+        public DoomGame Game => _game;
+        public double Fps => _frameCount / _stopwatch.Elapsed.TotalSeconds;
     }
 }

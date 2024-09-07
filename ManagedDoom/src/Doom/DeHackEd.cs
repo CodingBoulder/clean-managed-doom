@@ -25,7 +25,7 @@ namespace ManagedDoom
 {
     public static class DeHackEd
     {
-        private static Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[] sourcePointerTable;
+        private static Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[] _sourcePointerTable;
 
         public static void Initialize(CommandLineArgs args, Wad wad)
         {
@@ -42,7 +42,7 @@ namespace ManagedDoom
 
         private static void ReadFiles(params string[] fileNames)
         {
-            string lastFileName = null;
+            string? lastFileName = null;
             try
             {
                 // Ensure the static members are initialized.
@@ -50,7 +50,7 @@ namespace ManagedDoom
 
                 Console.Write("Load DeHackEd patches: ");
 
-                foreach (var fileName in fileNames)
+                foreach (string fileName in fileNames)
                 {
                     lastFileName = fileName;
                     ProcessLines(File.ReadLines(fileName));
@@ -67,7 +67,7 @@ namespace ManagedDoom
 
         private static void ReadDeHackEdLump(Wad wad)
         {
-            var lump = wad.GetLumpNumber("DEHACKED");
+            int lump = wad.GetLumpNumber("DEHACKED");
 
             if (lump != -1)
             {
@@ -94,7 +94,7 @@ namespace ManagedDoom
         {
             using var ms = new MemoryStream(data);
             using var sr = new StreamReader(ms);
-            for (var line = sr.ReadLine(); line != null; line = sr.ReadLine())
+            for (string? line = sr.ReadLine(); line != null; line = sr.ReadLine())
             {
                 yield return line;
             }
@@ -102,22 +102,22 @@ namespace ManagedDoom
 
         private static void ProcessLines(IEnumerable<string> lines)
         {
-            if (sourcePointerTable == null)
+            if (_sourcePointerTable == null)
             {
-                sourcePointerTable = new Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[DoomInfo.States.Length];
-                for (var i = 0; i < sourcePointerTable.Length; i++)
+                _sourcePointerTable = new Tuple<Action<World, Player, PlayerSpriteDef>, Action<World, Mobj>>[DoomInfo.States.Length];
+                for (int i = 0; i < _sourcePointerTable.Length; i++)
                 {
-                    var playerAction = DoomInfo.States[i].PlayerAction;
-                    var mobjAction = DoomInfo.States[i].MobjAction;
-                    sourcePointerTable[i] = Tuple.Create(playerAction, mobjAction);
+                    Action<World, Player, PlayerSpriteDef>? playerAction = DoomInfo.States[i].PlayerAction;
+                    Action<World, Mobj>? mobjAction = DoomInfo.States[i].MobjAction;
+                    _sourcePointerTable[i] = Tuple.Create(playerAction, mobjAction);
                 }
             }
 
-            var lineNumber = 0;
+            int lineNumber = 0;
             var data = new List<string>();
-            var lastBlock = Block.None;
-            var lastBlockLine = 0;
-            foreach (var line in lines)
+            Block lastBlock = Block.None;
+            int lastBlockLine = 0;
+            foreach (string line in lines)
             {
                 lineNumber++;
 
@@ -126,8 +126,8 @@ namespace ManagedDoom
                     continue;
                 }
 
-                var split = line.Split(' ');
-                var blockType = GetBlockType(split);
+                string[] split = line.Split(' ');
+                Block blockType = GetBlockType(split);
                 if (blockType == Block.None)
                 {
                     data.Add(line);
@@ -196,9 +196,9 @@ namespace ManagedDoom
 
         private static void ProcessThingBlock(List<string> data)
         {
-            var thingNumber = int.Parse(data[0].Split(' ')[1]) - 1;
-            var info = DoomInfo.MobjInfos[thingNumber];
-            var dic = GetKeyValuePairs(data);
+            int thingNumber = int.Parse(data[0].Split(' ')[1]) - 1;
+            MobjInfo info = DoomInfo.MobjInfos[thingNumber];
+            Dictionary<string, string> dic = GetKeyValuePairs(data);
 
             info.DoomEdNum = GetInt(dic, "ID #", info.DoomEdNum);
             info.SpawnState = (MobjState)GetInt(dic, "Initial frame", (int)info.SpawnState);
@@ -227,9 +227,9 @@ namespace ManagedDoom
 
         private static void ProcessFrameBlock(List<string> data)
         {
-            var frameNumber = int.Parse(data[0].Split(' ')[1]);
-            var info = DoomInfo.States[frameNumber];
-            var dic = GetKeyValuePairs(data);
+            int frameNumber = int.Parse(data[0].Split(' ')[1]);
+            MobjStateDef info = DoomInfo.States[frameNumber];
+            Dictionary<string, string> dic = GetKeyValuePairs(data);
 
             info.Sprite = (Sprite)GetInt(dic, "Sprite number", (int)info.Sprite);
             info.Frame = GetInt(dic, "Sprite subnumber", info.Frame);
@@ -241,32 +241,33 @@ namespace ManagedDoom
 
         private static void ProcessPointerBlock(List<string> data)
         {
-            var dic = GetKeyValuePairs(data);
-            var start = data[0].IndexOf('(') + 1;
-            var end = data[0].IndexOf(')');
-            var length = end - start;
-            var targetFrameNumber = int.Parse(data[0].Substring(start, length).Split(' ')[1]);
-            var sourceFrameNumber = GetInt(dic, "Codep Frame", -1);
+            Dictionary<string, string> dic = GetKeyValuePairs(data);
+            int start = data[0].IndexOf('(') + 1;
+            int end = data[0].IndexOf(')');
+            int length = end - start;
+            int targetFrameNumber = int.Parse(data[0].Substring(start, length).Split(' ')[1]);
+            int sourceFrameNumber = GetInt(dic, "Codep Frame", -1);
             if (sourceFrameNumber == -1)
             {
                 return;
             }
-            var info = DoomInfo.States[targetFrameNumber];
+            MobjStateDef info = DoomInfo.States[targetFrameNumber];
 
-            info.PlayerAction = sourcePointerTable[sourceFrameNumber].Item1;
-            info.MobjAction = sourcePointerTable[sourceFrameNumber].Item2;
+            info.PlayerAction = _sourcePointerTable[sourceFrameNumber].Item1;
+            info.MobjAction = _sourcePointerTable[sourceFrameNumber].Item2;
         }
 
         private static void ProcessSoundBlock(List<string> data)
         {
+            throw new NotImplementedException();
         }
 
         private static void ProcessAmmoBlock(List<string> data)
         {
-            var ammoNumber = int.Parse(data[0].Split(' ')[1]);
-            var dic = GetKeyValuePairs(data);
-            var max = DoomInfo.AmmoInfos.Max;
-            var clip = DoomInfo.AmmoInfos.Clip;
+            int ammoNumber = int.Parse(data[0].Split(' ')[1]);
+            Dictionary<string, string> dic = GetKeyValuePairs(data);
+            int[] max = DoomInfo.AmmoInfos.Max;
+            int[] clip = DoomInfo.AmmoInfos.Clip;
 
             max[ammoNumber] = GetInt(dic, "Max ammo", max[ammoNumber]);
             clip[ammoNumber] = GetInt(dic, "Per ammo", clip[ammoNumber]);
@@ -274,9 +275,9 @@ namespace ManagedDoom
 
         private static void ProcessWeaponBlock(List<string> data)
         {
-            var weaponNumber = int.Parse(data[0].Split(' ')[1]);
-            var info = DoomInfo.WeaponInfos[weaponNumber];
-            var dic = GetKeyValuePairs(data);
+            int weaponNumber = int.Parse(data[0].Split(' ')[1]);
+            WeaponInfo info = DoomInfo.WeaponInfos[weaponNumber];
+            Dictionary<string, string> dic = GetKeyValuePairs(data);
 
             info.Ammo = (AmmoType)GetInt(dic, "Ammo type", (int)info.Ammo);
             info.UpState = (MobjState)GetInt(dic, "Deselect frame", (int)info.UpState);
@@ -288,11 +289,12 @@ namespace ManagedDoom
 
         private static void ProcessCheatBlock(List<string> data)
         {
+            throw new NotImplementedException();
         }
 
         private static void ProcessMiscBlock(List<string> data)
         {
-            var dic = GetKeyValuePairs(data);
+            Dictionary<string, string> dic = GetKeyValuePairs(data);
 
             DoomInfo.DeHackEdConst.InitialHealth = GetInt(dic, "Initial Health", DoomInfo.DeHackEdConst.InitialHealth);
             DoomInfo.DeHackEdConst.InitialBullets = GetInt(dic, "Initial Bullets", DoomInfo.DeHackEdConst.InitialBullets);
@@ -314,15 +316,15 @@ namespace ManagedDoom
 
         private static void ProcessTextBlock(List<string> data)
         {
-            var split = data[0].Split(' ');
-            var length1 = int.Parse(split[1]);
-            var length2 = int.Parse(split[2]);
+            string[] split = data[0].Split(' ');
+            int length1 = int.Parse(split[1]);
+            int length2 = int.Parse(split[2]);
 
-            var line = 1;
-            var pos = 0;
+            int line = 1;
+            int pos = 0;
 
             var sb1 = new StringBuilder();
-            for (var i = 0; i < length1; i++)
+            for (int i = 0; i < length1; i++)
             {
                 if (pos == data[line].Length)
                 {
@@ -338,7 +340,7 @@ namespace ManagedDoom
             }
 
             var sb2 = new StringBuilder();
-            for (var i = 0; i < length2; i++)
+            for (int i = 0; i < length2; i++)
             {
                 if (pos == data[line].Length)
                 {
@@ -358,21 +360,22 @@ namespace ManagedDoom
 
         private static void ProcessSpriteBlock(List<string> data)
         {
+            throw new NotImplementedException();
         }
 
         private static void ProcessBexStringsBlock(List<string> data)
         {
-            string name = null;
-            StringBuilder sb = null;
-            foreach (var line in data.Skip(1))
+            string? name = null;
+            StringBuilder? sb = null;
+            foreach (string? line in data.Skip(1))
             {
                 if (name == null)
                 {
-                    var eqPos = line.IndexOf('=');
+                    int eqPos = line.IndexOf('=');
                     if (eqPos != -1)
                     {
-                        var left = line.Substring(0, eqPos).Trim();
-                        var right = line.Substring(eqPos + 1).Trim().Replace("\\n", "\n");
+                        string left = line.Substring(0, eqPos).Trim();
+                        string right = line.Substring(eqPos + 1).Trim().Replace("\\n", "\n");
                         if (right.Last() != '\\')
                         {
                             DoomString.ReplaceByName(left, right);
@@ -387,7 +390,7 @@ namespace ManagedDoom
                 }
                 else
                 {
-                    var value = line.Trim().Replace("\\n", "\n"); ;
+                    string value = line.Trim().Replace("\\n", "\n"); ;
                     if (value.Last() != '\\')
                     {
                         sb.Append(value);
@@ -405,17 +408,16 @@ namespace ManagedDoom
 
         private static void ProcessBexParsBlock(List<string> data)
         {
-            foreach (var line in data.Skip(1))
+            foreach (string? line in data.Skip(1))
             {
-                var split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 if (split.Length >= 3 && split[0] == "par")
                 {
                     var parsed = new List<int>();
-                    foreach (var value in split.Skip(1))
+                    foreach (string? value in split.Skip(1))
                     {
-                        int result;
-                        if (int.TryParse(value, out result))
+                        if (int.TryParse(value, out int result))
                         {
                             parsed.Add(result);
                         }
@@ -723,7 +725,7 @@ namespace ManagedDoom
 
         private static bool IsNumber(string value)
         {
-            foreach (var ch in value)
+            foreach (char ch in value)
             {
                 if (!('0' <= ch && ch <= '9'))
                 {
@@ -737,9 +739,9 @@ namespace ManagedDoom
         private static Dictionary<string, string> GetKeyValuePairs(List<string> data)
         {
             var dic = new Dictionary<string, string>();
-            foreach (var line in data)
+            foreach (string line in data)
             {
-                var split = line.Split('=');
+                string[] split = line.Split('=');
                 if (split.Length == 2)
                 {
                     dic[split[0].Trim()] = split[1].Trim();
@@ -750,11 +752,9 @@ namespace ManagedDoom
 
         private static int GetInt(Dictionary<string, string> dic, string key, int defaultValue)
         {
-            string value;
-            if (dic.TryGetValue(key, out value))
+            if (dic.TryGetValue(key, out string? value))
             {
-                int intValue;
-                if (int.TryParse(value, out intValue))
+                if (int.TryParse(value, out int intValue))
                 {
                     return intValue;
                 }

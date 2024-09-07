@@ -11,9 +11,9 @@ namespace ManagedDoomTest.UnitTests
         public void LoadE1M1()
         {
             using var wad = new Wad(WadPath.Doom1);
-            var map = wad.GetLumpNumber("E1M1");
+            int map = wad.GetLumpNumber("E1M1");
             var flats = new FlatLookup(wad);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
 
             Assert.Equal(88, sectors.Length);
 
@@ -46,9 +46,9 @@ namespace ManagedDoomTest.UnitTests
         public void LoadMap01()
         {
             using var wad = new Wad(WadPath.Doom2);
-            var map = wad.GetLumpNumber("MAP01");
+            int map = wad.GetLumpNumber("MAP01");
             var flats = new FlatLookup(wad);
-            var sectors = Sector.FromWad(wad, map + 8, flats);
+            Sector[] sectors = Sector.FromWad(wad, map + 8, flats);
 
             Assert.Equal(59, sectors.Length);
 

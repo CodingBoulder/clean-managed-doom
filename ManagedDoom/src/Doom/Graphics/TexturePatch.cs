@@ -23,25 +23,25 @@ namespace ManagedDoom
     {
         public const int DataSize = 10;
 
-        private int originX;
-        private int originY;
-        private Patch patch;
+        private readonly int _originX;
+        private readonly int _originY;
+        private readonly Patch _patch;
 
         public TexturePatch(
             int originX,
             int originY,
             Patch patch)
         {
-            this.originX = originX;
-            this.originY = originY;
-            this.patch = patch;
+            _originX = originX;
+            _originY = originY;
+            _patch = patch;
         }
 
         public static TexturePatch FromData(byte[] data, int offset, Patch[] patches)
         {
-            var originX = BitConverter.ToInt16(data, offset);
-            var originY = BitConverter.ToInt16(data, offset + 2);
-            var patchNum = BitConverter.ToInt16(data, offset + 4);
+            short originX = BitConverter.ToInt16(data, offset);
+            short originY = BitConverter.ToInt16(data, offset + 2);
+            short patchNum = BitConverter.ToInt16(data, offset + 4);
 
             return new TexturePatch(
                 originX,
@@ -49,11 +49,11 @@ namespace ManagedDoom
                 patches[patchNum]);
         }
 
-        public string Name => patch.Name;
-        public int OriginX => originX;
-        public int OriginY => originY;
-        public int Width => patch.Width;
-        public int Height => patch.Height;
-        public Column[][] Columns => patch.Columns;
+        public string Name => _patch.Name;
+        public int OriginX => _originX;
+        public int OriginY => _originY;
+        public int Width => _patch.Width;
+        public int Height => _patch.Height;
+        public Column[][] Columns => _patch.Columns;
     }
 }

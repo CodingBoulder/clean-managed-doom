@@ -23,7 +23,7 @@ namespace ManagedDoom
 {
     public sealed class TextureAnimation
     {
-        private TextureAnimationInfo[] animations;
+        private readonly TextureAnimationInfo[] _animations;
 
         public TextureAnimation(ITextureLookup textures, IFlatLookup flats)
         {
@@ -33,7 +33,7 @@ namespace ManagedDoom
 
                 var list = new List<TextureAnimationInfo>();
 
-                foreach (var animDef in DoomInfo.TextureAnimation)
+                foreach (AnimationDef animDef in DoomInfo.TextureAnimation)
                 {
                     int picNum;
                     int basePic;
@@ -73,7 +73,7 @@ namespace ManagedDoom
                     list.Add(anim);
                 }
 
-                animations = list.ToArray();
+                _animations = list.ToArray();
 
                 Console.WriteLine("OK");
             }
@@ -84,6 +84,6 @@ namespace ManagedDoom
             }
         }
 
-        public TextureAnimationInfo[] Animations => animations;
+        public TextureAnimationInfo[] Animations => _animations;
     }
 }

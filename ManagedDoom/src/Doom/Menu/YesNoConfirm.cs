@@ -22,13 +22,13 @@ namespace ManagedDoom
 {
     public sealed class YesNoConfirm : MenuDef
     {
-        private string[] text;
-        private Action action;
+        private readonly string[] _text;
+        private readonly Action _action;
 
         public YesNoConfirm(DoomMenu menu, string text, Action action) : base(menu)
         {
-            this.text = text.Split('\n');
-            this.action = action;
+            _text = text.Split('\n');
+            _action = action;
         }
 
         public override bool DoEvent(DoomEvent e)
@@ -42,7 +42,7 @@ namespace ManagedDoom
                 e.Key == DoomKey.Enter ||
                 e.Key == DoomKey.Space)
             {
-                action();
+                _action();
                 Menu.Close();
                 Menu.StartSound(Sfx.PISTOL);
             }
@@ -57,6 +57,6 @@ namespace ManagedDoom
             return true;
         }
 
-        public IReadOnlyList<string> Text => text;
+        public IReadOnlyList<string> Text => _text;
     }
 }

@@ -21,11 +21,11 @@ namespace ManagedDoom
 {
     public abstract class MenuDef
     {
-        private DoomMenu menu;
+        private readonly DoomMenu _menu;
 
         public MenuDef(DoomMenu menu)
         {
-            this.menu = menu;
+            _menu = menu;
         }
 
         public virtual void Open()
@@ -38,6 +38,6 @@ namespace ManagedDoom
 
         public abstract bool DoEvent(DoomEvent e);
 
-        public DoomMenu Menu => menu;
+        public DoomMenu Menu => _menu;
     }
 }

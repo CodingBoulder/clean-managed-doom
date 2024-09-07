@@ -13,186 +13,182 @@
 // GNU General Public License for more details.
 //
 
-
-
-using System;
-
 namespace ManagedDoom
 {
-	public sealed class Platform : Thinker
-	{
-		private World world;
+    public sealed class Platform : Thinker
+    {
+        private readonly World _world;
 
-		private Sector sector;
-		private Fixed speed;
-		private Fixed low;
-		private Fixed high;
-		private int wait;
-		private int count;
-		private PlatformState status;
-		private PlatformState oldStatus;
-		private bool crush;
-		private int tag;
-		private PlatformType type;
+        private Sector _sector;
+        private Fixed _speed;
+        private Fixed _low;
+        private Fixed _high;
+        private int _wait;
+        private int _count;
+        private PlatformState _status;
+        private PlatformState _oldStatus;
+        private bool _crush;
+        private int _tag;
+        private PlatformType _type;
 
-		public Platform(World world)
-		{
-			this.world = world;
-		}
+        public Platform(World world)
+        {
+            _world = world;
+        }
 
-		public override void Run()
-		{
-			var sa = world.SectorAction;
+        public override void Run()
+        {
+            SectorAction sa = _world.SectorAction;
 
-			SectorActionResult result;
+            SectorActionResult result;
 
-			switch (status)
-			{
-				case PlatformState.Up:
-					result = sa.MovePlane(sector, speed, high, crush, 0, 1);
+            switch (_status)
+            {
+                case PlatformState.Up:
+                    result = sa.MovePlane(_sector, _speed, _high, _crush, 0, 1);
 
-					if (type == PlatformType.RaiseAndChange ||
-						type == PlatformType.RaiseToNearestAndChange)
-					{
-						if (((world.LevelTime + sector.Number) & 7) == 0)
-						{
-							world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
-						}
-					}
+                    if (_type == PlatformType.RaiseAndChange ||
+                        _type == PlatformType.RaiseToNearestAndChange)
+                    {
+                        if (((_world.LevelTime + _sector.Number) & 7) == 0)
+                        {
+                            _world.StartSound(_sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
+                        }
+                    }
 
-					if (result == SectorActionResult.Crushed && !crush)
-					{
-						count = wait;
-						status = PlatformState.Down;
-						world.StartSound(sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
-					}
-					else
-					{
-						if (result == SectorActionResult.PastDestination)
-						{
-							count = wait;
-							status = PlatformState.Waiting;
-							world.StartSound(sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
+                    if (result == SectorActionResult.Crushed && !_crush)
+                    {
+                        _count = _wait;
+                        _status = PlatformState.Down;
+                        _world.StartSound(_sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
+                    }
+                    else
+                    {
+                        if (result == SectorActionResult.PastDestination)
+                        {
+                            _count = _wait;
+                            _status = PlatformState.Waiting;
+                            _world.StartSound(_sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
 
-							switch (type)
-							{
-								case PlatformType.BlazeDwus:
-								case PlatformType.DownWaitUpStay:
-									sa.RemoveActivePlatform(this);
-									sector.DisableFrameInterpolationForOneFrame();
-									break;
+                            switch (_type)
+                            {
+                                case PlatformType.BlazeDwus:
+                                case PlatformType.DownWaitUpStay:
+                                    sa.RemoveActivePlatform(this);
+                                    _sector.DisableFrameInterpolationForOneFrame();
+                                    break;
 
-								case PlatformType.RaiseAndChange:
-								case PlatformType.RaiseToNearestAndChange:
-									sa.RemoveActivePlatform(this);
-									sector.DisableFrameInterpolationForOneFrame();
-									break;
+                                case PlatformType.RaiseAndChange:
+                                case PlatformType.RaiseToNearestAndChange:
+                                    sa.RemoveActivePlatform(this);
+                                    _sector.DisableFrameInterpolationForOneFrame();
+                                    break;
 
-								default:
-									break;
-							}
-						}
-					}
+                                default:
+                                    break;
+                            }
+                        }
+                    }
 
-					break;
+                    break;
 
-				case PlatformState.Down:
-					result = sa.MovePlane(sector, speed, low, false, 0, -1);
+                case PlatformState.Down:
+                    result = sa.MovePlane(_sector, _speed, _low, false, 0, -1);
 
-					if (result == SectorActionResult.PastDestination)
-					{
-						count = wait;
-						status = PlatformState.Waiting;
-						world.StartSound(sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
-					}
+                    if (result == SectorActionResult.PastDestination)
+                    {
+                        _count = _wait;
+                        _status = PlatformState.Waiting;
+                        _world.StartSound(_sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
+                    }
 
-					break;
+                    break;
 
-				case PlatformState.Waiting:
-					if (--count == 0)
-					{
-						if (sector.FloorHeight == low)
-						{
-							status = PlatformState.Up;
-						}
-						else
-						{
-							status = PlatformState.Down;
-						}
-						world.StartSound(sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
-					}
+                case PlatformState.Waiting:
+                    if (--_count == 0)
+                    {
+                        if (_sector.FloorHeight == _low)
+                        {
+                            _status = PlatformState.Up;
+                        }
+                        else
+                        {
+                            _status = PlatformState.Down;
+                        }
+                        _world.StartSound(_sector.SoundOrigin, Sfx.PSTART, SfxType.Misc);
+                    }
 
-					break;
+                    break;
 
-				case PlatformState.InStasis:
-					break;
-			}
-		}
+                case PlatformState.InStasis:
+                    break;
+            }
+        }
 
-		public Sector Sector
-		{
-			get => sector;
-			set => sector = value;
-		}
+        public Sector Sector
+        {
+            get => _sector;
+            set => _sector = value;
+        }
 
-		public Fixed Speed
-		{
-			get => speed;
-			set => speed = value;
-		}
+        public Fixed Speed
+        {
+            get => _speed;
+            set => _speed = value;
+        }
 
-		public Fixed Low
-		{
-			get => low;
-			set => low = value;
-		}
+        public Fixed Low
+        {
+            get => _low;
+            set => _low = value;
+        }
 
-		public Fixed High
-		{
-			get => high;
-			set => high = value;
-		}
+        public Fixed High
+        {
+            get => _high;
+            set => _high = value;
+        }
 
-		public int Wait
-		{
-			get => wait;
-			set => wait = value;
-		}
+        public int Wait
+        {
+            get => _wait;
+            set => _wait = value;
+        }
 
-		public int Count
-		{
-			get => count;
-			set => count = value;
-		}
+        public int Count
+        {
+            get => _count;
+            set => _count = value;
+        }
 
-		public PlatformState Status
-		{
-			get => status;
-			set => status = value;
-		}
+        public PlatformState Status
+        {
+            get => _status;
+            set => _status = value;
+        }
 
-		public PlatformState OldStatus
-		{
-			get => oldStatus;
-			set => oldStatus = value;
-		}
+        public PlatformState OldStatus
+        {
+            get => _oldStatus;
+            set => _oldStatus = value;
+        }
 
-		public bool Crush
-		{
-			get => crush;
-			set => crush = value;
-		}
+        public bool Crush
+        {
+            get => _crush;
+            set => _crush = value;
+        }
 
-		public int Tag
-		{
-			get => tag;
-			set => tag = value;
-		}
+        public int Tag
+        {
+            get => _tag;
+            set => _tag = value;
+        }
 
-		public PlatformType Type
-		{
-			get => type;
-			set => type = value;
-		}
-	}
+        public PlatformType Type
+        {
+            get => _type;
+            set => _type = value;
+        }
+    }
 }

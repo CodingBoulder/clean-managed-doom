@@ -21,90 +21,90 @@ namespace ManagedDoom
 {
     public class MobjStateDef
     {
-        private int number;
-        private Sprite sprite;
-        private int frame;
-        private int tics;
-        private Action<World, Player, PlayerSpriteDef> playerAction;
-        private Action<World, Mobj> mobjAction;
-        private MobjState next;
-        private int misc1;
-        private int misc2;
+        private int _number;
+        private Sprite _sprite;
+        private int _frame;
+        private int _tics;
+        private Action<World, Player, PlayerSpriteDef>? _playerAction;
+        private Action<World, Mobj>? _mobjAction;
+        private MobjState _next;
+        private int _misc1;
+        private int _misc2;
 
         public MobjStateDef(
             int number,
             Sprite sprite,
             int frame,
             int tics,
-            Action<World, Player, PlayerSpriteDef> playerAction,
-            Action<World, Mobj> mobjAction,
+            Action<World, Player, PlayerSpriteDef>? playerAction,
+            Action<World, Mobj>? mobjAction,
             MobjState next,
             int misc1,
             int misc2)
         {
-            this.number = number;
-            this.sprite = sprite;
-            this.frame = frame;
-            this.tics = tics;
-            this.playerAction = playerAction;
-            this.mobjAction = mobjAction;
-            this.next = next;
-            this.misc1 = misc1;
-            this.misc2 = misc2;
+            _number = number;
+            _sprite = sprite;
+            _frame = frame;
+            _tics = tics;
+            _playerAction = playerAction;
+            _mobjAction = mobjAction;
+            _next = next;
+            _misc1 = misc1;
+            _misc2 = misc2;
         }
 
         public int Number
         {
-            get => number;
-            set => number = value;
+            get => _number;
+            set => _number = value;
         }
 
         public Sprite Sprite
         {
-            get => sprite;
-            set => sprite = value;
+            get => _sprite;
+            set => _sprite = value;
         }
 
         public int Frame
         {
-            get => frame;
-            set => frame = value;
+            get => _frame;
+            set => _frame = value;
         }
 
         public int Tics
         {
-            get => tics;
-            set => tics = value;
+            get => _tics;
+            set => _tics = value;
         }
 
-        public Action<World, Player, PlayerSpriteDef> PlayerAction
+        public Action<World, Player, PlayerSpriteDef>? PlayerAction
         {
-            get => playerAction;
-            set => playerAction = value;
+            get => _playerAction;
+            set => _playerAction = value;
         }
 
-        public Action<World, Mobj> MobjAction
+        public Action<World, Mobj>? MobjAction
         {
-            get => mobjAction;
-            set => mobjAction = value;
+            get => _mobjAction;
+            set => _mobjAction = value;
         }
 
         public MobjState Next
         {
-            get => next;
-            set => next = value;
+            get => _next;
+            set => _next = value;
         }
 
         public int Misc1
         {
-            get => misc1;
-            set => misc1 = value;
+            get => _misc1;
+            set => _misc1 = value;
         }
 
         public int Misc2
         {
-            get => misc2;
-            set => misc2 = value;
+            get => _misc2;
+            set => _misc2 = value;
         }
     }
 }

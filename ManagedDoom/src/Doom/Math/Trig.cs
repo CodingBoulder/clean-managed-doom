@@ -26,48 +26,48 @@ namespace ManagedDoom
         public const int FineMask = FineAngleCount - 1;
         public const int AngleToFineShift = 19;
 
-        private const int fineCosineOffset = FineAngleCount / 4;
+        private const int _fineCosineOffset = FineAngleCount / 4;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Tan(Angle anglePlus90)
         {
-            return new Fixed(fineTangent[anglePlus90.Data >> AngleToFineShift]);
+            return new Fixed(_fineTangent[anglePlus90.Data >> AngleToFineShift]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Tan(int fineAnglePlus90)
         {
-            return new Fixed(fineTangent[fineAnglePlus90]);
+            return new Fixed(_fineTangent[fineAnglePlus90]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Sin(Angle angle)
         {
-            return new Fixed(fineSine[angle.Data >> AngleToFineShift]);
+            return new Fixed(_fineSine[angle.Data >> AngleToFineShift]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Sin(int fineAngle)
         {
-            return new Fixed(fineSine[fineAngle]);
+            return new Fixed(_fineSine[fineAngle]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Cos(Angle angle)
         {
-            return new Fixed(fineSine[(angle.Data >> AngleToFineShift) + fineCosineOffset]);
+            return new Fixed(_fineSine[(angle.Data >> AngleToFineShift) + _fineCosineOffset]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Cos(int fineAngle)
         {
-            return new Fixed(fineSine[fineAngle + fineCosineOffset]);
+            return new Fixed(_fineSine[fineAngle + _fineCosineOffset]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle TanToAngle(uint tan)
         {
-            return new Angle(tanToAngle[tan]);
+            return new Angle(_tanToAngle[tan]);
         }
     }
 }

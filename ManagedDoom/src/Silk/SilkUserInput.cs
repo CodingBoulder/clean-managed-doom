@@ -9,23 +9,23 @@ namespace ManagedDoom.Silk
 {
     public class SilkUserInput : IUserInput, IDisposable
     {
-        private Config config;
-        private IWindow window;
+        private readonly Config _config;
+        private readonly IWindow _window;
 
-        private IInputContext input;
-        private IKeyboard keyboard;
+        private IInputContext? _input;
+        private readonly IKeyboard _keyboard;
 
-        private bool[] weaponKeys;
-        private int turnHeld;
+        private readonly bool[] _weaponKeys;
+        private int _turnHeld;
 
-        private IMouse mouse;
-        private bool mouseGrabbed;
-        private float mouseX;
-        private float mouseY;
-        private float mousePrevX;
-        private float mousePrevY;
-        private float mouseDeltaX;
-        private float mouseDeltaY;
+        private readonly IMouse _mouse;
+        private bool _mouseGrabbed;
+        private float _mouseX;
+        private float _mouseY;
+        private float _mousePrevX;
+        private float _mousePrevY;
+        private float _mouseDeltaX;
+        private float _mouseDeltaY;
 
         public SilkUserInput(Config config, IWindow window, SilkDoom doom, bool useMouse)
         {
@@ -33,22 +33,22 @@ namespace ManagedDoom.Silk
             {
                 Console.Write("Initialize user input: ");
 
-                this.config = config;
-                this.window = window;
+                _config = config;
+                _window = window;
 
-                input = window.CreateInput();
+                _input = window.CreateInput();
 
-                keyboard = input.Keyboards[0];
-                keyboard.KeyDown += (sender, key, value) => doom.KeyDown(key);
-                keyboard.KeyUp += (sender, key, value) => doom.KeyUp(key);
+                _keyboard = _input.Keyboards[0];
+                _keyboard.KeyDown += (sender, key, value) => doom.KeyDown(key);
+                _keyboard.KeyUp += (sender, key, value) => doom.KeyUp(key);
 
-                weaponKeys = new bool[7];
-                turnHeld = 0;
+                _weaponKeys = new bool[7];
+                _turnHeld = 0;
 
                 if (useMouse)
                 {
-                    mouse = input.Mice[0];
-                    mouseGrabbed = false;
+                    _mouse = _input.Mice[0];
+                    _mouseGrabbed = false;
                 }
 
                 Console.WriteLine("OK");
@@ -63,48 +63,48 @@ namespace ManagedDoom.Silk
 
         public void BuildTicCmd(TicCmd cmd)
         {
-            var keyForward = IsPressed(keyboard, config.key_forward);
-            var keyBackward = IsPressed(keyboard, config.key_backward);
-            var keyStrafeLeft = IsPressed(keyboard, config.key_strafeleft);
-            var keyStrafeRight = IsPressed(keyboard, config.key_straferight);
-            var keyTurnLeft = IsPressed(keyboard, config.key_turnleft);
-            var keyTurnRight = IsPressed(keyboard, config.key_turnright);
-            var keyFire = IsPressed(keyboard, config.key_fire);
-            var keyUse = IsPressed(keyboard, config.key_use);
-            var keyRun = IsPressed(keyboard, config.key_run);
-            var keyStrafe = IsPressed(keyboard, config.key_strafe);
+            bool keyForward = IsPressed(_keyboard, _config.key_forward);
+            bool keyBackward = IsPressed(_keyboard, _config.key_backward);
+            bool keyStrafeLeft = IsPressed(_keyboard, _config.key_strafeleft);
+            bool keyStrafeRight = IsPressed(_keyboard, _config.key_straferight);
+            bool keyTurnLeft = IsPressed(_keyboard, _config.key_turnleft);
+            bool keyTurnRight = IsPressed(_keyboard, _config.key_turnright);
+            bool keyFire = IsPressed(_keyboard, _config.key_fire);
+            bool keyUse = IsPressed(_keyboard, _config.key_use);
+            bool keyRun = IsPressed(_keyboard, _config.key_run);
+            bool keyStrafe = IsPressed(_keyboard, _config.key_strafe);
 
-            weaponKeys[0] = keyboard.IsKeyPressed(Key.Number1);
-            weaponKeys[1] = keyboard.IsKeyPressed(Key.Number2);
-            weaponKeys[2] = keyboard.IsKeyPressed(Key.Number3);
-            weaponKeys[3] = keyboard.IsKeyPressed(Key.Number4);
-            weaponKeys[4] = keyboard.IsKeyPressed(Key.Number5);
-            weaponKeys[5] = keyboard.IsKeyPressed(Key.Number6);
-            weaponKeys[6] = keyboard.IsKeyPressed(Key.Number7);
+            _weaponKeys[0] = _keyboard.IsKeyPressed(Key.Number1);
+            _weaponKeys[1] = _keyboard.IsKeyPressed(Key.Number2);
+            _weaponKeys[2] = _keyboard.IsKeyPressed(Key.Number3);
+            _weaponKeys[3] = _keyboard.IsKeyPressed(Key.Number4);
+            _weaponKeys[4] = _keyboard.IsKeyPressed(Key.Number5);
+            _weaponKeys[5] = _keyboard.IsKeyPressed(Key.Number6);
+            _weaponKeys[6] = _keyboard.IsKeyPressed(Key.Number7);
 
             cmd.Clear();
 
-            var strafe = keyStrafe;
-            var speed = keyRun ? 1 : 0;
-            var forward = 0;
-            var side = 0;
+            bool strafe = keyStrafe;
+            int speed = keyRun ? 1 : 0;
+            int forward = 0;
+            int side = 0;
 
-            if (config.game_alwaysrun)
+            if (_config.game_alwaysrun)
             {
                 speed = 1 - speed;
             }
 
             if (keyTurnLeft || keyTurnRight)
             {
-                turnHeld++;
+                _turnHeld++;
             }
             else
             {
-                turnHeld = 0;
+                _turnHeld = 0;
             }
 
             int turnSpeed;
-            if (turnHeld < PlayerBehavior.SlowTurnTics)
+            if (_turnHeld < PlayerBehavior.SlowTurnTics)
             {
                 turnSpeed = 2;
             }
@@ -165,9 +165,9 @@ namespace ManagedDoom.Silk
             }
 
             // Check weapon keys.
-            for (var i = 0; i < weaponKeys.Length; i++)
+            for (int i = 0; i < _weaponKeys.Length; i++)
             {
-                if (weaponKeys[i])
+                if (_weaponKeys[i])
                 {
                     cmd.Buttons |= TicCmdButtons.Change;
                     cmd.Buttons |= (byte)(i << TicCmdButtons.WeaponShift);
@@ -176,9 +176,9 @@ namespace ManagedDoom.Silk
             }
 
             UpdateMouse();
-            var ms = 0.5F * config.mouse_sensitivity;
-            var mx = (int)MathF.Round(ms * mouseDeltaX);
-            var my = (int)MathF.Round(ms * -mouseDeltaY);
+            float ms = 0.5F * _config.mouse_sensitivity;
+            int mx = (int)MathF.Round(ms * _mouseDeltaX);
+            int my = (int)MathF.Round(ms * -_mouseDeltaY);
             forward += my;
             if (strafe)
             {
@@ -212,7 +212,7 @@ namespace ManagedDoom.Silk
 
         private bool IsPressed(IKeyboard keyboard, KeyBinding keyBinding)
         {
-            foreach (var key in keyBinding.Keys)
+            foreach (DoomKey key in keyBinding.Keys)
             {
                 if (keyboard.IsKeyPressed(DoomToSilk(key)))
                 {
@@ -220,11 +220,11 @@ namespace ManagedDoom.Silk
                 }
             }
 
-            if (mouseGrabbed)
+            if (_mouseGrabbed)
             {
-                foreach (var mouseButton in keyBinding.MouseButtons)
+                foreach (DoomMouseButton mouseButton in keyBinding.MouseButtons)
                 {
-                    if (mouse.IsButtonPressed((MouseButton)mouseButton))
+                    if (_mouse.IsButtonPressed((MouseButton)mouseButton))
                     {
                         return true;
                     }
@@ -236,73 +236,73 @@ namespace ManagedDoom.Silk
 
         public void Reset()
         {
-            if (mouse == null)
+            if (_mouse == null)
             {
                 return;
             }
 
-            mouseX = mouse.Position.X;
-            mouseY = mouse.Position.Y;
-            mousePrevX = mouseX;
-            mousePrevY = mouseY;
-            mouseDeltaX = 0;
-            mouseDeltaY = 0;
+            _mouseX = _mouse.Position.X;
+            _mouseY = _mouse.Position.Y;
+            _mousePrevX = _mouseX;
+            _mousePrevY = _mouseY;
+            _mouseDeltaX = 0;
+            _mouseDeltaY = 0;
         }
 
         public void GrabMouse()
         {
-            if (mouse == null)
+            if (_mouse == null)
             {
                 return;
             }
 
-            if (!mouseGrabbed)
+            if (!_mouseGrabbed)
             {
-                mouse.Cursor.CursorMode = CursorMode.Raw;
-                mouseGrabbed = true;
-                mouseX = mouse.Position.X;
-                mouseY = mouse.Position.Y;
-                mousePrevX = mouseX;
-                mousePrevY = mouseY;
-                mouseDeltaX = 0;
-                mouseDeltaY = 0;
+                _mouse.Cursor.CursorMode = CursorMode.Raw;
+                _mouseGrabbed = true;
+                _mouseX = _mouse.Position.X;
+                _mouseY = _mouse.Position.Y;
+                _mousePrevX = _mouseX;
+                _mousePrevY = _mouseY;
+                _mouseDeltaX = 0;
+                _mouseDeltaY = 0;
             }
         }
 
         public void ReleaseMouse()
         {
-            if (mouse == null)
+            if (_mouse == null)
             {
                 return;
             }
 
-            if (mouseGrabbed)
+            if (_mouseGrabbed)
             {
-                mouse.Cursor.CursorMode = CursorMode.Normal;
-                mouse.Position = new Vector2(window.Size.X - 10, window.Size.Y - 10);
-                mouseGrabbed = false;
+                _mouse.Cursor.CursorMode = CursorMode.Normal;
+                _mouse.Position = new Vector2(_window.Size.X - 10, _window.Size.Y - 10);
+                _mouseGrabbed = false;
             }
         }
 
         private void UpdateMouse()
         {
-            if (mouse == null)
+            if (_mouse == null)
             {
                 return;
             }
 
-            if (mouseGrabbed)
+            if (_mouseGrabbed)
             {
-                mousePrevX = mouseX;
-                mousePrevY = mouseY;
-                mouseX = mouse.Position.X;
-                mouseY = mouse.Position.Y;
-                mouseDeltaX = mouseX - mousePrevX;
-                mouseDeltaY = mouseY - mousePrevY;
+                _mousePrevX = _mouseX;
+                _mousePrevY = _mouseY;
+                _mouseX = _mouse.Position.X;
+                _mouseY = _mouse.Position.Y;
+                _mouseDeltaX = _mouseX - _mousePrevX;
+                _mouseDeltaY = _mouseY - _mousePrevY;
 
-                if (config.mouse_disableyaxis)
+                if (_config.mouse_disableyaxis)
                 {
-                    mouseDeltaY = 0;
+                    _mouseDeltaY = 0;
                 }
             }
         }
@@ -311,11 +311,13 @@ namespace ManagedDoom.Silk
         {
             Console.WriteLine("Shutdown user input.");
 
-            if (input != null)
+            if (_input != null)
             {
-                input.Dispose();
-                input = null;
+                _input.Dispose();
+                _input = null;
             }
+
+            GC.SuppressFinalize(this);
         }
 
         public static DoomKey SilkToDoom(Key silkKey)
@@ -568,12 +570,12 @@ namespace ManagedDoom.Silk
         {
             get
             {
-                return config.mouse_sensitivity;
+                return _config.mouse_sensitivity;
             }
 
             set
             {
-                config.mouse_sensitivity = value;
+                _config.mouse_sensitivity = value;
             }
         }
     }

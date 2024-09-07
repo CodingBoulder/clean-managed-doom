@@ -23,43 +23,43 @@ namespace ManagedDoom
 {
     public sealed class Sector
     {
-        private static readonly int dataSize = 26;
+        private static readonly int _dataSize = 26;
 
-        private int number;
-        private Fixed floorHeight;
-        private Fixed ceilingHeight;
-        private int floorFlat;
-        private int ceilingFlat;
-        private int lightLevel;
-        private SectorSpecial special;
-        private int tag;
+        private readonly int _number;
+        private Fixed _floorHeight;
+        private Fixed _ceilingHeight;
+        private int _floorFlat;
+        private int _ceilingFlat;
+        private int _lightLevel;
+        private SectorSpecial _special;
+        private int _tag;
 
         // 0 = untraversed, 1, 2 = sndlines - 1.
-        private int soundTraversed;
+        private int _soundTraversed;
 
         // Thing that made a sound (or null).
-        private Mobj soundTarget;
+        private Mobj? _soundTarget;
 
         // Mapblock bounding box for height changes.
-        private int[] blockBox;
+        private int[] _blockBox;
 
         // Origin for any sounds played by the sector.
-        private Mobj soundOrigin;
+        private Mobj _soundOrigin;
 
         // If == validcount, already checked.
-        private int validCount;
+        private int _validCount;
 
         // List of mobjs in sector.
-        private Mobj thingList;
+        private Mobj? _thingList;
 
         // Thinker for reversable actions.
-        private Thinker specialData;
+        private Thinker? _specialData;
 
-        private LineDef[] lines;
+        private LineDef[] _lines;
 
         // For frame interpolation.
-        private Fixed oldFloorHeight;
-        private Fixed oldCeilingHeight;
+        private Fixed _oldFloorHeight;
+        private Fixed _oldCeilingHeight;
 
         public Sector(
             int number,
@@ -71,28 +71,28 @@ namespace ManagedDoom
             SectorSpecial special,
             int tag)
         {
-            this.number = number;
-            this.floorHeight = floorHeight;
-            this.ceilingHeight = ceilingHeight;
-            this.floorFlat = floorFlat;
-            this.ceilingFlat = ceilingFlat;
-            this.lightLevel = lightLevel;
-            this.special = special;
-            this.tag = tag;
+            _number = number;
+            _floorHeight = floorHeight;
+            _ceilingHeight = ceilingHeight;
+            _floorFlat = floorFlat;
+            _ceilingFlat = ceilingFlat;
+            _lightLevel = lightLevel;
+            _special = special;
+            _tag = tag;
 
-            oldFloorHeight = floorHeight;
-            oldCeilingHeight = ceilingHeight;
+            _oldFloorHeight = floorHeight;
+            _oldCeilingHeight = ceilingHeight;
         }
 
         public static Sector FromData(byte[] data, int offset, int number, IFlatLookup flats)
         {
-            var floorHeight = BitConverter.ToInt16(data, offset);
-            var ceilingHeight = BitConverter.ToInt16(data, offset + 2);
-            var floorFlatName = DoomInterop.ToString(data, offset + 4, 8);
-            var ceilingFlatName = DoomInterop.ToString(data, offset + 12, 8);
-            var lightLevel = BitConverter.ToInt16(data, offset + 20);
-            var special = BitConverter.ToInt16(data, offset + 22);
-            var tag = BitConverter.ToInt16(data, offset + 24);
+            short floorHeight = BitConverter.ToInt16(data, offset);
+            short ceilingHeight = BitConverter.ToInt16(data, offset + 2);
+            string floorFlatName = DoomInterop.ToString(data, offset + 4, 8);
+            string ceilingFlatName = DoomInterop.ToString(data, offset + 12, 8);
+            short lightLevel = BitConverter.ToInt16(data, offset + 20);
+            short special = BitConverter.ToInt16(data, offset + 22);
+            short tag = BitConverter.ToInt16(data, offset + 24);
 
             return new Sector(
                 number,
@@ -107,19 +107,19 @@ namespace ManagedDoom
 
         public static Sector[] FromWad(Wad wad, int lump, IFlatLookup flats)
         {
-            var length = wad.GetLumpSize(lump);
-            if (length % dataSize != 0)
+            int length = wad.GetLumpSize(lump);
+            if (length % _dataSize != 0)
             {
                 throw new Exception();
             }
 
-            var data = wad.ReadLump(lump);
-            var count = length / dataSize;
+            byte[] data = wad.ReadLump(lump);
+            int count = length / _dataSize;
             var sectors = new Sector[count]; ;
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var offset = dataSize * i;
+                int offset = _dataSize * i;
                 sectors[i] = FromData(data, offset, i, flats);
             }
 
@@ -128,24 +128,24 @@ namespace ManagedDoom
 
         public void UpdateFrameInterpolationInfo()
         {
-            oldFloorHeight = floorHeight;
-            oldCeilingHeight = ceilingHeight;
+            _oldFloorHeight = _floorHeight;
+            _oldCeilingHeight = _ceilingHeight;
         }
 
         public Fixed GetInterpolatedFloorHeight(Fixed frameFrac)
         {
-            return oldFloorHeight + frameFrac * (floorHeight - oldFloorHeight);
+            return _oldFloorHeight + frameFrac * (_floorHeight - _oldFloorHeight);
         }
 
         public Fixed GetInterpolatedCeilingHeight(Fixed frameFrac)
         {
-            return oldCeilingHeight + frameFrac * (ceilingHeight - oldCeilingHeight);
+            return _oldCeilingHeight + frameFrac * (_ceilingHeight - _oldCeilingHeight);
         }
 
         public void DisableFrameInterpolationForOneFrame()
         {
-            oldFloorHeight = floorHeight;
-            oldCeilingHeight = ceilingHeight;
+            _oldFloorHeight = _floorHeight;
+            _oldCeilingHeight = _ceilingHeight;
         }
 
         public ThingEnumerator GetEnumerator()
@@ -157,137 +157,137 @@ namespace ManagedDoom
 
         public struct ThingEnumerator : IEnumerator<Mobj>
         {
-            private Sector sector;
-            private Mobj thing;
-            private Mobj current;
+            private readonly Sector _sector;
+            private Mobj? _thing;
+            private Mobj? _current;
 
             public ThingEnumerator(Sector sector)
             {
-                this.sector = sector;
-                thing = sector.thingList;
-                current = null;
+                _sector = sector;
+                _thing = sector._thingList;
+                _current = null;
             }
 
             public bool MoveNext()
             {
-                if (thing != null)
+                if (_thing != null)
                 {
-                    current = thing;
-                    thing = thing.SectorNext;
+                    _current = _thing;
+                    _thing = _thing.SectorNext;
                     return true;
                 }
                 else
                 {
-                    current = null;
+                    _current = null;
                     return false;
                 }
             }
 
             public void Reset()
             {
-                thing = sector.thingList;
-                current = null;
+                _thing = _sector._thingList;
+                _current = null;
             }
 
             public void Dispose()
             {
             }
 
-            public Mobj Current => current;
+            public Mobj? Current => _current;
 
             object IEnumerator.Current => throw new NotImplementedException();
         }
 
-        public int Number => number;
+        public int Number => _number;
 
         public Fixed FloorHeight
         {
-            get => floorHeight;
-            set => floorHeight = value;
+            get => _floorHeight;
+            set => _floorHeight = value;
         }
 
         public Fixed CeilingHeight
         {
-            get => ceilingHeight;
-            set => ceilingHeight = value;
+            get => _ceilingHeight;
+            set => _ceilingHeight = value;
         }
 
         public int FloorFlat
         {
-            get => floorFlat;
-            set => floorFlat = value;
+            get => _floorFlat;
+            set => _floorFlat = value;
         }
 
         public int CeilingFlat
         {
-            get => ceilingFlat;
-            set => ceilingFlat = value;
+            get => _ceilingFlat;
+            set => _ceilingFlat = value;
         }
 
         public int LightLevel
         {
-            get => lightLevel;
-            set => lightLevel = value;
+            get => _lightLevel;
+            set => _lightLevel = value;
         }
 
         public SectorSpecial Special
         {
-            get => special;
-            set => special = value;
+            get => _special;
+            set => _special = value;
         }
 
         public int Tag
         {
-            get => tag;
-            set => tag = value;
+            get => _tag;
+            set => _tag = value;
         }
 
         public int SoundTraversed
         {
-            get => soundTraversed;
-            set => soundTraversed = value;
+            get => _soundTraversed;
+            set => _soundTraversed = value;
         }
 
-        public Mobj SoundTarget
+        public Mobj? SoundTarget
         {
-            get => soundTarget;
-            set => soundTarget = value;
+            get => _soundTarget;
+            set => _soundTarget = value;
         }
 
         public int[] BlockBox
         {
-            get => blockBox;
-            set => blockBox = value;
+            get => _blockBox;
+            set => _blockBox = value;
         }
 
         public Mobj SoundOrigin
         {
-            get => soundOrigin;
-            set => soundOrigin = value;
+            get => _soundOrigin;
+            set => _soundOrigin = value;
         }
 
         public int ValidCount
         {
-            get => validCount;
-            set => validCount = value;
+            get => _validCount;
+            set => _validCount = value;
         }
 
-        public Mobj ThingList
+        public Mobj? ThingList
         {
-            get => thingList;
-            set => thingList = value;
+            get => _thingList;
+            set => _thingList = value;
         }
 
-        public Thinker SpecialData
+        public Thinker? SpecialData
         {
-            get => specialData;
-            set => specialData = value;
+            get => _specialData;
+            set => _specialData = value;
         }
 
         public LineDef[] Lines
         {
-            get => lines;
-            set => lines = value;
+            get => _lines;
+            set => _lines = value;
         }
     }
 }

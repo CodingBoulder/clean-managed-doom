@@ -25,12 +25,12 @@ namespace ManagedDoom
 {
     public sealed class Wad : IDisposable
     {
-        private List<string> names;
-        private List<Stream> streams;
-        private List<LumpInfo> lumpInfos;
-        private GameVersion gameVersion;
-        private GameMode gameMode;
-        private MissionPack missionPack;
+        private readonly List<string> _names;
+        private readonly List<Stream> _streams;
+        private readonly List<LumpInfo> _lumpInfos;
+        private readonly GameVersion _gameVersion;
+        private readonly GameMode _gameMode;
+        private readonly MissionPack _missionPack;
 
         public Wad(params string[] fileNames)
         {
@@ -38,18 +38,18 @@ namespace ManagedDoom
             {
                 Console.Write("Open WAD files: ");
 
-                names = [];
-                streams = [];
-                lumpInfos = [];
+                _names = [];
+                _streams = [];
+                _lumpInfos = [];
 
-                foreach (var fileName in fileNames)
+                foreach (string fileName in fileNames)
                 {
                     AddFile(fileName);
                 }
 
-                gameMode = GetGameMode(names);
-                missionPack = GetMissionPack(names);
-                gameVersion = GetGameVersion(names);
+                _gameMode = GetGameMode(_names);
+                _missionPack = GetMissionPack(_names);
+                _gameVersion = GetGameVersion(_names);
 
                 Console.WriteLine("OK (" + string.Join(", ", fileNames.Select(x => Path.GetFileName(x))) + ")");
             }
@@ -63,16 +63,16 @@ namespace ManagedDoom
 
         private void AddFile(string fileName)
         {
-            names.Add(Path.GetFileNameWithoutExtension(fileName).ToLower());
+            _names.Add(Path.GetFileNameWithoutExtension(fileName).ToLower());
 
             var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            streams.Add(stream);
+            _streams.Add(stream);
 
             string identification;
             int lumpCount;
             int lumpInfoTableOffset;
             {
-                var data = new byte[12];
+                byte[] data = new byte[12];
                 if (stream.Read(data, 0, data.Length) != data.Length)
                 {
                     throw new Exception("Failed to read the WAD file.");
@@ -88,31 +88,31 @@ namespace ManagedDoom
             }
 
             {
-                var data = new byte[LumpInfo.DataSize * lumpCount];
+                byte[] data = new byte[LumpInfo.DataSize * lumpCount];
                 stream.Seek(lumpInfoTableOffset, SeekOrigin.Begin);
                 if (stream.Read(data, 0, data.Length) != data.Length)
                 {
                     throw new Exception("Failed to read the WAD file.");
                 }
 
-                for (var i = 0; i < lumpCount; i++)
+                for (int i = 0; i < lumpCount; i++)
                 {
-                    var offset = LumpInfo.DataSize * i;
+                    int offset = LumpInfo.DataSize * i;
                     var lumpInfo = new LumpInfo(
                         DoomInterop.ToString(data, offset + 8, 8),
                         stream,
                         BitConverter.ToInt32(data, offset),
                         BitConverter.ToInt32(data, offset + 4));
-                    lumpInfos.Add(lumpInfo);
+                    _lumpInfos.Add(lumpInfo);
                 }
             }
         }
 
         public int GetLumpNumber(string name)
         {
-            for (var i = lumpInfos.Count - 1; i >= 0; i--)
+            for (int i = _lumpInfos.Count - 1; i >= 0; i--)
             {
-                if (lumpInfos[i].Name == name)
+                if (_lumpInfos[i].Name == name)
                 {
                     return i;
                 }
@@ -123,17 +123,17 @@ namespace ManagedDoom
 
         public int GetLumpSize(int number)
         {
-            return lumpInfos[number].Size;
+            return _lumpInfos[number].Size;
         }
 
         public byte[] ReadLump(int number)
         {
-            var lumpInfo = lumpInfos[number];
+            LumpInfo lumpInfo = _lumpInfos[number];
 
-            var data = new byte[lumpInfo.Size];
+            byte[] data = new byte[lumpInfo.Size];
 
             lumpInfo.Stream.Seek(lumpInfo.Position, SeekOrigin.Begin);
-            var read = lumpInfo.Stream.Read(data, 0, lumpInfo.Size);
+            int read = lumpInfo.Stream.Read(data, 0, lumpInfo.Size);
             if (read != lumpInfo.Size)
             {
                 throw new Exception("Failed to read the lump " + number + ".");
@@ -144,7 +144,7 @@ namespace ManagedDoom
 
         public byte[] ReadLump(string name)
         {
-            var lumpNumber = GetLumpNumber(name);
+            int lumpNumber = GetLumpNumber(name);
 
             if (lumpNumber == -1)
             {
@@ -158,17 +158,17 @@ namespace ManagedDoom
         {
             Console.WriteLine("Close WAD files.");
 
-            foreach (var stream in streams)
+            foreach (Stream stream in _streams)
             {
                 stream.Dispose();
             }
 
-            streams.Clear();
+            _streams.Clear();
         }
 
         private static GameVersion GetGameVersion(IReadOnlyList<string> names)
         {
-            foreach (var name in names)
+            foreach (string name in names)
             {
                 switch (name.ToLower())
                 {
@@ -190,7 +190,7 @@ namespace ManagedDoom
 
         private static GameMode GetGameMode(IReadOnlyList<string> names)
         {
-            foreach (var name in names)
+            foreach (string name in names)
             {
                 switch (name.ToLower())
                 {
@@ -212,7 +212,7 @@ namespace ManagedDoom
 
         private static MissionPack GetMissionPack(IReadOnlyList<string> names)
         {
-            foreach (var name in names)
+            foreach (string name in names)
             {
                 switch (name.ToLower())
                 {
@@ -226,10 +226,9 @@ namespace ManagedDoom
             return MissionPack.Doom2;
         }
 
-        public IReadOnlyList<string> Names => names;
-        public IReadOnlyList<LumpInfo> LumpInfos => lumpInfos;
-        public GameVersion GameVersion => gameVersion;
-        public GameMode GameMode => gameMode;
-        public MissionPack MissionPack => missionPack;
+        public IReadOnlyList<LumpInfo> LumpInfos => _lumpInfos;
+        public GameVersion GameVersion => _gameVersion;
+        public GameMode GameMode => _gameMode;
+        public MissionPack MissionPack => _missionPack;
     }
 }

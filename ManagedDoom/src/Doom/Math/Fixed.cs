@@ -25,22 +25,22 @@ namespace ManagedDoom
         public const int FracBits = 16;
         public const int FracUnit = 1 << FracBits;
 
-        public static readonly Fixed Zero = new Fixed(0);
-        public static readonly Fixed One = new Fixed(FracUnit);
+        public static readonly Fixed Zero = new(0);
+        public static readonly Fixed One = new(FracUnit);
 
-        public static readonly Fixed MaxValue = new Fixed(int.MaxValue);
-        public static readonly Fixed MinValue = new Fixed(int.MinValue);
+        public static readonly Fixed MaxValue = new(int.MaxValue);
+        public static readonly Fixed MinValue = new(int.MinValue);
 
-        public static readonly Fixed Epsilon = new Fixed(1);
-        public static readonly Fixed OnePlusEpsilon = new Fixed(FracUnit + 1);
-        public static readonly Fixed OneMinusEpsilon = new Fixed(FracUnit - 1);
+        public static readonly Fixed Epsilon = new(1);
+        public static readonly Fixed OnePlusEpsilon = new(FracUnit + 1);
+        public static readonly Fixed OneMinusEpsilon = new(FracUnit - 1);
 
-        private int data;
+        private readonly int _data;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Fixed(int data)
         {
-            this.data = data;
+            _data = data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -64,21 +64,21 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float ToFloat()
         {
-            return (float)data / FracUnit;
+            return (float)_data / FracUnit;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double ToDouble()
         {
-            return (double)data / FracUnit;
+            return (double)_data / FracUnit;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed Abs(Fixed a)
         {
-            if (a.data < 0)
+            if (a._data < 0)
             {
-                return new Fixed(-a.data);
+                return new Fixed(-a._data);
             }
             else
             {
@@ -95,44 +95,44 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator -(Fixed a)
         {
-            return new Fixed(-a.data);
+            return new Fixed(-a._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator +(Fixed a, Fixed b)
         {
-            return new Fixed(a.data + b.data);
+            return new Fixed(a._data + b._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator -(Fixed a, Fixed b)
         {
-            return new Fixed(a.data - b.data);
+            return new Fixed(a._data - b._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator *(Fixed a, Fixed b)
         {
-            return new Fixed((int)(((long)a.data * (long)b.data) >> FracBits));
+            return new Fixed((int)(((long)a._data * (long)b._data) >> FracBits));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator *(int a, Fixed b)
         {
-            return new Fixed(a * b.data);
+            return new Fixed(a * b._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator *(Fixed a, int b)
         {
-            return new Fixed(a.data * b);
+            return new Fixed(a._data * b);
         }
 
         public static Fixed operator /(Fixed a, Fixed b)
         {
-            if ((CIntAbs(a.data) >> 14) >= CIntAbs(b.data))
+            if ((CIntAbs(a._data) >> 14) >= CIntAbs(b._data))
             {
-                return new Fixed((a.data ^ b.data) < 0 ? int.MinValue : int.MaxValue);
+                return new Fixed((a._data ^ b._data) < 0 ? int.MinValue : int.MaxValue);
             }
 
             return FixedDiv2(a, b);
@@ -148,7 +148,7 @@ namespace ManagedDoom
 
         private static Fixed FixedDiv2(Fixed a, Fixed b)
         {
-            var c = ((double)a.data) / ((double)b.data) * FracUnit;
+            double c = ((double)a._data) / ((double)b._data) * FracUnit;
 
             if (c >= 2147483648.0 || c < -2147483648.0)
             {
@@ -167,55 +167,55 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator /(Fixed a, int b)
         {
-            return new Fixed(a.data / b);
+            return new Fixed(a._data / b);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator <<(Fixed a, int b)
         {
-            return new Fixed(a.data << b);
+            return new Fixed(a._data << b);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Fixed operator >>(Fixed a, int b)
         {
-            return new Fixed(a.data >> b);
+            return new Fixed(a._data >> b);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Fixed a, Fixed b)
         {
-            return a.data == b.data;
+            return a._data == b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Fixed a, Fixed b)
         {
-            return a.data != b.data;
+            return a._data != b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <(Fixed a, Fixed b)
         {
-            return a.data < b.data;
+            return a._data < b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >(Fixed a, Fixed b)
         {
-            return a.data > b.data;
+            return a._data > b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <=(Fixed a, Fixed b)
         {
-            return a.data <= b.data;
+            return a._data <= b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >=(Fixed a, Fixed b)
         {
-            return a.data >= b.data;
+            return a._data >= b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -247,34 +247,34 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int ToIntFloor()
         {
-            return data >> FracBits;
+            return _data >> FracBits;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int ToIntCeiling()
         {
-            return (data + FracUnit - 1) >> FracBits;
+            return (_data + FracUnit - 1) >> FracBits;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             throw new NotSupportedException();
         }
 
         public override int GetHashCode()
         {
-            return data.GetHashCode();
+            return _data.GetHashCode();
         }
 
         public override string ToString()
         {
-            return ((double)data / FracUnit).ToString();
+            return ((double)_data / FracUnit).ToString();
         }
 
         public int Data
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => data;
+            get => _data;
         }
     }
 }

@@ -21,61 +21,61 @@ namespace ManagedDoom
 {
     public sealed class FireFlicker : Thinker
     {
-        private World world;
+        private readonly World _world;
 
-        private Sector sector;
-        private int count;
-        private int maxLight;
-        private int minLight;
+        private Sector _sector;
+        private int _count;
+        private int _maxLight;
+        private int _minLight;
 
         public FireFlicker(World world)
         {
-            this.world = world;
+            _world = world;
         }
 
         public override void Run()
         {
-            if (--count > 0)
+            if (--_count > 0)
             {
                 return;
             }
 
-            var amount = (world.Random.Next() & 3) * 16;
+            int amount = (_world.Random.Next() & 3) * 16;
 
-            if (sector.LightLevel - amount < minLight)
+            if (_sector.LightLevel - amount < _minLight)
             {
-                sector.LightLevel = minLight;
+                _sector.LightLevel = _minLight;
             }
             else
             {
-                sector.LightLevel = maxLight - amount;
+                _sector.LightLevel = _maxLight - amount;
             }
 
-            count = 4;
+            _count = 4;
         }
 
         public Sector Sector
         {
-            get => sector;
-            set => sector = value;
+            get => _sector;
+            set => _sector = value;
         }
 
         public int Count
         {
-            get => count;
-            set => count = value;
+            get => _count;
+            set => _count = value;
         }
 
         public int MaxLight
         {
-            get => maxLight;
-            set => maxLight = value;
+            get => _maxLight;
+            set => _maxLight = value;
         }
 
         public int MinLight
         {
-            get => minLight;
-            set => minLight = value;
+            get => _minLight;
+            set => _minLight = value;
         }
     }
 }

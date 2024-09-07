@@ -25,73 +25,66 @@ namespace ManagedDoom
         public static readonly int FastDark = 15;
         public static readonly int SlowDark = 35;
 
-        private World world;
-
-        private Sector sector;
-        private int count;
-        private int minLight;
-        private int maxLight;
-        private int darkTime;
-        private int brightTime;
-
-        public StrobeFlash(World world)
-        {
-            this.world = world;
-        }
+        private Sector _sector;
+        private int _count;
+        private int _minLight;
+        private int _maxLight;
+        private int _darkTime;
+        private int _brightTime;
 
         public override void Run()
         {
-            if (--count > 0)
+            if (--_count > 0)
             {
                 return;
             }
 
-            if (sector.LightLevel == minLight)
+            if (_sector.LightLevel == _minLight)
             {
-                sector.LightLevel = maxLight;
-                count = brightTime;
+                _sector.LightLevel = _maxLight;
+                _count = _brightTime;
             }
             else
             {
-                sector.LightLevel = minLight;
-                count = darkTime;
+                _sector.LightLevel = _minLight;
+                _count = _darkTime;
             }
         }
 
         public Sector Sector
         {
-            get => sector;
-            set => sector = value;
+            get => _sector;
+            set => _sector = value;
         }
 
         public int Count
         {
-            get => count;
-            set => count = value;
+            get => _count;
+            set => _count = value;
         }
 
         public int MinLight
         {
-            get => minLight;
-            set => minLight = value;
+            get => _minLight;
+            set => _minLight = value;
         }
 
         public int MaxLight
         {
-            get => maxLight;
-            set => maxLight = value;
+            get => _maxLight;
+            set => _maxLight = value;
         }
 
         public int DarkTime
         {
-            get => darkTime;
-            set => darkTime = value;
+            get => _darkTime;
+            set => _darkTime = value;
         }
 
         public int BrightTime
         {
-            get => brightTime;
-            set => brightTime = value;
+            get => _brightTime;
+            set => _brightTime = value;
         }
     }
 }

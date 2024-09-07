@@ -22,148 +22,148 @@ namespace ManagedDoom
 {
     public sealed class AutoMap
     {
-        private World world;
+        private readonly World _world;
 
-        private Fixed minX;
-        private Fixed maxX;
-        private Fixed minY;
-        private Fixed maxY;
+        private readonly Fixed _minX;
+        private readonly Fixed _maxX;
+        private readonly Fixed _minY;
+        private readonly Fixed _maxY;
 
-        private Fixed viewX;
-        private Fixed viewY;
+        private Fixed _viewX;
+        private Fixed _viewY;
 
-        private bool visible;
-        private AutoMapState state;
+        private bool _visible;
+        private AutoMapState _state;
 
-        private Fixed zoom;
-        private bool follow;
+        private Fixed _zoom;
+        private bool _follow;
 
-        private bool zoomIn;
-        private bool zoomOut;
+        private bool _zoomIn;
+        private bool _zoomOut;
 
-        private bool left;
-        private bool right;
-        private bool up;
-        private bool down;
+        private bool _left;
+        private bool _right;
+        private bool _up;
+        private bool _down;
 
-        private List<Vertex> marks;
-        private int nextMarkNumber;
+        private readonly List<Vertex> _marks;
+        private int _nextMarkNumber;
 
         public AutoMap(World world)
         {
-            this.world = world;
+            _world = world;
 
-            minX = Fixed.MaxValue;
-            maxX = Fixed.MinValue;
-            minY = Fixed.MaxValue;
-            maxY = Fixed.MinValue;
-            foreach (var vertex in world.Map.Vertices)
+            _minX = Fixed.MaxValue;
+            _maxX = Fixed.MinValue;
+            _minY = Fixed.MaxValue;
+            _maxY = Fixed.MinValue;
+            foreach (Vertex vertex in world.Map.Vertices)
             {
-                if (vertex.X < minX)
+                if (vertex.X < _minX)
                 {
-                    minX = vertex.X;
+                    _minX = vertex.X;
                 }
 
-                if (vertex.X > maxX)
+                if (vertex.X > _maxX)
                 {
-                    maxX = vertex.X;
+                    _maxX = vertex.X;
                 }
 
-                if (vertex.Y < minY)
+                if (vertex.Y < _minY)
                 {
-                    minY = vertex.Y;
+                    _minY = vertex.Y;
                 }
 
-                if (vertex.Y > maxY)
+                if (vertex.Y > _maxY)
                 {
-                    maxY = vertex.Y;
+                    _maxY = vertex.Y;
                 }
             }
 
-            viewX = minX + (maxX - minX) / 2;
-            viewY = minY + (maxY - minY) / 2;
+            _viewX = _minX + (_maxX - _minX) / 2;
+            _viewY = _minY + (_maxY - _minY) / 2;
 
-            visible = false;
-            state = AutoMapState.None;
+            _visible = false;
+            _state = AutoMapState.None;
 
-            zoom = Fixed.One;
-            follow = true;
+            _zoom = Fixed.One;
+            _follow = true;
 
-            zoomIn = false;
-            zoomOut = false;
-            left = false;
-            right = false;
-            up = false;
-            down = false;
+            _zoomIn = false;
+            _zoomOut = false;
+            _left = false;
+            _right = false;
+            _up = false;
+            _down = false;
 
-            marks = [];
-            nextMarkNumber = 0;
+            _marks = [];
+            _nextMarkNumber = 0;
         }
 
         public void Update()
         {
-            if (zoomIn)
+            if (_zoomIn)
             {
-                zoom += zoom / 16;
+                _zoom += _zoom / 16;
             }
 
-            if (zoomOut)
+            if (_zoomOut)
             {
-                zoom -= zoom / 16;
+                _zoom -= _zoom / 16;
             }
 
-            if (zoom < Fixed.One / 2)
+            if (_zoom < Fixed.One / 2)
             {
-                zoom = Fixed.One / 2;
+                _zoom = Fixed.One / 2;
             }
-            else if (zoom > Fixed.One * 32)
+            else if (_zoom > Fixed.One * 32)
             {
-                zoom = Fixed.One * 32;
-            }
-
-            if (left)
-            {
-                viewX -= 64 / zoom;
+                _zoom = Fixed.One * 32;
             }
 
-            if (right)
+            if (_left)
             {
-                viewX += 64 / zoom;
+                _viewX -= 64 / _zoom;
             }
 
-            if (up)
+            if (_right)
             {
-                viewY += 64 / zoom;
+                _viewX += 64 / _zoom;
             }
 
-            if (down)
+            if (_up)
             {
-                viewY -= 64 / zoom;
+                _viewY += 64 / _zoom;
             }
 
-            if (viewX < minX)
+            if (_down)
             {
-                viewX = minX;
-            }
-            else if (viewX > maxX)
-            {
-                viewX = maxX;
+                _viewY -= 64 / _zoom;
             }
 
-            if (viewY < minY)
+            if (_viewX < _minX)
             {
-                viewY = minY;
+                _viewX = _minX;
             }
-            else if (viewY > maxY)
+            else if (_viewX > _maxX)
             {
-                viewY = maxY;
+                _viewX = _maxX;
             }
 
-            if (follow)
+            if (_viewY < _minY)
             {
-                var player = world.ConsolePlayer.Mobj;
-                viewX = player.X;
-                viewY = player.Y;
+                _viewY = _minY;
+            }
+            else if (_viewY > _maxY)
+            {
+                _viewY = _maxY;
+            }
+
+            if (_follow)
+            {
+                Mobj? player = _world.ConsolePlayer.Mobj;
+                _viewX = player.X;
+                _viewY = player.Y;
             }
         }
 
@@ -173,11 +173,11 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    zoomIn = true;
+                    _zoomIn = true;
                 }
                 else if (e.Type == EventType.KeyUp)
                 {
-                    zoomIn = false;
+                    _zoomIn = false;
                 }
 
                 return true;
@@ -186,11 +186,11 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    zoomOut = true;
+                    _zoomOut = true;
                 }
                 else if (e.Type == EventType.KeyUp)
                 {
-                    zoomOut = false;
+                    _zoomOut = false;
                 }
 
                 return true;
@@ -199,11 +199,11 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    left = true;
+                    _left = true;
                 }
                 else if (e.Type == EventType.KeyUp)
                 {
-                    left = false;
+                    _left = false;
                 }
 
                 return true;
@@ -212,11 +212,11 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    right = true;
+                    _right = true;
                 }
                 else if (e.Type == EventType.KeyUp)
                 {
-                    right = false;
+                    _right = false;
                 }
 
                 return true;
@@ -225,11 +225,11 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    up = true;
+                    _up = true;
                 }
                 else if (e.Type == EventType.KeyUp)
                 {
-                    up = false;
+                    _up = false;
                 }
 
                 return true;
@@ -238,11 +238,11 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    down = true;
+                    _down = true;
                 }
                 else if (e.Type == EventType.KeyUp)
                 {
-                    down = false;
+                    _down = false;
                 }
 
                 return true;
@@ -251,14 +251,14 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    follow = !follow;
-                    if (follow)
+                    _follow = !_follow;
+                    if (_follow)
                     {
-                        world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_FOLLOWON);
+                        _world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_FOLLOWON);
                     }
                     else
                     {
-                        world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_FOLLOWOFF);
+                        _world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_FOLLOWOFF);
                     }
                     return true;
                 }
@@ -267,20 +267,20 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    if (marks.Count < 10)
+                    if (_marks.Count < 10)
                     {
-                        marks.Add(new Vertex(viewX, viewY));
+                        _marks.Add(new Vertex(_viewX, _viewY));
                     }
                     else
                     {
-                        marks[nextMarkNumber] = new Vertex(viewX, viewY);
+                        _marks[_nextMarkNumber] = new Vertex(_viewX, _viewY);
                     }
-                    nextMarkNumber++;
-                    if (nextMarkNumber == 10)
+                    _nextMarkNumber++;
+                    if (_nextMarkNumber == 10)
                     {
-                        nextMarkNumber = 0;
+                        _nextMarkNumber = 0;
                     }
-                    world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_MARKEDSPOT);
+                    _world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_MARKEDSPOT);
                     return true;
                 }
             }
@@ -288,9 +288,9 @@ namespace ManagedDoom
             {
                 if (e.Type == EventType.KeyDown)
                 {
-                    marks.Clear();
-                    nextMarkNumber = 0;
-                    world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_MARKSCLEARED);
+                    _marks.Clear();
+                    _nextMarkNumber = 0;
+                    _world.ConsolePlayer.SendMessage(DoomInfo.Strings.AMSTR_MARKSCLEARED);
                     return true;
                 }
             }
@@ -300,39 +300,39 @@ namespace ManagedDoom
 
         public void Open()
         {
-            visible = true;
+            _visible = true;
         }
 
         public void Close()
         {
-            visible = false;
-            zoomIn = false;
-            zoomOut = false;
-            left = false;
-            right = false;
-            up = false;
-            down = false;
+            _visible = false;
+            _zoomIn = false;
+            _zoomOut = false;
+            _left = false;
+            _right = false;
+            _up = false;
+            _down = false;
         }
 
         public void ToggleCheat()
         {
-            state++;
-            if ((int)state == 3)
+            _state++;
+            if ((int)_state == 3)
             {
-                state = AutoMapState.None;
+                _state = AutoMapState.None;
             }
         }
 
-        public Fixed MinX => minX;
-        public Fixed MaxX => maxX;
-        public Fixed MinY => minY;
-        public Fixed MaxY => maxY;
-        public Fixed ViewX => viewX;
-        public Fixed ViewY => viewY;
-        public Fixed Zoom => zoom;
-        public bool Follow => follow;
-        public bool Visible => visible;
-        public AutoMapState State => state;
-        public IReadOnlyList<Vertex> Marks => marks;
+        public Fixed MinX => _minX;
+        public Fixed MaxX => _maxX;
+        public Fixed MinY => _minY;
+        public Fixed MaxY => _maxY;
+        public Fixed ViewX => _viewX;
+        public Fixed ViewY => _viewY;
+        public Fixed Zoom => _zoom;
+        public bool Follow => _follow;
+        public bool Visible => _visible;
+        public AutoMapState State => _state;
+        public IReadOnlyList<Vertex> Marks => _marks;
     }
 }

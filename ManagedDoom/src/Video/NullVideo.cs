@@ -21,16 +21,16 @@ namespace ManagedDoom.Video
 {
     public class NullVideo : IVideo
     {
-        private static NullVideo instance;
+        private static NullVideo _instance;
 
         public static NullVideo GetInstance()
         {
-            if (instance == null)
+            if (_instance == null)
             {
-                instance = new NullVideo();
+                _instance = new NullVideo();
             }
 
-            return instance;
+            return _instance;
         }
 
         public void Render(Doom doom, Fixed frameFrac)

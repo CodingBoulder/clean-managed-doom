@@ -22,61 +22,57 @@ namespace ManagedDoom
 {
     public sealed class DoomString
     {
-        private static Dictionary<string, DoomString> valueTable = [];
-        private static Dictionary<string, DoomString> nameTable = [];
+        private static readonly Dictionary<string, DoomString> _valueTable = [];
+        private static readonly Dictionary<string, DoomString> _nameTable = [];
 
-        private string original;
-        private string replaced;
+        private string _replaced;
 
         public DoomString(string original)
         {
-            this.original = original;
-            replaced = original;
+            _replaced = original;
 
-            if (!valueTable.ContainsKey(original))
+            if (!_valueTable.ContainsKey(original))
             {
-                valueTable.Add(original, this);
+                _valueTable.Add(original, this);
             }
         }
 
         public DoomString(string name, string original) : this(original)
         {
-            nameTable.Add(name, this);
+            _nameTable.Add(name, this);
         }
 
         public override string ToString()
         {
-            return replaced;
+            return _replaced;
         }
 
         public char this[int index]
         {
             get
             {
-                return replaced[index];
+                return _replaced[index];
             }
         }
 
         public static implicit operator string(DoomString ds)
         {
-            return ds.replaced;
+            return ds._replaced;
         }
 
         public static void ReplaceByValue(string original, string replaced)
         {
-            DoomString ds;
-            if (valueTable.TryGetValue(original, out ds))
+            if (_valueTable.TryGetValue(original, out DoomString? ds))
             {
-                ds.replaced = replaced;
+                ds._replaced = replaced;
             }
         }
 
         public static void ReplaceByName(string name, string value)
         {
-            DoomString ds;
-            if (nameTable.TryGetValue(name, out ds))
+            if (_nameTable.TryGetValue(name, out DoomString? ds))
             {
-                ds.replaced = value;
+                ds._replaced = value;
             }
         }
     }

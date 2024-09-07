@@ -11,12 +11,12 @@ namespace ManagedDoomTest.CompatibilityTests
         {
             using var content = GameContent.CreateDummy(WadPath.Doom2);
             var demo = new Demo(@"data\altdeath_test.lmp");
-            var cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
+            TicCmd[] cmds = Enumerable.Range(0, Player.MaxPlayerCount).Select(i => new TicCmd()).ToArray();
             var game = new DoomGame(content, demo.Options);
             game.DeferedInitNew();
 
-            var lastMobjHash = 0;
-            var aggMobjHash = 0;
+            int lastMobjHash = 0;
+            int aggMobjHash = 0;
 
             while (true)
             {

@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public static partial class DoomInfo
     {
-        public static readonly AnimationDef[] TextureAnimation = new AnimationDef[]
-        {
+        public static readonly AnimationDef[] TextureAnimation =
+        [
             new AnimationDef(false, "NUKAGE3",  "NUKAGE1",  8),
             new AnimationDef(false, "FWATER4",  "FWATER1",  8),
             new AnimationDef(false, "SWATER4",  "SWATER1",  8),
@@ -50,6 +50,6 @@ namespace ManagedDoom
             new AnimationDef(true,  "SFALL4",   "SFALL1",   8),
             new AnimationDef(true,  "WFALL4",   "WFALL1",   8),
             new AnimationDef(true,  "DBRAIN4",  "DBRAIN1",  8)
-        };
+        ];
     }
 }

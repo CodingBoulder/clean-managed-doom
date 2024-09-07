@@ -7,13 +7,13 @@ namespace ManagedDoom
     public class DummyTextureLookup : ITextureLookup
     {
         private readonly DummyData dummyData = new();
-        
+
         private List<Texture> textures;
         private Dictionary<string, Texture> nameToTexture;
         private Dictionary<string, int> nameToNumber;
 
         private int[] switchList;
-        
+
         public DummyTextureLookup(Wad wad)
         {
             InitLookup(wad);
@@ -26,22 +26,22 @@ namespace ManagedDoom
             nameToTexture = [];
             nameToNumber = [];
 
-            for (var n = 1; n <= 2; n++)
+            for (int n = 1; n <= 2; n++)
             {
-                var lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
+                int lumpNumber = wad.GetLumpNumber("TEXTURE" + n);
                 if (lumpNumber == -1)
                 {
                     break;
                 }
 
-                var data = wad.ReadLump(lumpNumber);
-                var count = BitConverter.ToInt32(data, 0);
-                for (var i = 0; i < count; i++)
+                byte[] data = wad.ReadLump(lumpNumber);
+                int count = BitConverter.ToInt32(data, 0);
+                for (int i = 0; i < count; i++)
                 {
-                    var offset = BitConverter.ToInt32(data, 4 + 4 * i);
-                    var name = Texture.GetName(data, offset);
-                    var height = Texture.GetHeight(data, offset);
-                    var texture = dummyData.GetTexture(height);
+                    int offset = BitConverter.ToInt32(data, 4 + 4 * i);
+                    string name = Texture.GetName(data, offset);
+                    int height = Texture.GetHeight(data, offset);
+                    Texture texture = dummyData.GetTexture(height);
                     nameToNumber.TryAdd(name, textures.Count);
                     textures.Add(texture);
                     nameToTexture.TryAdd(name, texture);
@@ -52,10 +52,10 @@ namespace ManagedDoom
         private void InitSwitchList()
         {
             var list = new List<int>();
-            foreach (var tuple in DoomInfo.SwitchNames)
+            foreach (Tuple<DoomString, DoomString> tuple in DoomInfo.SwitchNames)
             {
-                var texNum1 = GetNumber(tuple.Item1);
-                var texNum2 = GetNumber(tuple.Item2);
+                int texNum1 = GetNumber(tuple.Item1);
+                int texNum2 = GetNumber(tuple.Item2);
                 if (texNum1 != -1 && texNum2 != -1)
                 {
                     list.Add(texNum1);
@@ -72,8 +72,7 @@ namespace ManagedDoom
                 return 0;
             }
 
-            int number;
-            if (nameToNumber.TryGetValue(name, out number))
+            if (nameToNumber.TryGetValue(name, out int number))
             {
                 return number;
             }

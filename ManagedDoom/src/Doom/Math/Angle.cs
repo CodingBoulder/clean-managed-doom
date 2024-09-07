@@ -22,53 +22,53 @@ namespace ManagedDoom
 {
     public struct Angle
     {
-        private static double TwoXPI = 2 * Math.PI;
-        public static readonly Angle Ang0 = new Angle(0x00000000);
-        public static readonly Angle Ang45 = new Angle(0x20000000);
-        public static readonly Angle Ang90 = new Angle(0x40000000);
-        public static readonly Angle Ang180 = new Angle(0x80000000);
-        public static readonly Angle Ang270 = new Angle(0xC0000000);
+        private static readonly double _twoXPI = 2 * Math.PI;
+        public static readonly Angle Ang0 = new(0x00000000);
+        public static readonly Angle Ang45 = new(0x20000000);
+        public static readonly Angle Ang90 = new(0x40000000);
+        public static readonly Angle Ang180 = new(0x80000000);
+        public static readonly Angle Ang270 = new(0xC0000000);
 
-        private uint data;
+        private readonly uint _data;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Angle(uint data)
         {
-            this.data = data;
+            _data = data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Angle(int data)
         {
-            this.data = (uint)data;
+            _data = (uint)data;
         }
 
         public static Angle FromRadian(double radian)
         {
-            var data = Math.Round(0x100000000 * (radian / (TwoXPI)));
+            double data = Math.Round(0x100000000 * (radian / (_twoXPI)));
             return new Angle((uint)data);
         }
 
         public static Angle FromDegree(double degree)
         {
-            var data = Math.Round(0x100000000 * (degree / 360));
+            double data = Math.Round(0x100000000 * (degree / 360));
             return new Angle((uint)data);
         }
 
         public double ToRadian()
         {
-            return TwoXPI * ((double)data / 0x100000000);
+            return _twoXPI * ((double)_data / 0x100000000);
         }
 
         public double ToDegree()
         {
-            return 360 * ((double)data / 0x100000000);
+            return 360 * ((double)_data / 0x100000000);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle Abs(Angle angle)
         {
-            var data = (int)angle.data;
+            int data = (int)angle._data;
             if (data < 0)
             {
                 return new Angle((uint)-data);
@@ -88,83 +88,83 @@ namespace ManagedDoom
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle operator -(Angle a)
         {
-            return new Angle((uint)-(int)a.data);
+            return new Angle((uint)-(int)a._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle operator +(Angle a, Angle b)
         {
-            return new Angle(a.data + b.data);
+            return new Angle(a._data + b._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle operator -(Angle a, Angle b)
         {
-            return new Angle(a.data - b.data);
+            return new Angle(a._data - b._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle operator *(uint a, Angle b)
         {
-            return new Angle(a * b.data);
+            return new Angle(a * b._data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle operator *(Angle a, uint b)
         {
-            return new Angle(a.data * b);
+            return new Angle(a._data * b);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Angle operator /(Angle a, uint b)
         {
-            return new Angle(a.data / b);
+            return new Angle(a._data / b);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Angle a, Angle b)
         {
-            return a.data == b.data;
+            return a._data == b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Angle a, Angle b)
         {
-            return a.data != b.data;
+            return a._data != b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <(Angle a, Angle b)
         {
-            return a.data < b.data;
+            return a._data < b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >(Angle a, Angle b)
         {
-            return a.data > b.data;
+            return a._data > b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <=(Angle a, Angle b)
         {
-            return a.data <= b.data;
+            return a._data <= b._data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >=(Angle a, Angle b)
         {
-            return a.data >= b.data;
+            return a._data >= b._data;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             throw new NotSupportedException();
         }
 
         public override int GetHashCode()
         {
-            return data.GetHashCode();
+            return _data.GetHashCode();
         }
 
         public override string ToString()
@@ -175,7 +175,7 @@ namespace ManagedDoom
         public uint Data
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => data;
+            get => _data;
         }
     }
 }

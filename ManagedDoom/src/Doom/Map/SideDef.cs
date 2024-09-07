@@ -21,14 +21,14 @@ namespace ManagedDoom
 {
     public sealed class SideDef
     {
-        private static readonly int dataSize = 30;
+        private static readonly int _dataSize = 30;
 
-        private Fixed textureOffset;
-        private Fixed rowOffset;
-        private int topTexture;
-        private int bottomTexture;
-        private int middleTexture;
-        private Sector sector;
+        private Fixed _textureOffset;
+        private Fixed _rowOffset;
+        private int _topTexture;
+        private int _bottomTexture;
+        private int _middleTexture;
+        private readonly Sector _sector;
 
         public SideDef(
             Fixed textureOffset,
@@ -38,22 +38,22 @@ namespace ManagedDoom
             int middleTexture,
             Sector sector)
         {
-            this.textureOffset = textureOffset;
-            this.rowOffset = rowOffset;
-            this.topTexture = topTexture;
-            this.bottomTexture = bottomTexture;
-            this.middleTexture = middleTexture;
-            this.sector = sector;
+            _textureOffset = textureOffset;
+            _rowOffset = rowOffset;
+            _topTexture = topTexture;
+            _bottomTexture = bottomTexture;
+            _middleTexture = middleTexture;
+            _sector = sector;
         }
 
         public static SideDef FromData(byte[] data, int offset, ITextureLookup textures, Sector[] sectors)
         {
-            var textureOffset = BitConverter.ToInt16(data, offset);
-            var rowOffset = BitConverter.ToInt16(data, offset + 2);
-            var topTextureName = DoomInterop.ToString(data, offset + 4, 8);
-            var bottomTextureName = DoomInterop.ToString(data, offset + 12, 8);
-            var middleTextureName = DoomInterop.ToString(data, offset + 20, 8);
-            var sectorNum = BitConverter.ToInt16(data, offset + 28);
+            short textureOffset = BitConverter.ToInt16(data, offset);
+            short rowOffset = BitConverter.ToInt16(data, offset + 2);
+            string topTextureName = DoomInterop.ToString(data, offset + 4, 8);
+            string bottomTextureName = DoomInterop.ToString(data, offset + 12, 8);
+            string middleTextureName = DoomInterop.ToString(data, offset + 20, 8);
+            short sectorNum = BitConverter.ToInt16(data, offset + 28);
 
             return new SideDef(
                 Fixed.FromInt(textureOffset),
@@ -66,19 +66,19 @@ namespace ManagedDoom
 
         public static SideDef[] FromWad(Wad wad, int lump, ITextureLookup textures, Sector[] sectors)
         {
-            var length = wad.GetLumpSize(lump);
-            if (length % dataSize != 0)
+            int length = wad.GetLumpSize(lump);
+            if (length % _dataSize != 0)
             {
                 throw new Exception();
             }
 
-            var data = wad.ReadLump(lump);
-            var count = length / dataSize;
+            byte[] data = wad.ReadLump(lump);
+            int count = length / _dataSize;
             var sides = new SideDef[count]; ;
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var offset = dataSize * i;
+                int offset = _dataSize * i;
                 sides[i] = FromData(data, offset, textures, sectors);
             }
 
@@ -87,34 +87,34 @@ namespace ManagedDoom
 
         public Fixed TextureOffset
         {
-            get => textureOffset;
-            set => textureOffset = value;
+            get => _textureOffset;
+            set => _textureOffset = value;
         }
 
         public Fixed RowOffset
         {
-            get => rowOffset;
-            set => rowOffset = value;
+            get => _rowOffset;
+            set => _rowOffset = value;
         }
 
         public int TopTexture
         {
-            get => topTexture;
-            set => topTexture = value;
+            get => _topTexture;
+            set => _topTexture = value;
         }
 
         public int BottomTexture
         {
-            get => bottomTexture;
-            set => bottomTexture = value;
+            get => _bottomTexture;
+            set => _bottomTexture = value;
         }
 
         public int MiddleTexture
         {
-            get => middleTexture;
-            set => middleTexture = value;
+            get => _middleTexture;
+            set => _middleTexture = value;
         }
 
-        public Sector Sector => sector;
+        public Sector Sector => _sector;
     }
 }

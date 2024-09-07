@@ -23,17 +23,17 @@ namespace ManagedDoom
 {
     public sealed class SaveMenu : MenuDef
     {
-        private string[] name;
-        private int[] titleX;
-        private int[] titleY;
-        private TextBoxMenuItem[] items;
+        private readonly string[] _name;
+        private readonly int[] _titleX;
+        private readonly int[] _titleY;
+        private readonly TextBoxMenuItem[] _items;
 
-        private int index;
-        private TextBoxMenuItem choice;
+        private int _index;
+        private TextBoxMenuItem _choice;
 
-        private TextInput textInput;
+        private TextInput? _textInput;
 
-        private int lastSaveSlot;
+        private int _lastSaveSlot;
 
         public SaveMenu(
             DoomMenu menu,
@@ -41,15 +41,15 @@ namespace ManagedDoom
             int firstChoice,
             params TextBoxMenuItem[] items) : base(menu)
         {
-            this.name = new[] { name };
-            this.titleX = new[] { titleX };
-            this.titleY = new[] { titleY };
-            this.items = items;
+            _name = [name];
+            _titleX = [titleX];
+            _titleY = [titleY];
+            _items = items;
 
-            index = firstChoice;
-            choice = items[index];
+            _index = firstChoice;
+            _choice = items[_index];
 
-            lastSaveSlot = -1;
+            _lastSaveSlot = -1;
         }
 
         public override void Open()
@@ -61,32 +61,32 @@ namespace ManagedDoom
                 return;
             }
 
-            for (var i = 0; i < items.Length; i++)
+            for (int i = 0; i < _items.Length; i++)
             {
-                items[i].SetText(Menu.SaveSlots[i]);
+                _items[i].SetText(Menu.SaveSlots[i]);
             }
         }
 
         private void Up()
         {
-            index--;
-            if (index < 0)
+            _index--;
+            if (_index < 0)
             {
-                index = items.Length - 1;
+                _index = _items.Length - 1;
             }
 
-            choice = items[index];
+            _choice = _items[_index];
         }
 
         private void Down()
         {
-            index++;
-            if (index >= items.Length)
+            _index++;
+            if (_index >= _items.Length)
             {
-                index = 0;
+                _index = 0;
             }
 
-            choice = items[index];
+            _choice = _items[_index];
         }
 
         public override bool DoEvent(DoomEvent e)
@@ -96,17 +96,17 @@ namespace ManagedDoom
                 return true;
             }
 
-            if (textInput != null)
+            if (_textInput != null)
             {
-                var result = textInput.DoEvent(e);
+                bool result = _textInput.DoEvent(e);
 
-                if (textInput.State == TextInputState.Canceled)
+                if (_textInput.State == TextInputState.Canceled)
                 {
-                    textInput = null;
+                    _textInput = null;
                 }
-                else if (textInput.State == TextInputState.Finished)
+                else if (_textInput.State == TextInputState.Finished)
                 {
-                    textInput = null;
+                    _textInput = null;
                 }
 
                 if (result)
@@ -129,7 +129,7 @@ namespace ManagedDoom
 
             if (e.Key == DoomKey.Enter)
             {
-                textInput = choice.Edit(() => DoSave(index));
+                _textInput = _choice.Edit(() => DoSave(_index));
                 Menu.StartSound(Sfx.PISTOL);
             }
 
@@ -144,11 +144,11 @@ namespace ManagedDoom
 
         public void DoSave(int slotNumber)
         {
-            Menu.SaveSlots[slotNumber] = new string(items[slotNumber].Text.ToArray());
+            Menu.SaveSlots[slotNumber] = new string(_items[slotNumber].Text.ToArray());
             if (Menu.Doom.SaveGame(slotNumber, Menu.SaveSlots[slotNumber]))
             {
                 Menu.Close();
-                lastSaveSlot = slotNumber;
+                _lastSaveSlot = slotNumber;
             }
             else
             {
@@ -157,11 +157,11 @@ namespace ManagedDoom
             Menu.StartSound(Sfx.PISTOL);
         }
 
-        public IReadOnlyList<string> Name => name;
-        public IReadOnlyList<int> TitleX => titleX;
-        public IReadOnlyList<int> TitleY => titleY;
-        public IReadOnlyList<MenuItem> Items => items;
-        public MenuItem Choice => choice;
-        public int LastSaveSlot => lastSaveSlot;
+        public IReadOnlyList<string> Name => _name;
+        public IReadOnlyList<int> TitleX => _titleX;
+        public IReadOnlyList<int> TitleY => _titleY;
+        public IReadOnlyList<MenuItem> Items => _items;
+        public MenuItem Choice => _choice;
+        public int LastSaveSlot => _lastSaveSlot;
     }
 }

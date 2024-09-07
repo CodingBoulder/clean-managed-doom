@@ -21,31 +21,38 @@ namespace ManagedDoom
 {
     public class SimpleMenuItem : MenuItem
     {
-        private string name;
-        private int itemX;
-        private int itemY;
-        private Action action;
-        private Func<bool> selectable;
+        private readonly string name;
+        private readonly int itemX;
+        private readonly int itemY;
+        private readonly Action? action;
+        private readonly Func<bool>? selectable;
 
         public SimpleMenuItem(
             string name,
-            int skullX, int skullY,
-            int itemX, int itemY,
-            Action action, MenuDef next)
+            int skullX,
+            int skullY,
+            int itemX,
+            int itemY,
+            Action? action,
+            MenuDef? next)
             : base(skullX, skullY, next)
         {
             this.name = name;
             this.itemX = itemX;
             this.itemY = itemY;
             this.action = action;
-            this.selectable = null;
+            selectable = null;
         }
 
         public SimpleMenuItem(
             string name,
-            int skullX, int skullY,
-            int itemX, int itemY,
-            Action action, MenuDef next, Func<bool> selectable)
+            int skullX,
+            int skullY,
+            int itemX,
+            int itemY,
+            Action? action,
+            MenuDef next,
+            Func<bool> selectable)
             : base(skullX, skullY, next)
         {
             this.name = name;
@@ -58,7 +65,7 @@ namespace ManagedDoom
         public string Name => name;
         public int ItemX => itemX;
         public int ItemY => itemY;
-        public Action Action => action;
+        public Action? Action => action;
 
         public bool Selectable
         {

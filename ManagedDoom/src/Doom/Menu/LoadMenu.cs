@@ -22,13 +22,13 @@ namespace ManagedDoom
 {
     public sealed class LoadMenu : MenuDef
     {
-        private string[] name;
-        private int[] titleX;
-        private int[] titleY;
-        private TextBoxMenuItem[] items;
+        private readonly string[] _name;
+        private readonly int[] _titleX;
+        private readonly int[] _titleY;
+        private readonly TextBoxMenuItem[] _items;
 
-        private int index;
-        private TextBoxMenuItem choice;
+        private int _index;
+        private TextBoxMenuItem _choice;
 
         public LoadMenu(
             DoomMenu menu,
@@ -36,43 +36,43 @@ namespace ManagedDoom
             int firstChoice,
             params TextBoxMenuItem[] items) : base(menu)
         {
-            this.name = new[] { name };
-            this.titleX = new[] { titleX };
-            this.titleY = new[] { titleY };
-            this.items = items;
+            _name = [name];
+            _titleX = [titleX];
+            _titleY = [titleY];
+            _items = items;
 
-            index = firstChoice;
-            choice = items[index];
+            _index = firstChoice;
+            _choice = items[_index];
         }
 
         public override void Open()
         {
-            for (var i = 0; i < items.Length; i++)
+            for (int i = 0; i < _items.Length; i++)
             {
-                items[i].SetText(Menu.SaveSlots[i]);
+                _items[i].SetText(Menu.SaveSlots[i]);
             }
         }
 
         private void Up()
         {
-            index--;
-            if (index < 0)
+            _index--;
+            if (_index < 0)
             {
-                index = items.Length - 1;
+                _index = _items.Length - 1;
             }
 
-            choice = items[index];
+            _choice = _items[_index];
         }
 
         private void Down()
         {
-            index++;
-            if (index >= items.Length)
+            _index++;
+            if (_index >= _items.Length)
             {
-                index = 0;
+                _index = 0;
             }
 
-            choice = items[index];
+            _choice = _items[_index];
         }
 
         public override bool DoEvent(DoomEvent e)
@@ -96,7 +96,7 @@ namespace ManagedDoom
 
             if (e.Key == DoomKey.Enter)
             {
-                if (DoLoad(index))
+                if (DoLoad(_index))
                 {
                     Menu.Close();
                 }
@@ -125,10 +125,10 @@ namespace ManagedDoom
             }
         }
 
-        public IReadOnlyList<string> Name => name;
-        public IReadOnlyList<int> TitleX => titleX;
-        public IReadOnlyList<int> TitleY => titleY;
-        public IReadOnlyList<MenuItem> Items => items;
-        public MenuItem Choice => choice;
+        public IReadOnlyList<string> Name => _name;
+        public IReadOnlyList<int> TitleX => _titleX;
+        public IReadOnlyList<int> TitleY => _titleY;
+        public IReadOnlyList<MenuItem> Items => _items;
+        public MenuItem Choice => _choice;
     }
 }

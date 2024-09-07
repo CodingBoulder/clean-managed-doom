@@ -21,20 +21,20 @@ namespace ManagedDoom
 {
     public sealed class MapThing
     {
-        private static readonly int dataSize = 10;
+        private static readonly int _dataSize = 10;
 
-        public static MapThing Empty = new MapThing(
+        public static MapThing Empty = new(
             Fixed.Zero,
             Fixed.Zero,
             Angle.Ang0,
             0,
             0);
 
-        private Fixed x;
-        private Fixed y;
-        private Angle angle;
-        private int type;
-        private ThingFlags flags;
+        private readonly Fixed _x;
+        private readonly Fixed _y;
+        private readonly Angle _angle;
+        private int _type;
+        private readonly ThingFlags _flags;
 
         public MapThing(
             Fixed x,
@@ -43,20 +43,20 @@ namespace ManagedDoom
             int type,
             ThingFlags flags)
         {
-            this.x = x;
-            this.y = y;
-            this.angle = angle;
-            this.type = type;
-            this.flags = flags;
+            _x = x;
+            _y = y;
+            _angle = angle;
+            _type = type;
+            _flags = flags;
         }
 
         public static MapThing FromData(byte[] data, int offset)
         {
-            var x = BitConverter.ToInt16(data, offset);
-            var y = BitConverter.ToInt16(data, offset + 2);
-            var angle = BitConverter.ToInt16(data, offset + 4);
-            var type = BitConverter.ToInt16(data, offset + 6);
-            var flags = BitConverter.ToInt16(data, offset + 8);
+            short x = BitConverter.ToInt16(data, offset);
+            short y = BitConverter.ToInt16(data, offset + 2);
+            short angle = BitConverter.ToInt16(data, offset + 4);
+            short type = BitConverter.ToInt16(data, offset + 6);
+            short flags = BitConverter.ToInt16(data, offset + 8);
 
             return new MapThing(
                 Fixed.FromInt(x),
@@ -68,35 +68,35 @@ namespace ManagedDoom
 
         public static MapThing[] FromWad(Wad wad, int lump)
         {
-            var length = wad.GetLumpSize(lump);
-            if (length % dataSize != 0)
+            int length = wad.GetLumpSize(lump);
+            if (length % _dataSize != 0)
             {
                 throw new Exception();
             }
 
-            var data = wad.ReadLump(lump);
-            var count = length / dataSize;
+            byte[] data = wad.ReadLump(lump);
+            int count = length / _dataSize;
             var things = new MapThing[count];
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var offset = dataSize * i;
+                int offset = _dataSize * i;
                 things[i] = FromData(data, offset);
             }
 
             return things;
         }
 
-        public Fixed X => x;
-        public Fixed Y => y;
-        public Angle Angle => angle;
+        public Fixed X => _x;
+        public Fixed Y => _y;
+        public Angle Angle => _angle;
 
         public int Type
         {
-            get => type;
-            set => type = value;
+            get => _type;
+            set => _type = value;
         }
 
-        public ThingFlags Flags => flags;
+        public ThingFlags Flags => _flags;
     }
 }

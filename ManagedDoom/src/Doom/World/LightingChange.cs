@@ -21,11 +21,11 @@ namespace ManagedDoom
 {
     public sealed class LightingChange
     {
-        private World world;
+        private readonly World _world;
 
         public LightingChange(World world)
         {
-            this.world = world;
+            _world = world;
         }
 
         public void SpawnFireFlicker(Sector sector)
@@ -34,9 +34,9 @@ namespace ManagedDoom
             // Nothing special about it during gameplay.
             sector.Special = 0;
 
-            var flicker = new FireFlicker(world);
+            var flicker = new FireFlicker(_world);
 
-            world.Thinkers.Add(flicker);
+            _world.Thinkers.Add(flicker);
 
             flicker.Sector = sector;
             flicker.MaxLight = sector.LightLevel;
@@ -49,9 +49,9 @@ namespace ManagedDoom
             // Nothing special about it during gameplay.
             sector.Special = 0;
 
-            var light = new LightFlash(world);
+            var light = new LightFlash(_world);
 
-            world.Thinkers.Add(light);
+            _world.Thinkers.Add(light);
 
             light.Sector = sector;
             light.MaxLight = sector.LightLevel;
@@ -59,14 +59,14 @@ namespace ManagedDoom
             light.MinLight = FindMinSurroundingLight(sector, sector.LightLevel);
             light.MaxTime = 64;
             light.MinTime = 7;
-            light.Count = (world.Random.Next() & light.MaxTime) + 1;
+            light.Count = (_world.Random.Next() & light.MaxTime) + 1;
         }
 
         public void SpawnStrobeFlash(Sector sector, int time, bool inSync)
         {
-            var strobe = new StrobeFlash(world);
+            var strobe = new StrobeFlash();
 
-            world.Thinkers.Add(strobe);
+            _world.Thinkers.Add(strobe);
 
             strobe.Sector = sector;
             strobe.DarkTime = time;
@@ -88,15 +88,15 @@ namespace ManagedDoom
             }
             else
             {
-                strobe.Count = (world.Random.Next() & 7) + 1;
+                strobe.Count = (_world.Random.Next() & 7) + 1;
             }
         }
 
         public void SpawnGlowingLight(Sector sector)
         {
-            var glowing = new GlowingLight(world);
+            var glowing = new GlowingLight();
 
-            world.Thinkers.Add(glowing);
+            _world.Thinkers.Add(glowing);
 
             glowing.Sector = sector;
             glowing.MinLight = FindMinSurroundingLight(sector, sector.LightLevel);
@@ -108,11 +108,11 @@ namespace ManagedDoom
 
         private int FindMinSurroundingLight(Sector sector, int max)
         {
-            var min = max;
-            for (var i = 0; i < sector.Lines.Length; i++)
+            int min = max;
+            for (int i = 0; i < sector.Lines.Length; i++)
             {
-                var line = sector.Lines[i];
-                var check = GetNextSector(line, sector);
+                LineDef line = sector.Lines[i];
+                Sector? check = GetNextSector(line, sector);
 
                 if (check == null)
                 {
@@ -127,7 +127,7 @@ namespace ManagedDoom
             return min;
         }
 
-        private Sector GetNextSector(LineDef line, Sector sector)
+        private Sector? GetNextSector(LineDef line, Sector sector)
         {
             if ((line.Flags & LineFlags.TwoSided) == 0)
             {

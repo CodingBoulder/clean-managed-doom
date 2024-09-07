@@ -22,12 +22,12 @@ namespace ManagedDoom
 {
     public sealed class Patch
     {
-        private string name;
-        private int width;
-        private int height;
-        private int leftOffset;
-        private int topOffset;
-        private Column[][] columns;
+        private readonly string _name;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly int _leftOffset;
+        private readonly int _topOffset;
+        private readonly Column[][] _columns;
 
         public Patch(
             string name,
@@ -37,37 +37,37 @@ namespace ManagedDoom
             int topOffset,
             Column[][] columns)
         {
-            this.name = name;
-            this.width = width;
-            this.height = height;
-            this.leftOffset = leftOffset;
-            this.topOffset = topOffset;
-            this.columns = columns;
+            _name = name;
+            _width = width;
+            _height = height;
+            _leftOffset = leftOffset;
+            _topOffset = topOffset;
+            _columns = columns;
         }
 
         public static Patch FromData(string name, byte[] data)
         {
-            var width = BitConverter.ToInt16(data, 0);
-            var height = BitConverter.ToInt16(data, 2);
-            var leftOffset = BitConverter.ToInt16(data, 4);
-            var topOffset = BitConverter.ToInt16(data, 6);
+            short width = BitConverter.ToInt16(data, 0);
+            short height = BitConverter.ToInt16(data, 2);
+            short leftOffset = BitConverter.ToInt16(data, 4);
+            short topOffset = BitConverter.ToInt16(data, 6);
 
             PadData(ref data, width);
 
             var columns = new Column[width][];
-            for (var x = 0; x < width; x++)
+            for (int x = 0; x < width; x++)
             {
                 var cs = new List<Column>();
-                var p = BitConverter.ToInt32(data, 8 + 4 * x);
+                int p = BitConverter.ToInt32(data, 8 + 4 * x);
                 while (true)
                 {
-                    var topDelta = data[p];
+                    byte topDelta = data[p];
                     if (topDelta == Column.Last)
                     {
                         break;
                     }
-                    var length = data[p + 1];
-                    var offset = p + 3;
+                    byte length = data[p + 1];
+                    int offset = p + 3;
                     cs.Add(new Column(topDelta, data, offset, length));
                     p += length + 4;
                 }
@@ -90,19 +90,19 @@ namespace ManagedDoom
 
         private static void PadData(ref byte[] data, int width)
         {
-            var need = 0;
-            for (var x = 0; x < width; x++)
+            int need = 0;
+            for (int x = 0; x < width; x++)
             {
-                var p = BitConverter.ToInt32(data, 8 + 4 * x);
+                int p = BitConverter.ToInt32(data, 8 + 4 * x);
                 while (true)
                 {
-                    var topDelta = data[p];
+                    byte topDelta = data[p];
                     if (topDelta == Column.Last)
                     {
                         break;
                     }
-                    var length = data[p + 1];
-                    var offset = p + 3;
+                    byte length = data[p + 1];
+                    int offset = p + 3;
                     need = Math.Max(offset + 128, need);
                     p += length + 4;
                 }
@@ -116,14 +116,14 @@ namespace ManagedDoom
 
         public override string ToString()
         {
-            return name;
+            return _name;
         }
 
-        public string Name => name;
-        public int Width => width;
-        public int Height => height;
-        public int LeftOffset => leftOffset;
-        public int TopOffset => topOffset;
-        public Column[][] Columns => columns;
+        public string Name => _name;
+        public int Width => _width;
+        public int Height => _height;
+        public int LeftOffset => _leftOffset;
+        public int TopOffset => _topOffset;
+        public Column[][] Columns => _columns;
     }
 }

@@ -83,13 +83,13 @@ namespace ManagedDoom
             // Check for drag & drop.
             if (args.Length > 0 && args.All(arg => arg.FirstOrDefault() != '-'))
             {
-                string iwadPath = null;
+                string? iwadPath = null;
                 var pwadPaths = new List<string>();
                 var dehPaths = new List<string>();
 
-                foreach (var path in args)
+                foreach (string path in args)
                 {
-                    var extension = Path.GetExtension(path).ToLower();
+                    string extension = Path.GetExtension(path).ToLower();
 
                     if (extension == ".wad")
                     {
@@ -127,7 +127,7 @@ namespace ManagedDoom
 
         private static Arg<string[]> Check_file(string[] args)
         {
-            var values = GetValues(args, "-file");
+            string[] values = GetValues(args, "-file");
             if (values.Length >= 1)
             {
                 return new Arg<string[]>(values);
@@ -138,7 +138,7 @@ namespace ManagedDoom
 
         private static Arg<string[]> Check_deh(string[] args)
         {
-            var values = GetValues(args, "-deh");
+            string[] values = GetValues(args, "-deh");
             if (values.Length >= 1)
             {
                 return new Arg<string[]>(values);
@@ -149,20 +149,17 @@ namespace ManagedDoom
 
         private static Arg<Tuple<int, int>> Check_warp(string[] args)
         {
-            var values = GetValues(args, "-warp");
+            string[] values = GetValues(args, "-warp");
             if (values.Length == 1)
             {
-                int map;
-                if (int.TryParse(values[0], out map))
+                if (int.TryParse(values[0], out int map))
                 {
                     return new Arg<Tuple<int, int>>(Tuple.Create(1, map));
                 }
             }
             else if (values.Length == 2)
             {
-                int episode;
-                int map;
-                if (int.TryParse(values[0], out episode) && int.TryParse(values[1], out map))
+                if (int.TryParse(values[0], out int episode) && int.TryParse(values[1], out int map))
                 {
                     return new Arg<Tuple<int, int>>(Tuple.Create(episode, map));
                 }
@@ -173,7 +170,7 @@ namespace ManagedDoom
 
         private static Arg<string> GetString(string[] args, string name)
         {
-            var values = GetValues(args, name);
+            string[] values = GetValues(args, name);
             if (values.Length == 1)
             {
                 return new Arg<string>(values[0]);
@@ -184,11 +181,10 @@ namespace ManagedDoom
 
         private static Arg<int> GetInt(string[] args, string name)
         {
-            var values = GetValues(args, name);
+            string[] values = GetValues(args, name);
             if (values.Length == 1)
             {
-                int result;
-                if (int.TryParse(values[0], out result))
+                if (int.TryParse(values[0], out int result))
                 {
                     return new Arg<int>(result);
                 }
@@ -210,40 +206,40 @@ namespace ManagedDoom
 
         public class Arg
         {
-            private bool present;
+            private readonly bool _present;
 
             public Arg()
             {
-                this.present = false;
+                _present = false;
             }
 
             public Arg(bool present)
             {
-                this.present = present;
+                _present = present;
             }
 
-            public bool Present => present;
+            public bool Present => _present;
         }
 
         public class Arg<T>
         {
-            private bool present;
-            private T value;
+            private readonly bool _present;
+            private readonly T? _value;
 
             public Arg()
             {
-                this.present = false;
-                this.value = default;
+                _present = false;
+                _value = default;
             }
 
             public Arg(T value)
             {
-                this.present = true;
-                this.value = value;
+                _present = true;
+                _value = value;
             }
 
-            public bool Present => present;
-            public T Value => value;
+            public bool Present => _present;
+            public T? Value => _value;
         }
     }
 }

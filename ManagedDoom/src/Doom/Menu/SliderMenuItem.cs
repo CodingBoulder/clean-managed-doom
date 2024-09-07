@@ -21,15 +21,15 @@ namespace ManagedDoom
 {
     public class SliderMenuItem : MenuItem
     {
-        private string name;
-        private int itemX;
-        private int itemY;
+        private readonly string _name;
+        private readonly int _itemX;
+        private readonly int _itemY;
 
-        private int sliderLength;
-        private int sliderPosition;
+        private readonly int _sliderLength;
+        private int _sliderPosition;
 
-        private Func<int> reset;
-        private Action<int> action;
+        private readonly Func<int> _reset;
+        private readonly Action<int> _action;
 
         public SliderMenuItem(
             string name,
@@ -40,58 +40,52 @@ namespace ManagedDoom
             Action<int> action)
             : base(skullX, skullY, null)
         {
-            this.name = name;
-            this.itemX = itemX;
-            this.itemY = itemY;
+            _name = name;
+            _itemX = itemX;
+            _itemY = itemY;
 
-            this.sliderLength = sliderLength;
-            sliderPosition = 0;
+            _sliderLength = sliderLength;
+            _sliderPosition = 0;
 
-            this.action = action;
-            this.reset = reset;
+            _action = action;
+            _reset = reset;
         }
 
         public void Reset()
         {
-            if (reset != null)
+            if (_reset != null)
             {
-                sliderPosition = reset();
+                _sliderPosition = _reset();
             }
         }
 
         public void Up()
         {
-            if (sliderPosition < SliderLength - 1)
+            if (_sliderPosition < SliderLength - 1)
             {
-                sliderPosition++;
+                _sliderPosition++;
             }
 
-            if (action != null)
-            {
-                action(sliderPosition);
-            }
+            _action?.Invoke(_sliderPosition);
         }
 
         public void Down()
         {
-            if (sliderPosition > 0)
+            if (_sliderPosition > 0)
             {
-                sliderPosition--;
+                _sliderPosition--;
             }
 
-            if (action != null)
-            {
-                action(sliderPosition);
-            }
+            _action?.Invoke(_sliderPosition);
         }
 
-        public string Name => name;
-        public int ItemX => itemX;
-        public int ItemY => itemY;
+        public string Name => _name;
+        public int ItemX => _itemX;
+        public int ItemY => _itemY;
 
-        public int SliderX => itemX;
-        public int SliderY => itemY + 16;
-        public int SliderLength => sliderLength;
-        public int SliderPosition => sliderPosition;
+        public int SliderX => _itemX;
+        public int SliderY => _itemY + 16;
+        public int SliderLength => _sliderLength;
+        public int SliderPosition => _sliderPosition;
     }
 }

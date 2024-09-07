@@ -24,23 +24,23 @@ namespace ManagedDoom
 {
     public sealed class FlatLookup : IFlatLookup
     {
-        private Flat[] flats;
+        private Flat[] _flats;
 
-        private Dictionary<string, Flat> nameToFlat;
-        private Dictionary<string, int> nameToNumber;
+        private Dictionary<string, Flat> _nameToFlat;
+        private Dictionary<string, int> _nameToNumber;
 
-        private int skyFlatNumber;
-        private Flat skyFlat;
+        private int _skyFlatNumber;
+        private Flat _skyFlat;
 
         public FlatLookup(Wad wad)
         {
-            var fStartCount = CountLump(wad, "F_START");
-            var fEndCount = CountLump(wad, "F_END");
-            var ffStartCount = CountLump(wad, "FF_START");
-            var ffEndCount = CountLump(wad, "FF_END");
+            int fStartCount = CountLump(wad, "F_START");
+            int fEndCount = CountLump(wad, "F_END");
+            int ffStartCount = CountLump(wad, "FF_START");
+            int ffEndCount = CountLump(wad, "FF_END");
 
             // Usual case.
-            var standard =
+            bool standard =
                 fStartCount == 1 &&
                 fEndCount == 1 &&
                 ffStartCount == 0 &&
@@ -48,12 +48,12 @@ namespace ManagedDoom
 
             // A trick to add custom flats is used.
             // https://www.doomworld.com/tutorials/fx2.php
-            var customFlatTrick =
+            bool customFlatTrick =
                 fStartCount == 1 &&
                 fEndCount >= 2;
 
             // Need deutex to add flats.
-            var deutexMerge =
+            bool deutexMerge =
                 fStartCount + ffStartCount >= 2 &&
                 fEndCount + ffEndCount >= 2;
 
@@ -77,35 +77,35 @@ namespace ManagedDoom
             {
                 Console.Write("Load flats: ");
 
-                var firstFlat = wad.GetLumpNumber("F_START") + 1;
-                var lastFlat = wad.GetLumpNumber("F_END") - 1;
-                var count = lastFlat - firstFlat + 1;
+                int firstFlat = wad.GetLumpNumber("F_START") + 1;
+                int lastFlat = wad.GetLumpNumber("F_END") - 1;
+                int count = lastFlat - firstFlat + 1;
 
-                flats = new Flat[count];
+                _flats = new Flat[count];
 
-                nameToFlat = [];
-                nameToNumber = [];
+                _nameToFlat = [];
+                _nameToNumber = [];
 
-                for (var lump = firstFlat; lump <= lastFlat; lump++)
+                for (int lump = firstFlat; lump <= lastFlat; lump++)
                 {
                     if (wad.GetLumpSize(lump) != 4096)
                     {
                         continue;
                     }
 
-                    var number = lump - firstFlat;
-                    var name = wad.LumpInfos[lump].Name;
+                    int number = lump - firstFlat;
+                    string name = wad.LumpInfos[lump].Name;
                     var flat = new Flat(name, wad.ReadLump(lump));
 
-                    flats[number] = flat;
-                    nameToFlat[name] = flat;
-                    nameToNumber[name] = number;
+                    _flats[number] = flat;
+                    _nameToFlat[name] = flat;
+                    _nameToNumber[name] = number;
                 }
 
-                skyFlatNumber = nameToNumber["F_SKY1"];
-                skyFlat = nameToFlat["F_SKY1"];
+                _skyFlatNumber = _nameToNumber["F_SKY1"];
+                _skyFlat = _nameToFlat["F_SKY1"];
 
-                Console.WriteLine("OK (" + nameToFlat.Count + " flats)");
+                Console.WriteLine("OK (" + _nameToFlat.Count + " flats)");
             }
             catch (Exception e)
             {
@@ -121,10 +121,10 @@ namespace ManagedDoom
                 Console.Write("Load flats: ");
 
                 var allFlats = new List<int>();
-                var flatZone = false;
-                for (var lump = 0; lump < wad.LumpInfos.Count; lump++)
+                bool flatZone = false;
+                for (int lump = 0; lump < wad.LumpInfos.Count; lump++)
                 {
-                    var name = wad.LumpInfos[lump].Name;
+                    string name = wad.LumpInfos[lump].Name;
                     if (flatZone)
                     {
                         if (name == "F_END" || name == "FF_END")
@@ -148,7 +148,7 @@ namespace ManagedDoom
 
                 var dupCheck = new HashSet<string>();
                 var distinctFlats = new List<int>();
-                foreach (var lump in allFlats)
+                foreach (int lump in allFlats)
                 {
                     if (!dupCheck.Contains(wad.LumpInfos[lump].Name))
                     {
@@ -158,32 +158,32 @@ namespace ManagedDoom
                 }
                 distinctFlats.Reverse();
 
-                flats = new Flat[distinctFlats.Count];
+                _flats = new Flat[distinctFlats.Count];
 
-                nameToFlat = [];
-                nameToNumber = [];
+                _nameToFlat = [];
+                _nameToNumber = [];
 
-                for (var number = 0; number < flats.Length; number++)
+                for (int number = 0; number < _flats.Length; number++)
                 {
-                    var lump = distinctFlats[number];
+                    int lump = distinctFlats[number];
 
                     if (wad.GetLumpSize(lump) != 4096)
                     {
                         continue;
                     }
 
-                    var name = wad.LumpInfos[lump].Name;
+                    string name = wad.LumpInfos[lump].Name;
                     var flat = new Flat(name, wad.ReadLump(lump));
 
-                    flats[number] = flat;
-                    nameToFlat[name] = flat;
-                    nameToNumber[name] = number;
+                    _flats[number] = flat;
+                    _nameToFlat[name] = flat;
+                    _nameToNumber[name] = number;
                 }
 
-                skyFlatNumber = nameToNumber["F_SKY1"];
-                skyFlat = nameToFlat["F_SKY1"];
+                _skyFlatNumber = _nameToNumber["F_SKY1"];
+                _skyFlat = _nameToFlat["F_SKY1"];
 
-                Console.WriteLine("OK (" + nameToFlat.Count + " flats)");
+                Console.WriteLine("OK (" + _nameToFlat.Count + " flats)");
             }
             catch (Exception e)
             {
@@ -193,24 +193,24 @@ namespace ManagedDoom
         }
 
         public int GetNumber(string name)
-            => nameToNumber.TryGetValue(name, out int number)
+            => _nameToNumber.TryGetValue(name, out int number)
                 ? number
                 : -1;
 
         public IEnumerator<Flat> GetEnumerator()
         {
-            return ((IEnumerable<Flat>)flats).GetEnumerator();
+            return ((IEnumerable<Flat>)_flats).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return flats.GetEnumerator();
+            return _flats.GetEnumerator();
         }
 
         private static int CountLump(Wad wad, string name)
         {
-            var count = 0;
-            foreach (var lump in wad.LumpInfos)
+            int count = 0;
+            foreach (LumpInfo lump in wad.LumpInfos)
             {
                 if (lump.Name == name)
                 {
@@ -220,10 +220,10 @@ namespace ManagedDoom
             return count;
         }
 
-        public int Count => flats.Length;
-        public Flat this[int num] => flats[num];
-        public Flat this[string name] => nameToFlat[name];
-        public int SkyFlatNumber => skyFlatNumber;
-        public Flat SkyFlat => skyFlat;
+        public int Count => _flats.Length;
+        public Flat this[int num] => _flats[num];
+        public Flat this[string name] => _nameToFlat[name];
+        public int SkyFlatNumber => _skyFlatNumber;
+        public Flat SkyFlat => _skyFlat;
     }
 }

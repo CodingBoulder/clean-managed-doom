@@ -21,49 +21,49 @@ namespace ManagedDoom
 {
     public sealed class Button
     {
-        private LineDef line;
-        private ButtonPosition position;
-        private int texture;
-        private int timer;
-        private Mobj soundOrigin;
+        private LineDef? _line;
+        private ButtonPosition _position;
+        private int _texture;
+        private int _timer;
+        private Mobj? _soundOrigin;
 
         public void Clear()
         {
-            line = null;
-            position = 0;
-            texture = 0;
-            timer = 0;
-            soundOrigin = null;
+            _line = null;
+            _position = 0;
+            _texture = 0;
+            _timer = 0;
+            _soundOrigin = null;
         }
 
-        public LineDef Line
+        public LineDef? Line
         {
-            get => line;
-            set => line = value;
+            get => _line;
+            set => _line = value;
         }
 
         public ButtonPosition Position
         {
-            get => position;
-            set => position = value;
+            get => _position;
+            set => _position = value;
         }
 
         public int Texture
         {
-            get => texture;
-            set => texture = value;
+            get => _texture;
+            set => _texture = value;
         }
 
         public int Timer
         {
-            get => timer;
-            set => timer = value;
+            get => _timer;
+            set => _timer = value;
         }
 
-        public Mobj SoundOrigin
+        public Mobj? SoundOrigin
         {
-            get => soundOrigin;
-            set => soundOrigin = value;
+            get => _soundOrigin;
+            set => _soundOrigin = value;
         }
     }
 }

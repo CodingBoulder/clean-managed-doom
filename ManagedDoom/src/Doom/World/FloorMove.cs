@@ -19,121 +19,121 @@ using System;
 
 namespace ManagedDoom
 {
-	public sealed class FloorMove : Thinker
-	{
-		private World world;
+    public sealed class FloorMove : Thinker
+    {
+        private readonly World _world;
 
-		private FloorMoveType type;
-		private bool crush;
-		private Sector sector;
-		private int direction;
-		private SectorSpecial newSpecial;
-		private int texture;
-		private Fixed floorDestHeight;
-		private Fixed speed;
+        private FloorMoveType _type;
+        private bool _crush;
+        private Sector _sector;
+        private int _direction;
+        private SectorSpecial _newSpecial;
+        private int _texture;
+        private Fixed _floorDestHeight;
+        private Fixed _speed;
 
-		public FloorMove(World world)
-		{
-			this.world = world;
-		}
+        public FloorMove(World world)
+        {
+            _world = world;
+        }
 
-		public override void Run()
-		{
-			SectorActionResult result;
+        public override void Run()
+        {
+            SectorActionResult result;
 
-			var sa = world.SectorAction;
+            SectorAction sa = _world.SectorAction;
 
-			result = sa.MovePlane(
-				sector,
-				speed,
-				floorDestHeight,
-				crush,
-				0,
-				direction);
+            result = sa.MovePlane(
+                _sector,
+                _speed,
+                _floorDestHeight,
+                _crush,
+                0,
+                _direction);
 
-			if (((world.LevelTime + sector.Number) & 7) == 0)
-			{
-				world.StartSound(sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
-			}
+            if (((_world.LevelTime + _sector.Number) & 7) == 0)
+            {
+                _world.StartSound(_sector.SoundOrigin, Sfx.STNMOV, SfxType.Misc);
+            }
 
-			if (result == SectorActionResult.PastDestination)
-			{
-				sector.SpecialData = null;
+            if (result == SectorActionResult.PastDestination)
+            {
+                _sector.SpecialData = null;
 
-				if (direction == 1)
-				{
-					switch (type)
-					{
-						case FloorMoveType.DonutRaise:
-							sector.Special = newSpecial;
-							sector.FloorFlat = texture;
-							break;
-					}
-				}
-				else if (direction == -1)
-				{
-					switch (type)
-					{
-						case FloorMoveType.LowerAndChange:
-							sector.Special = newSpecial;
-							sector.FloorFlat = texture;
-							break;
-					}
-				}
+                if (_direction == 1)
+                {
+                    switch (_type)
+                    {
+                        case FloorMoveType.DonutRaise:
+                            _sector.Special = _newSpecial;
+                            _sector.FloorFlat = _texture;
+                            break;
+                    }
+                }
+                else if (_direction == -1)
+                {
+                    switch (_type)
+                    {
+                        case FloorMoveType.LowerAndChange:
+                            _sector.Special = _newSpecial;
+                            _sector.FloorFlat = _texture;
+                            break;
+                    }
+                }
 
-				world.Thinkers.Remove(this);
-				sector.DisableFrameInterpolationForOneFrame();
+                _world.Thinkers.Remove(this);
+                _sector.DisableFrameInterpolationForOneFrame();
 
-				world.StartSound(sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
-			}
-		}
+                _world.StartSound(_sector.SoundOrigin, Sfx.PSTOP, SfxType.Misc);
+            }
+        }
 
-		public FloorMoveType Type
-		{
-			get => type;
-			set => type = value;
-		}
+        public FloorMoveType Type
+        {
+            get => _type;
+            set => _type = value;
+        }
 
-		public bool Crush
-		{
-			get => crush;
-			set => crush = value;
-		}
+        public bool Crush
+        {
+            get => _crush;
+            set => _crush = value;
+        }
 
-		public Sector Sector
-		{
-			get => sector;
-			set => sector = value;
-		}
+        public Sector Sector
+        {
+            get => _sector;
+            set => _sector = value;
+        }
 
-		public int Direction
-		{
-			get => direction;
-			set => direction = value;
-		}
+        public int Direction
+        {
+            get => _direction;
+            set => _direction = value;
+        }
 
-		public SectorSpecial NewSpecial
-		{
-			get => newSpecial;
-			set => newSpecial = value;
-		}
+        public SectorSpecial NewSpecial
+        {
+            get => _newSpecial;
+            set => _newSpecial = value;
+        }
 
-		public int Texture
-		{
-			get => texture;
-			set => texture = value;
-		}
+        public int Texture
+        {
+            get => _texture;
+            set => _texture = value;
+        }
 
-		public Fixed FloorDestHeight
-		{
-			get => floorDestHeight;
-			set => floorDestHeight = value;
-		}
+        public Fixed FloorDestHeight
+        {
+            get => _floorDestHeight;
+            set => _floorDestHeight = value;
+        }
 
-		public Fixed Speed
-		{
-			get => speed;
-			set => speed = value;
-		}
-	}
+        public Fixed Speed
+        {
+            get => _speed;
+            set => _speed = value;
+        }
+    }
 }

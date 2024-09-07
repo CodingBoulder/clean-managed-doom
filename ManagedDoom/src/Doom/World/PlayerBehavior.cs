@@ -22,30 +22,30 @@ namespace ManagedDoom
     public sealed class PlayerBehavior
     {
         public static readonly int[] ForwardMove =
-        {
+        [
             0x19,
             0x32
-        };
+        ];
 
         public static readonly int[] SideMove =
-        {
+        [
             0x18,
             0x28
-        };
+        ];
 
         public static readonly int[] AngleTurn =
-        {
+        [
             640,
             1280,
             320 // For slow turn.
-        };
+        ];
 
         public static readonly int MaxMove = ForwardMove[1];
         public static readonly int SlowTurnTics = 6;
 
 
 
-        private World world;
+        private readonly World world;
 
         public PlayerBehavior(World world)
         {
@@ -78,7 +78,7 @@ namespace ManagedDoom
             }
 
             // Chain saw run forward.
-            var cmd = player.Cmd;
+            TicCmd cmd = player.Cmd;
             if ((player.Mobj.Flags & MobjFlags.JustAttacked) != 0)
             {
                 cmd.AngleTurn = 0;
@@ -123,7 +123,7 @@ namespace ManagedDoom
             {
                 // The actual changing of the weapon is done when the weapon psprite can do it.
                 // Not in the middle of an attack.
-                var newWeapon = (cmd.Buttons & TicCmdButtons.WeaponMask) >> TicCmdButtons.WeaponShift;
+                int newWeapon = (cmd.Buttons & TicCmdButtons.WeaponMask) >> TicCmdButtons.WeaponShift;
 
                 if (newWeapon == (int)WeaponType.Fist &&
                     player.WeaponOwned[(int)WeaponType.Chainsaw] &&
@@ -243,7 +243,7 @@ namespace ManagedDoom
         }
 
 
-        private static readonly Fixed maxBob = new Fixed(0x100000);
+        private static readonly Fixed maxBob = new(0x100000);
 
         private bool onGround;
 
@@ -252,7 +252,7 @@ namespace ManagedDoom
         /// </summary>
         public void MovePlayer(Player player)
         {
-            var cmd = player.Cmd;
+            TicCmd cmd = player.Cmd;
 
             player.Mobj.Angle += new Angle(cmd.AngleTurn << 16);
 
@@ -305,9 +305,9 @@ namespace ManagedDoom
                 return;
             }
 
-            var angle = (Trig.FineAngleCount / 20 * world.LevelTime) & Trig.FineMask;
+            int angle = (Trig.FineAngleCount / 20 * world.LevelTime) & Trig.FineMask;
 
-            var bob = (player.Bob / 2) * Trig.Sin(angle);
+            Fixed bob = (player.Bob / 2) * Trig.Sin(angle);
 
             // Move viewheight.
             if (player.PlayerState == PlayerState.Live)
@@ -365,7 +365,7 @@ namespace ManagedDoom
         /// </summary>
         private void PlayerInSpecialSector(Player player)
         {
-            var sector = player.Mobj.Subsector.Sector;
+            Sector sector = player.Mobj.Subsector.Sector;
 
             // Falling, not all the way down yet?
             if (player.Mobj.Z != sector.FloorHeight)
@@ -373,7 +373,7 @@ namespace ManagedDoom
                 return;
             }
 
-            var ti = world.ThingInteraction;
+            ThingInteraction ti = world.ThingInteraction;
 
             // Has hitten ground.
             switch ((int)sector.Special)
@@ -401,7 +401,7 @@ namespace ManagedDoom
                     break;
 
                 case 16:
-                    // Super hell slime damage.
+                // Super hell slime damage.
                 case 4:
                     // Strobe hurt.
                     if (player.Powers[(int)PowerType.IronFeet] == 0 || (world.Random.Next() < 5))
@@ -438,7 +438,7 @@ namespace ManagedDoom
         }
 
 
-        private static Angle ang5 = new Angle(Angle.Ang90.Data / 18);
+        private static readonly Angle ang5 = new(Angle.Ang90.Data / 18);
 
         /// <summary>
         /// Fall on your face when dying.
@@ -465,11 +465,11 @@ namespace ManagedDoom
 
             if (player.Attacker != null && player.Attacker != player.Mobj)
             {
-                var angle = Geometry.PointToAngle(
+                Angle angle = Geometry.PointToAngle(
                     player.Mobj.X, player.Mobj.Y,
                     player.Attacker.X, player.Attacker.Y);
 
-                var delta = angle - player.Mobj.Angle;
+                Angle delta = angle - player.Mobj.Angle;
 
                 if (delta < ang5 || delta.Data > (-ang5).Data)
                 {
@@ -513,7 +513,7 @@ namespace ManagedDoom
         public void SetupPlayerSprites(Player player)
         {
             // Remove all psprites.
-            for (var i = 0; i < (int)PlayerSprite.Count; i++)
+            for (int i = 0; i < (int)PlayerSprite.Count; i++)
             {
                 player.PlayerSprites[i].State = null;
             }
@@ -538,7 +538,7 @@ namespace ManagedDoom
                 world.StartSound(player.Mobj, Sfx.SAWUP, SfxType.Weapon);
             }
 
-            var newState = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
+            MobjState newState = DoomInfo.WeaponInfos[(int)player.PendingWeapon].UpState;
 
             player.PendingWeapon = WeaponType.NoChange;
             player.PlayerSprites[(int)PlayerSprite.Weapon].Sy = WeaponBehavior.WeaponBottom;
@@ -551,7 +551,7 @@ namespace ManagedDoom
         /// </summary>
         public void SetPlayerSprite(Player player, PlayerSprite position, MobjState state)
         {
-            var psp = player.PlayerSprites[(int)position];
+            PlayerSpriteDef psp = player.PlayerSprites[(int)position];
 
             do
             {
@@ -562,7 +562,7 @@ namespace ManagedDoom
                     break;
                 }
 
-                var stateDef = DoomInfo.States[(int)state];
+                MobjStateDef stateDef = DoomInfo.States[(int)state];
                 psp.State = stateDef;
                 psp.Tics = stateDef.Tics; // Could be 0.
 
@@ -595,11 +595,11 @@ namespace ManagedDoom
         /// </summary>
         private void MovePlayerSprites(Player player)
         {
-            for (var i = 0; i < (int)PlayerSprite.Count; i++)
+            for (int i = 0; i < (int)PlayerSprite.Count; i++)
             {
-                var psp = player.PlayerSprites[i];
+                PlayerSpriteDef psp = player.PlayerSprites[i];
 
-                MobjStateDef stateDef;
+                MobjStateDef? stateDef;
 
                 // A null state means not active.
                 if ((stateDef = psp.State) != null)
@@ -645,7 +645,7 @@ namespace ManagedDoom
         public void PlayerScream(Mobj player)
         {
             // Default death sound.
-            var sound = Sfx.PLDETH;
+            Sfx sound = Sfx.PLDETH;
 
             if ((world.Options.GameMode == GameMode.Commercial) && (player.Health < -50))
             {
