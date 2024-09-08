@@ -15,11 +15,12 @@
 
 
 
-using System;
-using System.Numerics;
-using System.Runtime.ExceptionServices;
 using DrippyAL;
 using ManagedDoom.Audio;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.ExceptionServices;
 
 namespace ManagedDoom.Silk
 {
@@ -36,15 +37,15 @@ namespace ManagedDoom.Silk
 
         private readonly Config _config;
 
-        private AudioClip?[]? _buffers;
-        private readonly float[] _amplitudes;
+        private readonly List<AudioClip> _buffers = [];
+        private readonly List<float> _amplitudes = [];
 
         private readonly DoomRandom _random;
 
-        private AudioChannel?[]? _channels;
-        private readonly ChannelInfo[] _infos;
+        private readonly List<AudioChannel> _channels = [];
+        private readonly List<ChannelInfo> _infos = [];
 
-        private AudioChannel? _uiChannel;
+        private readonly AudioChannel _uiChannel;
         private Sfx _uiReserved;
 
         private Mobj? _listener;
@@ -63,9 +64,6 @@ namespace ManagedDoom.Silk
 
                 config.audio_soundvolume = Math.Clamp(config.audio_soundvolume, 0, MaxVolume);
 
-                _buffers = new AudioClip[DoomInfo.SfxNames.Length];
-                _amplitudes = new float[DoomInfo.SfxNames.Length];
-
                 if (config.audio_randompitch)
                 {
                     _random = new DoomRandom();
@@ -83,17 +81,15 @@ namespace ManagedDoom.Silk
                     Span<byte> samples = GetSamples(content.Wad, name, out int sampleRate, out int sampleCount);
                     if (!samples.IsEmpty)
                     {
-                        _buffers[i] = new AudioClip(device, sampleRate, 1, samples);
-                        _amplitudes[i] = GetAmplitude(samples, sampleRate, sampleCount);
+                        _buffers.Add(new AudioClip(device, sampleRate, 1, samples));
+                        _amplitudes.Add(GetAmplitude(samples, sampleRate, sampleCount));
                     }
                 }
 
-                _channels = new AudioChannel[_channelCount];
-                _infos = new ChannelInfo[_channelCount];
-                for (int i = 0; i < _channels.Length; i++)
+                for (int i = 0; i < _channelCount; i++)
                 {
-                    _channels[i] = new AudioChannel(device);
-                    _infos[i] = new ChannelInfo();
+                    _channels.Add(new AudioChannel(device));
+                    _infos.Add(new ChannelInfo());
                 }
 
                 _uiChannel = new AudioChannel(device);
@@ -215,7 +211,7 @@ namespace ManagedDoom.Silk
                 return;
             }
 
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 ChannelInfo info = _infos[i];
                 AudioChannel? channel = _channels[i];
@@ -312,7 +308,7 @@ namespace ManagedDoom.Silk
                 priority = _amplitudes[(int)sfx] * GetDistanceDecay(dist) * volume;
             }
 
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 ChannelInfo info = _infos[i];
                 if (info.Source == mobj && info.Type == type)
@@ -324,7 +320,7 @@ namespace ManagedDoom.Silk
                 }
             }
 
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 ChannelInfo info = _infos[i];
                 if (info.Reserved == Sfx.NONE && info.Playing == Sfx.NONE)
@@ -340,7 +336,7 @@ namespace ManagedDoom.Silk
 
             float minPriority = float.MaxValue;
             int minChannel = -1;
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 ChannelInfo info = _infos[i];
                 if (info.Priority < minPriority)
@@ -362,7 +358,7 @@ namespace ManagedDoom.Silk
 
         public void StopSound(Mobj mobj)
         {
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 ChannelInfo info = _infos[i];
                 if (info.Source == mobj)
@@ -379,7 +375,7 @@ namespace ManagedDoom.Silk
         {
             _random?.Clear();
 
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 _channels[i].Stop();
                 _infos[i].Clear();
@@ -390,7 +386,7 @@ namespace ManagedDoom.Silk
 
         public void Pause()
         {
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 AudioChannel? channel = _channels[i];
 
@@ -404,7 +400,7 @@ namespace ManagedDoom.Silk
 
         public void Resume()
         {
-            for (int i = 0; i < _infos.Length; i++)
+            for (int i = 0; i < _infos.Count; i++)
             {
                 AudioChannel? channel = _channels[i];
 
@@ -494,38 +490,22 @@ namespace ManagedDoom.Silk
         {
             Console.WriteLine("Shutdown sound.");
 
-            if (_channels != null)
+            foreach (AudioChannel channel in _channels)
             {
-                for (int i = 0; i < _channels.Length; i++)
-                {
-                    if (_channels[i] != null)
-                    {
-                        _channels[i].Stop();
-                        _channels[i].Dispose();
-                        _channels[i] = null;
-                    }
-                }
-                _channels = null;
+                channel.Stop();
+                channel.Dispose();
             }
 
-            if (_buffers != null)
+            _channels.Clear();
+
+            foreach (AudioClip buffer in _buffers)
             {
-                for (int i = 0; i < _buffers.Length; i++)
-                {
-                    if (_buffers[i] != null)
-                    {
-                        _buffers[i].Dispose();
-                        _buffers[i] = null;
-                    }
-                }
-                _buffers = null;
+                buffer.Dispose();
             }
 
-            if (_uiChannel != null)
-            {
-                _uiChannel.Dispose();
-                _uiChannel = null;
-            }
+            _buffers.Clear();
+
+            _uiChannel?.Dispose();
         }
 
         public int MaxVolume

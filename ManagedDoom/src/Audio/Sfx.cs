@@ -21,8 +21,8 @@ namespace ManagedDoom
 {
     public enum Sfx
     {
-        NONE,
-        PISTOL,
+        NONE = int.MinValue,
+        PISTOL = 0,
         SHOTGN,
         SGCOCK,
         DSHTGN,

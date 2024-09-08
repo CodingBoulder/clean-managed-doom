@@ -60,7 +60,7 @@ namespace ManagedDoom.Video
 
         public Renderer(Config config, GameContent content)
         {
-            this._config = config;
+            _config = config;
 
             _palette = content.Palette;
 
