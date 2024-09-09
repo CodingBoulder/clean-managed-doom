@@ -112,7 +112,7 @@ namespace ManagedDoom
         {
             for (int i = _lumpInfos.Count - 1; i >= 0; i--)
             {
-                if (_lumpInfos[i].Name == name)
+                if (string.Equals(_lumpInfos[i].Name, name, StringComparison.OrdinalIgnoreCase))
                 {
                     return i;
                 }

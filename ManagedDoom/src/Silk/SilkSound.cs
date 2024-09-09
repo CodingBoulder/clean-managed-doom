@@ -19,6 +19,7 @@ using DrippyAL;
 using ManagedDoom.Audio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.ExceptionServices;
 
@@ -37,13 +38,12 @@ namespace ManagedDoom.Silk
 
         private readonly Config _config;
 
-        private readonly List<AudioClip> _buffers = [];
+        private readonly List<(string Name, AudioClip Clip)> _audioClips = [];
         private readonly List<float> _amplitudes = [];
 
         private readonly DoomRandom _random;
 
-        private readonly List<AudioChannel> _channels = [];
-        private readonly List<ChannelInfo> _infos = [];
+        private readonly List<(AudioChannel Audio, ChannelInfo Info)> _channels;
 
         private readonly AudioChannel _uiChannel;
         private Sfx _uiReserved;
@@ -51,8 +51,6 @@ namespace ManagedDoom.Silk
         private Mobj? _listener;
 
         private float _masterVolumeDecay;
-
-        private DateTime _lastUpdate;
 
         public SilkSound(Config config, GameContent content, AudioDevice device)
         {
@@ -69,35 +67,37 @@ namespace ManagedDoom.Silk
                     _random = new DoomRandom();
                 }
 
-                for (int i = 0; i < DoomInfo.SfxNames.Length; i++)
+                foreach (string sfxName in DoomInfo.SfxNames.Select(ds => $"DS{ds.ToString()}"))
                 {
-                    string name = "DS" + DoomInfo.SfxNames[i].ToString().ToUpper();
-                    int lump = content.Wad.GetLumpNumber(name);
+                    int lump = content.Wad?.GetLumpNumber(sfxName) ?? -1;
+
                     if (lump == -1)
                     {
                         continue;
                     }
 
-                    Span<byte> samples = GetSamples(content.Wad, name, out int sampleRate, out int sampleCount);
+                    Span<byte> samples = GetSamples(
+                        content.Wad!,
+                        sfxName,
+                        out int sampleRate,
+                        out int sampleCount);
+
                     if (!samples.IsEmpty)
                     {
-                        _buffers.Add(new AudioClip(device, sampleRate, 1, samples));
+                        _audioClips.Add((sfxName, new AudioClip(device, sampleRate, 1, samples)));
                         _amplitudes.Add(GetAmplitude(samples, sampleRate, sampleCount));
                     }
                 }
 
-                for (int i = 0; i < _channelCount; i++)
-                {
-                    _channels.Add(new AudioChannel(device));
-                    _infos.Add(new ChannelInfo());
-                }
+                _channels = Enumerable
+                    .Range(0, _channelCount)
+                    .Select(_ => (new AudioChannel(device), new ChannelInfo()))
+                    .ToList();
 
                 _uiChannel = new AudioChannel(device);
                 _uiReserved = Sfx.NONE;
 
                 _masterVolumeDecay = (float)config.audio_soundvolume / MaxVolume;
-
-                _lastUpdate = DateTime.MinValue;
 
                 Console.WriteLine("OK");
             }
@@ -117,6 +117,7 @@ namespace ManagedDoom.Silk
             {
                 sampleRate = -1;
                 sampleCount = -1;
+
                 return null;
             }
 
@@ -124,20 +125,16 @@ namespace ManagedDoom.Silk
             sampleCount = BitConverter.ToInt32(data, 4);
 
             int offset = 8;
+
             if (ContainsDmxPadding(data))
             {
                 offset += 16;
                 sampleCount -= 32;
             }
 
-            if (sampleCount > 0)
-            {
-                return data.AsSpan(offset, sampleCount);
-            }
-            else
-            {
-                return [];
-            }
+            return sampleCount > 0
+                ? data.AsSpan(offset, sampleCount)
+                : [];
         }
 
         // Check if the data contains pad bytes.
@@ -147,6 +144,7 @@ namespace ManagedDoom.Silk
         private static bool ContainsDmxPadding(byte[] data)
         {
             int sampleCount = BitConverter.ToInt32(data, 4);
+
             if (sampleCount < 32)
             {
                 return false;
@@ -154,6 +152,7 @@ namespace ManagedDoom.Silk
             else
             {
                 byte first = data[8];
+
                 for (int i = 1; i < 16; i++)
                 {
                     if (data[8 + i] != first)
@@ -163,6 +162,7 @@ namespace ManagedDoom.Silk
                 }
 
                 byte last = data[8 + sampleCount - 1];
+
                 for (int i = 1; i < 16; i++)
                 {
                     if (data[8 + sampleCount - i - 1] != last)
@@ -178,16 +178,20 @@ namespace ManagedDoom.Silk
         private static float GetAmplitude(Span<byte> samples, int sampleRate, int sampleCount)
         {
             int max = 0;
+
             if (sampleCount > 0)
             {
                 int count = Math.Min(sampleRate / 5, sampleCount);
+
                 for (int t = 0; t < count; t++)
                 {
                     int a = samples[t] - 128;
+
                     if (a < 0)
                     {
                         a = -a;
                     }
+
                     if (a > max)
                     {
                         max = a;
@@ -205,20 +209,12 @@ namespace ManagedDoom.Silk
         public void Update()
         {
             DateTime now = DateTime.Now;
-            if ((now - _lastUpdate).TotalSeconds < 0.01)
-            {
-                // Don't update so frequently (for timedemo).
-                return;
-            }
 
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((AudioChannel audio, ChannelInfo info) in _channels)
             {
-                ChannelInfo info = _infos[i];
-                AudioChannel? channel = _channels[i];
-
                 if (info.Playing != Sfx.NONE)
                 {
-                    if (channel.State != PlaybackState.Stopped)
+                    if (audio.State != PlaybackState.Stopped)
                     {
                         if (info.Type == SfxType.Diffuse)
                         {
@@ -228,7 +224,7 @@ namespace ManagedDoom.Silk
                         {
                             info.Priority *= _fastDecay;
                         }
-                        SetParam(channel, info);
+                        SetParam(audio, info);
                     }
                     else
                     {
@@ -244,13 +240,13 @@ namespace ManagedDoom.Silk
                 {
                     if (info.Playing != Sfx.NONE)
                     {
-                        channel.Stop();
+                        audio.Stop();
                     }
 
-                    channel.AudioClip = _buffers[(int)info.Reserved];
-                    SetParam(channel, info);
-                    channel.Pitch = GetPitch(info.Type, info.Reserved);
-                    channel.Play();
+                    audio.AudioClip = _audioClips[(int)info.Reserved].Clip;
+                    SetParam(audio, info);
+                    audio.Pitch = GetPitch(info.Type, info.Reserved);
+                    audio.Play();
                     info.Playing = info.Reserved;
                     info.Reserved = Sfx.NONE;
                 }
@@ -264,17 +260,15 @@ namespace ManagedDoom.Silk
                 }
                 _uiChannel.Position = new Vector3(0, 0, -1);
                 _uiChannel.Volume = _masterVolumeDecay;
-                _uiChannel.AudioClip = _buffers[(int)_uiReserved];
+                _uiChannel.AudioClip = _audioClips[(int)_uiReserved].Clip;
                 _uiChannel.Play();
                 _uiReserved = Sfx.NONE;
             }
-
-            _lastUpdate = now;
         }
 
         public void StartSound(Sfx sfx)
         {
-            if (_buffers[(int)sfx] == null)
+            if (sfx == Sfx.NONE)
             {
                 return;
             }
@@ -282,14 +276,9 @@ namespace ManagedDoom.Silk
             _uiReserved = sfx;
         }
 
-        public void StartSound(Mobj mobj, Sfx sfx, SfxType type)
+        public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume = 100)
         {
-            StartSound(mobj, sfx, type, 100);
-        }
-
-        public void StartSound(Mobj mobj, Sfx sfx, SfxType type, int volume)
-        {
-            if (_buffers[(int)sfx] == null)
+            if (sfx == Sfx.NONE)
             {
                 return;
             }
@@ -299,6 +288,7 @@ namespace ManagedDoom.Silk
             float dist = MathF.Sqrt(x * x + y * y);
 
             float priority;
+
             if (type == SfxType.Diffuse)
             {
                 priority = volume;
@@ -308,21 +298,20 @@ namespace ManagedDoom.Silk
                 priority = _amplitudes[(int)sfx] * GetDistanceDecay(dist) * volume;
             }
 
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((_, ChannelInfo info) in _channels)
             {
-                ChannelInfo info = _infos[i];
                 if (info.Source == mobj && info.Type == type)
                 {
                     info.Reserved = sfx;
                     info.Priority = priority;
                     info.Volume = volume;
+
                     return;
                 }
             }
 
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((_, ChannelInfo info) in _channels)
             {
-                ChannelInfo info = _infos[i];
                 if (info.Reserved == Sfx.NONE && info.Playing == Sfx.NONE)
                 {
                     info.Reserved = sfx;
@@ -330,37 +319,29 @@ namespace ManagedDoom.Silk
                     info.Source = mobj;
                     info.Type = type;
                     info.Volume = volume;
+
                     return;
                 }
             }
 
-            float minPriority = float.MaxValue;
-            int minChannel = -1;
-            for (int i = 0; i < _infos.Count; i++)
-            {
-                ChannelInfo info = _infos[i];
-                if (info.Priority < minPriority)
-                {
-                    minPriority = info.Priority;
-                    minChannel = i;
-                }
-            }
-            if (priority >= minPriority)
-            {
-                ChannelInfo info = _infos[minChannel];
-                info.Reserved = sfx;
-                info.Priority = priority;
-                info.Source = mobj;
-                info.Type = type;
-                info.Volume = volume;
+            (_, ChannelInfo minInfo) = _channels
+                .OrderBy(c => c.Info.Priority)
+                .First();
+
+            if (priority >= minInfo.Priority)
+             {
+                minInfo.Reserved = sfx;
+                minInfo.Priority = priority;
+                minInfo.Source = mobj;
+                minInfo.Type = type;
+                minInfo.Volume = volume;
             }
         }
 
         public void StopSound(Mobj mobj)
         {
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((_, ChannelInfo info) in _channels)
             {
-                ChannelInfo info = _infos[i];
                 if (info.Source == mobj)
                 {
                     info.LastX = info.Source.X;
@@ -375,10 +356,10 @@ namespace ManagedDoom.Silk
         {
             _random?.Clear();
 
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((AudioChannel audio, ChannelInfo info) in _channels)
             {
-                _channels[i].Stop();
-                _infos[i].Clear();
+                audio.Stop();
+                info.Clear();
             }
 
             _listener = null;
@@ -386,27 +367,23 @@ namespace ManagedDoom.Silk
 
         public void Pause()
         {
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((AudioChannel audio, _) in _channels)
             {
-                AudioChannel? channel = _channels[i];
-
-                if (channel.State == PlaybackState.Playing &&
-                    channel.AudioClip.Duration - channel.PlayingOffset > TimeSpan.FromMilliseconds(200))
+                if (audio.State == PlaybackState.Playing
+                    && audio.AudioClip.Duration - audio.PlayingOffset > TimeSpan.FromMilliseconds(200))
                 {
-                    _channels[i].Pause();
+                    audio.Pause();
                 }
             }
         }
 
         public void Resume()
         {
-            for (int i = 0; i < _infos.Count; i++)
+            foreach ((AudioChannel audio, _) in _channels)
             {
-                AudioChannel? channel = _channels[i];
-
-                if (channel.State == PlaybackState.Paused)
+                if (audio.State == PlaybackState.Paused)
                 {
-                    channel.Play();
+                    audio.Play();
                 }
             }
         }
@@ -422,7 +399,8 @@ namespace ManagedDoom.Silk
             {
                 Fixed sourceX;
                 Fixed sourceY;
-                if (info.Source == null)
+
+                if (info.Source is null)
                 {
                     sourceX = info.LastX;
                     sourceY = info.LastY;
@@ -490,31 +468,26 @@ namespace ManagedDoom.Silk
         {
             Console.WriteLine("Shutdown sound.");
 
-            foreach (AudioChannel channel in _channels)
+            foreach ((AudioChannel audio, _) in _channels)
             {
-                channel.Stop();
-                channel.Dispose();
+                audio.Stop();
+                audio.Dispose();
             }
 
             _channels.Clear();
 
-            foreach (AudioClip buffer in _buffers)
+            foreach ((_, AudioClip clip) in _audioClips)
             {
-                buffer.Dispose();
+                clip.Dispose();
             }
 
-            _buffers.Clear();
+            _audioClips.Clear();
 
             _uiChannel?.Dispose();
         }
 
-        public int MaxVolume
-        {
-            get
-            {
-                return 15;
-            }
-        }
+
+        public int MaxVolume => 15;
 
         public int Volume
         {
@@ -529,8 +502,6 @@ namespace ManagedDoom.Silk
                 _masterVolumeDecay = (float)_config.audio_soundvolume / MaxVolume;
             }
         }
-
-
 
         private class ChannelInfo
         {
