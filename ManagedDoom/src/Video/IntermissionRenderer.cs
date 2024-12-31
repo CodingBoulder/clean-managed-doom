@@ -23,37 +23,37 @@ namespace ManagedDoom.Video
     public sealed class IntermissionRenderer
     {
         // GLOBAL LOCATIONS
-        private static readonly int titleY = 2;
-        private static readonly int spacingY = 33;
+        private static readonly int _titleY = 2;
+        private static readonly int _spacingY = 33;
 
         // SINGPLE-PLAYER STUFF
-        private static readonly int spStatsX = 50;
-        private static readonly int spStatsY = 50;
-        private static readonly int spTimeX = 16;
-        private static readonly int spTimeY = 200 - 32;
+        private static readonly int _spStatsX = 50;
+        private static readonly int _spStatsY = 50;
+        private static readonly int _spTimeX = 16;
+        private static readonly int _spTimeY = 200 - 32;
 
         // NET GAME STUFF
-        private static readonly int ngStatsY = 50;
-        private static readonly int ngSpacingX = 64;
+        private static readonly int _ngStatsY = 50;
+        private static readonly int _ngSpacingX = 64;
 
         // DEATHMATCH STUFF
-        private static readonly int dmMatrixX = 42;
-        private static readonly int dmMatrixY = 68;
-        private static readonly int dmSpacingX = 40;
-        private static readonly int dmTotalsX = 269;
-        private static readonly int dmKillersX = 10;
-        private static readonly int dmKillersY = 100;
-        private static readonly int dmVictimsX = 5;
-        private static readonly int dmVictimsY = 50;
+        private static readonly int _dmMatrixX = 42;
+        private static readonly int _dmMatrixY = 68;
+        private static readonly int _dmSpacingX = 40;
+        private static readonly int _dmTotalsX = 269;
+        private static readonly int _dmKillersX = 10;
+        private static readonly int _dmKillersY = 100;
+        private static readonly int _dmVictimsX = 5;
+        private static readonly int _dmVictimsY = 50;
 
-        private static readonly string[] mapPictures =
+        private static readonly string[] _mapPictures =
         [
             "WIMAP0",
             "WIMAP1",
             "WIMAP2"
         ];
 
-        private static readonly string[] playerBoxes =
+        private static readonly string[] _playerBoxes =
         [
             "STPB0",
             "STPB1",
@@ -61,84 +61,84 @@ namespace ManagedDoom.Video
             "STPB3"
         ];
 
-        private static readonly string[] youAreHere =
+        private static readonly string[] _youAreHere =
         [
             "WIURH0",
             "WIURH1"
         ];
 
-        private static readonly string[][] doomLevels;
-        private static readonly string[] doom2Levels;
+        private static readonly string[][] _doomLevels;
+        private static readonly string[] _doom2Levels;
 
         static IntermissionRenderer()
         {
-            doomLevels = new string[4][];
+            _doomLevels = new string[4][];
             for (int e = 0; e < 4; e++)
             {
-                doomLevels[e] = new string[9];
+                _doomLevels[e] = new string[9];
                 for (int m = 0; m < 9; m++)
                 {
-                    doomLevels[e][m] = "WILV" + e + m;
+                    _doomLevels[e][m] = "WILV" + e + m;
                 }
             }
 
-            doom2Levels = new string[32];
+            _doom2Levels = new string[32];
             for (int m = 0; m < 32; m++)
             {
-                doom2Levels[m] = "CWILV" + m.ToString("00");
+                _doom2Levels[m] = "CWILV" + m.ToString("00");
             }
         }
 
 
-        private readonly DrawScreen screen;
+        private readonly DrawScreen _screen;
 
-        private readonly PatchCache cache;
+        private readonly PatchCache _cache;
 
-        private readonly Patch minus;
-        private readonly Patch[] numbers;
-        private readonly Patch percent;
-        private readonly Patch colon;
+        private readonly Patch _minus;
+        private readonly Patch[] _numbers;
+        private readonly Patch _percent;
+        private readonly Patch _colon;
 
-        private readonly int scale;
+        private readonly int _scale;
 
         public IntermissionRenderer(Wad wad, DrawScreen screen)
         {
-            this.screen = screen;
+            this._screen = screen;
 
-            cache = new PatchCache(wad);
+            _cache = new PatchCache(wad);
 
-            minus = Patch.FromWad(wad, "WIMINUS");
-            numbers = new Patch[10];
+            _minus = Patch.FromWad(wad, "WIMINUS");
+            _numbers = new Patch[10];
             for (int i = 0; i < 10; i++)
             {
-                numbers[i] = Patch.FromWad(wad, "WINUM" + i);
+                _numbers[i] = Patch.FromWad(wad, "WINUM" + i);
             }
-            percent = Patch.FromWad(wad, "WIPCNT");
-            colon = Patch.FromWad(wad, "WICOLON");
+            _percent = Patch.FromWad(wad, "WIPCNT");
+            _colon = Patch.FromWad(wad, "WICOLON");
 
-            scale = screen.Width / 320;
+            _scale = screen.Width / 320;
         }
 
 
         private void DrawPatch(Patch patch, int x, int y)
         {
-            screen.DrawPatch(patch, scale * x, scale * y, scale);
+            _screen.DrawPatch(patch, _scale * x, _scale * y, _scale);
         }
 
         private void DrawPatch(string name, int x, int y)
         {
-            int scale = screen.Width / 320;
-            screen.DrawPatch(cache[name], scale * x, scale * y, scale);
+            int scale = _screen.Width / 320;
+            _screen.DrawPatch(_cache[name], scale * x, scale * y, scale);
         }
 
         private int GetWidth(string name)
         {
-            return cache.GetWidth(name);
+            return _cache.GetWidth(name);
         }
 
         private int GetHeight(string name)
         {
-            return cache.GetHeight(name);
+            return _cache.GetHeight(name);
         }
 
 
@@ -181,9 +181,9 @@ namespace ManagedDoom.Video
             else
             {
                 int e = im.Options.Episode - 1;
-                if (e < mapPictures.Length)
+                if (e < _mapPictures.Length)
                 {
-                    DrawPatch(mapPictures[e], 0, 0);
+                    DrawPatch(_mapPictures[e], 0, 0);
                 }
                 else
                 {
@@ -203,46 +203,46 @@ namespace ManagedDoom.Video
             DrawFinishedLevelName(im);
 
             // Line height.
-            int lineHeight = (3 * numbers[0].Height) / 2;
+            int lineHeight = (3 * _numbers[0].Height) / 2;
 
             DrawPatch(
                 "WIOSTK", // KILLS
-                spStatsX,
-                spStatsY);
+                _spStatsX,
+                _spStatsY);
 
             DrawPercent(
-                320 - spStatsX,
-                spStatsY,
+                320 - _spStatsX,
+                _spStatsY,
                 im.KillCount[0]);
 
             DrawPatch(
                 "WIOSTI", // ITEMS
-                spStatsX,
-                spStatsY + lineHeight);
+                _spStatsX,
+                _spStatsY + lineHeight);
 
             DrawPercent(
-                320 - spStatsX,
-                spStatsY + lineHeight,
+                320 - _spStatsX,
+                _spStatsY + lineHeight,
                 im.ItemCount[0]);
 
             DrawPatch(
                 "WISCRT2", // SECRET
-                spStatsX,
-                spStatsY + 2 * lineHeight);
+                _spStatsX,
+                _spStatsY + 2 * lineHeight);
 
             DrawPercent(
-                320 - spStatsX,
-                spStatsY + 2 * lineHeight,
+                320 - _spStatsX,
+                _spStatsY + 2 * lineHeight,
                 im.SecretCount[0]);
 
             DrawPatch(
                 "WITIME", // TIME
-                spTimeX,
-                spTimeY);
+                _spTimeX,
+                _spTimeY);
 
             DrawTime(
-                320 / 2 - spTimeX,
-                spTimeY,
+                320 / 2 - _spTimeX,
+                _spTimeY,
                 im.TimeCount);
 
             if (im.Info.Episode < 3)
@@ -250,12 +250,12 @@ namespace ManagedDoom.Video
 
                 DrawPatch(
                     "WIPAR", // PAR
-                    320 / 2 + spTimeX,
-                    spTimeY);
+                    320 / 2 + _spTimeX,
+                    _spTimeY);
 
                 DrawTime(
-                    320 - spTimeX,
-                    spTimeY,
+                    320 - _spTimeX,
+                    _spTimeY,
                     im.ParCount);
             }
         }
@@ -279,29 +279,29 @@ namespace ManagedDoom.Video
             // Draw stat titles (top line).
             DrawPatch(
                 "WIOSTK", // KILLS
-                ngStatsX + ngSpacingX - GetWidth("WIOSTK"),
-                ngStatsY);
+                ngStatsX + _ngSpacingX - GetWidth("WIOSTK"),
+                _ngStatsY);
 
             DrawPatch(
                 "WIOSTI", // ITEMS
-                ngStatsX + 2 * ngSpacingX - GetWidth("WIOSTI"),
-                ngStatsY);
+                ngStatsX + 2 * _ngSpacingX - GetWidth("WIOSTI"),
+                _ngStatsY);
 
             DrawPatch(
                 "WIOSTS", // SCRT
-                ngStatsX + 3 * ngSpacingX - GetWidth("WIOSTS"),
-                ngStatsY);
+                ngStatsX + 3 * _ngSpacingX - GetWidth("WIOSTS"),
+                _ngStatsY);
 
             if (im.DoFrags)
             {
                 DrawPatch(
                     "WIFRGS", // FRAGS
-                    ngStatsX + 4 * ngSpacingX - GetWidth("WIFRGS"),
-                    ngStatsY);
+                    ngStatsX + 4 * _ngSpacingX - GetWidth("WIFRGS"),
+                    _ngStatsY);
             }
 
             // Draw stats.
-            int y = ngStatsY + GetHeight("WIOSTK");
+            int y = _ngStatsY + GetHeight("WIOSTK");
 
             for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
@@ -313,35 +313,35 @@ namespace ManagedDoom.Video
                 int x = ngStatsX;
 
                 DrawPatch(
-                    playerBoxes[i],
-                    x - GetWidth(playerBoxes[i]),
+                    _playerBoxes[i],
+                    x - GetWidth(_playerBoxes[i]),
                     y);
 
                 if (i == im.Options.ConsolePlayer)
                 {
                     DrawPatch(
                         "STFST01", // Player face
-                        x - GetWidth(playerBoxes[i]),
+                        x - GetWidth(_playerBoxes[i]),
                         y);
                 }
 
-                x += ngSpacingX;
+                x += _ngSpacingX;
 
-                DrawPercent(x - percent.Width, y + 10, im.KillCount[i]);
-                x += ngSpacingX;
+                DrawPercent(x - _percent.Width, y + 10, im.KillCount[i]);
+                x += _ngSpacingX;
 
-                DrawPercent(x - percent.Width, y + 10, im.ItemCount[i]);
-                x += ngSpacingX;
+                DrawPercent(x - _percent.Width, y + 10, im.ItemCount[i]);
+                x += _ngSpacingX;
 
-                DrawPercent(x - percent.Width, y + 10, im.SecretCount[i]);
-                x += ngSpacingX;
+                DrawPercent(x - _percent.Width, y + 10, im.SecretCount[i]);
+                x += _ngSpacingX;
 
                 if (im.DoFrags)
                 {
                     DrawNumber(x, y + 10, im.FragCount[i], -1);
                 }
 
-                y += spacingY;
+                y += _spacingY;
             }
         }
 
@@ -358,47 +358,47 @@ namespace ManagedDoom.Video
             // Draw stat titles (top line).
             DrawPatch(
                 "WIMSTT", // TOTAL
-                dmTotalsX - GetWidth("WIMSTT") / 2,
-                dmMatrixY - spacingY + 10);
+                _dmTotalsX - GetWidth("WIMSTT") / 2,
+                _dmMatrixY - _spacingY + 10);
 
             DrawPatch(
                 "WIKILRS", // KILLERS
-                dmKillersX,
-                dmKillersY);
+                _dmKillersX,
+                _dmKillersY);
 
             DrawPatch(
                 "WIVCTMS", // VICTIMS
-                dmVictimsX,
-                dmVictimsY);
+                _dmVictimsX,
+                _dmVictimsY);
 
             // Draw player boxes.
-            int x = dmMatrixX + dmSpacingX;
-            int y = dmMatrixY;
+            int x = _dmMatrixX + _dmSpacingX;
+            int y = _dmMatrixY;
 
             for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
                 if (im.Options.Players[i].InGame)
                 {
                     DrawPatch(
-                        playerBoxes[i],
-                        x - GetWidth(playerBoxes[i]) / 2,
-                        dmMatrixY - spacingY);
+                        _playerBoxes[i],
+                        x - GetWidth(_playerBoxes[i]) / 2,
+                        _dmMatrixY - _spacingY);
 
                     DrawPatch(
-                        playerBoxes[i],
-                        dmMatrixX - GetWidth(playerBoxes[i]) / 2,
+                        _playerBoxes[i],
+                        _dmMatrixX - GetWidth(_playerBoxes[i]) / 2,
                         y);
 
                     if (i == im.Options.ConsolePlayer)
                     {
                         DrawPatch(
                             "STFDEAD0", // Player face (dead)
-                            x - GetWidth(playerBoxes[i]) / 2,
-                            dmMatrixY - spacingY);
+                            x - GetWidth(_playerBoxes[i]) / 2,
+                            _dmMatrixY - _spacingY);
 
                         DrawPatch(
                             "STFST01", // Player face
-                            dmMatrixX - GetWidth(playerBoxes[i]) / 2,
+                            _dmMatrixX - GetWidth(_playerBoxes[i]) / 2,
                             y);
                     }
                 }
@@ -410,17 +410,17 @@ namespace ManagedDoom.Video
                     //   y, FB, bp[i]);
                 }
 
-                x += dmSpacingX;
-                y += spacingY;
+                x += _dmSpacingX;
+                y += _spacingY;
             }
 
             // Draw stats.
-            y = dmMatrixY + 10;
-            int w = numbers[0].Width;
+            y = _dmMatrixY + 10;
+            int w = _numbers[0].Width;
 
             for (int i = 0; i < Player.MaxPlayerCount; i++)
             {
-                x = dmMatrixX + dmSpacingX;
+                x = _dmMatrixX + _dmSpacingX;
 
                 if (im.Options.Players[i].InGame)
                 {
@@ -431,13 +431,13 @@ namespace ManagedDoom.Video
                             DrawNumber(x + w, y, im.DeathmatchFrags[i][j], 2);
                         }
 
-                        x += dmSpacingX;
+                        x += _dmSpacingX;
                     }
 
-                    DrawNumber(dmTotalsX + w, y, im.DeathmatchTotals[i], 2);
+                    DrawNumber(_dmTotalsX + w, y, im.DeathmatchTotals[i], 2);
                 }
 
-                y += spacingY;
+                y += _spacingY;
             }
         }
 
@@ -485,7 +485,7 @@ namespace ManagedDoom.Video
                 {
                     int x = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].X;
                     int y = WorldMap.Locations[im.Info.Episode][im.Info.NextLevel].Y;
-                    DrawSuitablePatch(youAreHere, x, y);
+                    DrawSuitablePatch(_youAreHere, x, y);
                 }
             }
 
@@ -499,17 +499,17 @@ namespace ManagedDoom.Video
         private void DrawFinishedLevelName(Intermission intermission)
         {
             IntermissionInfo wbs = intermission.Info;
-            int y = titleY;
+            int y = _titleY;
 
             string levelName;
             if (intermission.Options.GameMode != GameMode.Commercial)
             {
                 int e = intermission.Options.Episode - 1;
-                levelName = doomLevels[e][wbs.LastLevel];
+                levelName = _doomLevels[e][wbs.LastLevel];
             }
             else
             {
-                levelName = doom2Levels[wbs.LastLevel];
+                levelName = _doom2Levels[wbs.LastLevel];
             }
 
             // Draw level name. 
@@ -530,17 +530,17 @@ namespace ManagedDoom.Video
         private void DrawEnteringLevelName(Intermission im)
         {
             IntermissionInfo wbs = im.Info;
-            int y = titleY;
+            int y = _titleY;
 
             string levelName;
             if (im.Options.GameMode != GameMode.Commercial)
             {
                 int e = im.Options.Episode - 1;
-                levelName = doomLevels[e][wbs.NextLevel];
+                levelName = _doomLevels[e][wbs.NextLevel];
             }
             else
             {
-                levelName = doom2Levels[wbs.NextLevel];
+                levelName = _doom2Levels[wbs.NextLevel];
             }
 
             // Draw "Entering".
@@ -593,20 +593,20 @@ namespace ManagedDoom.Video
                 return 0;
             }
 
-            int fontWidth = numbers[0].Width;
+            int fontWidth = _numbers[0].Width;
 
             // Draw the new number.
             while (digits-- != 0)
             {
                 x -= fontWidth;
-                DrawPatch(numbers[n % 10], x, y);
+                DrawPatch(_numbers[n % 10], x, y);
                 n /= 10;
             }
 
             // Draw a minus sign if necessary.
             if (neg)
             {
-                DrawPatch(minus, x -= 8, y);
+                DrawPatch(_minus, x -= 8, y);
             }
 
             return x;
@@ -619,7 +619,7 @@ namespace ManagedDoom.Video
                 return;
             }
 
-            DrawPatch(percent, x, y);
+            DrawPatch(_percent, x, y);
             DrawNumber(x, y, p, -1);
         }
 
@@ -637,13 +637,13 @@ namespace ManagedDoom.Video
                 do
                 {
                     int n = (t / div) % 60;
-                    x = DrawNumber(x, y, n, 2) - colon.Width;
+                    x = DrawNumber(x, y, n, 2) - _colon.Width;
                     div *= 60;
 
                     // Draw.
                     if (div == 60 || t / div != 0)
                     {
-                        DrawPatch(colon, x, y);
+                        DrawPatch(_colon, x, y);
                     }
                 }
                 while (t / div != 0);
@@ -679,14 +679,14 @@ namespace ManagedDoom.Video
             }
         }
 
-        private void DrawSuitablePatch(IReadOnlyList<string> candidates, int x, int y)
+        private void DrawSuitablePatch(string[] candidates, int x, int y)
         {
             bool fits = false;
             int i = 0;
 
             do
             {
-                Patch patch = cache[candidates[i]];
+                Patch patch = _cache[candidates[i]];
 
                 int left = x - patch.LeftOffset;
                 int top = y - patch.TopOffset;

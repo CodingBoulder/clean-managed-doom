@@ -52,7 +52,10 @@ namespace ManagedDoom
         public static Angle FromDegree(double degree)
         {
             double data = Math.Round(0x100000000 * (degree / 360));
-            return new Angle((uint)data);
+
+            long shifted = (long)data << 32;
+
+            return new Angle((uint)(shifted >> 32));
         }
 
         public double ToRadian()
